@@ -35,10 +35,10 @@ public class GroupRoomController {
         return CommonUtils.success(groupResponses);
     }
 
-    @Operation(summary = "그룹에 속한 유저 조회")
+    @Operation(summary = "그룹 정보 조회")
     @GetMapping("/{groupId}")
     public CommonResponse<?> getUserByGroup(@PathVariable Long groupId) {
-        List<GroupUserResponse> responses = groupRoomService.getGroupUsers(groupId);
+        GroupUserResponse responses = groupRoomService.getGroupUsers(groupId);
         return CommonUtils.success(responses);
     }
 
