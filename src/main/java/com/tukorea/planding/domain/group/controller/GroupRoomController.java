@@ -37,8 +37,8 @@ public class GroupRoomController {
 
     @Operation(summary = "그룹 정보 조회")
     @GetMapping("/{groupId}")
-    public CommonResponse<?> getUserByGroup(@PathVariable Long groupId) {
-        GroupUserResponse responses = groupRoomService.getGroupUsers(groupId);
+    public CommonResponse<GroupUserResponse> getUserByGroup(@AuthenticationPrincipal UserInfo userInfo,@PathVariable Long groupId) {
+        GroupUserResponse responses = groupRoomService.getGroupUsers(userInfo,groupId);
         return CommonUtils.success(responses);
     }
 
