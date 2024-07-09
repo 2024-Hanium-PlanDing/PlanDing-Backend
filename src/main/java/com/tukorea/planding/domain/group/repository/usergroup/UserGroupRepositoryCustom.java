@@ -6,7 +6,7 @@ import com.tukorea.planding.domain.user.entity.User;
 import java.util.List;
 
 public interface UserGroupRepositoryCustom {
-    boolean existsByGroupRoomIdAndUserId(Long groupRoomId, String userCode);
+    boolean existsByGroupRoomIdAndUserId(String groupCode, String userCode);
 
     List<User> findUserByIsConnectionFalse(Long groupRoomId);
 

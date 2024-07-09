@@ -1,6 +1,8 @@
 package com.tukorea.planding.global.websocket;
 
 import com.tukorea.planding.domain.group.service.UserGroupService;
+import com.tukorea.planding.domain.group.service.query.GroupQueryService;
+import com.tukorea.planding.domain.schedule.dto.request.GroupScheduleRequest;
 import com.tukorea.planding.global.config.security.jwt.JwtTokenHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,10 +29,9 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
-
-        if (accessor.getCommand().equals(StompCommand.CONNECT)) {
+        if (StompCommand.CONNECT.equals(accessor.getCommand())) {
             handleConnect(accessor);
-        } else if (accessor.getCommand().equals(StompCommand.DISCONNECT)) {
+        } else if (StompCommand.DISCONNECT.equals(accessor.getCommand())) {
             handleDisconnect(accessor);
         }
 
@@ -51,7 +52,6 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
             jwt = jwt.substring(7);
             if (jwtTokenHandler.validateToken(jwt)) {
                 String userCode = jwtTokenHandler.extractClaim(jwt, claims -> claims.get("code", String.class));
-
 
                 // 웹소켓 세션설정
                 webSocketRegistry.register(sessionId, new UserInfoSession(userCode, groupCode));
@@ -74,5 +74,6 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
 
         webSocketRegistry.unregister(sessionId);
     }
+
 
 }

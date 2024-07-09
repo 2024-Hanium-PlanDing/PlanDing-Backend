@@ -113,7 +113,7 @@
 //
 //        GroupInviteRequest groupInviteRequest = GroupInviteRequest
 //                .builder()
-//                .groupId(groupRoom.id())
+//                .groupCode(groupRoom.id())
 //                .userCode(userB.getUserCode())
 //                .build();
 //
@@ -217,7 +217,7 @@
 //
 //        GroupInviteRequest groupInviteRequest = GroupInviteRequest
 //                .builder()
-//                .groupId(groupRoom.id())
+//                .groupCode(groupRoom.id())
 //                .userCode(userB.getUserCode())
 //                .build();
 //
@@ -326,7 +326,7 @@
 //
 //        GroupInviteRequest groupInviteRequest = GroupInviteRequest
 //                .builder()
-//                .groupId(groupRoom.id())
+//                .groupCode(groupRoom.id())
 //                .userCode(userB.getUserCode())
 //                .build();
 //
@@ -385,7 +385,7 @@
 //
 //        GroupInviteRequest groupInviteRequest = GroupInviteRequest
 //                .builder()
-//                .groupId(groupRoom.id())
+//                .groupCode(groupRoom.id())
 //                .userCode(userB.getUserCode())
 //                .build();
 //

@@ -29,7 +29,7 @@ public class UserGroupService {
         GroupRoom groupRoom = groupRoomRepository.findByGroupCode(groupCode)
                 .orElseThrow(() -> new BusinessException(ErrorCode.GROUP_ROOM_NOT_FOUND));
 
-        if (!userGroupRepository.existsByGroupRoomIdAndUserId(groupRoom.getId(), user.getUserCode())) {
+        if (!userGroupRepository.existsByGroupRoomIdAndUserId(groupCode, user.getUserCode())) {
             throw new BusinessException(ErrorCode.GROUP_ROOM_NOT_FOUND);
         }
 

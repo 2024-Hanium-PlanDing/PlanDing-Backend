@@ -126,7 +126,7 @@
 //
 //        GroupInviteRequest groupInviteRequest = GroupInviteRequest
 //                .builder()
-//                .groupId(save.getId())
+//                .groupCode(save.getId())
 //                .userCode(userB.getUserCode())
 //                .build();
 //
@@ -169,7 +169,7 @@
 //
 //        GroupInviteRequest groupInviteRequest = GroupInviteRequest
 //                .builder()
-//                .groupId(save.getId())
+//                .groupCode(save.getId())
 //                .userCode(userB.getUserCode())
 //                .build();
 //
