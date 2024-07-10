@@ -1,0 +1,28 @@
+plugins {
+    id 'java'
+}
+
+tasks.named('bootJar') { // bootJar 세팅을 켜기
+    enabled = true
+}
+
+tasks.named('jar') { // jar 설정은 끄기
+    enabled = false
+}
+
+group = 'com.tukorea'
+version = '0.0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
