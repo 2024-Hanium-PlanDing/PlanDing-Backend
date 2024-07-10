@@ -45,4 +45,4 @@ deploy-test-server.sh
 production-server.sh
 Dockerfile.test
 Dockerfile.production
-/src/main/resources/firebase
+/src/main/resources/**/firebase
