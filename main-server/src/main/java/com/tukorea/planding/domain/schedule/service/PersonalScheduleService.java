@@ -1,7 +1,5 @@
 package com.tukorea.planding.domain.schedule.service;
 
-import com.tukorea.planding.domain.notify.dto.NotificationDTO;
-import com.tukorea.planding.domain.notify.service.ScheduleNotificationService;
 import com.tukorea.planding.domain.schedule.dto.request.PersonalScheduleRequest;
 import com.tukorea.planding.domain.schedule.dto.request.ScheduleRequest;
 import com.tukorea.planding.domain.schedule.dto.response.PersonalScheduleResponse;
@@ -18,8 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,7 +28,6 @@ public class PersonalScheduleService {
     private final ScheduleQueryService scheduleQueryService;
     private final UserQueryService userQueryService;
     private final PersonalScheduleRepository personalScheduleRepository;
-    private final ScheduleNotificationService notificationService;
 
 
     // 메인페이지
@@ -51,30 +46,9 @@ public class PersonalScheduleService {
 
     public PersonalScheduleResponse createSchedule(UserInfo userInfo, PersonalScheduleRequest personalScheduleRequest) {
         User user = userQueryService.getUserByUserCode(userInfo.getUserCode());
-
         // 개인 스케줄 생성
-        PersonalSchedule personalSchedule = PersonalSchedule.builder()
-                .user(user)
-                .build();
-
-        Schedule newSchedule = Schedule.builder()
-                .personalSchedule(personalSchedule)
-                .title(personalScheduleRequest.title())
-                .content(personalScheduleRequest.content())
-                .scheduleDate(personalScheduleRequest.scheduleDate())
-                .startTime(personalScheduleRequest.startTime())
-                .endTime(personalScheduleRequest.endTime())
-                .isComplete(false)
-                .type(ScheduleType.PERSONAL)
-                .build();
-
-        // 개인 스케줄에 스케줄 추가
-        personalSchedule.getSchedules().add(newSchedule);
-        personalScheduleRepository.save(personalSchedule);
-        Schedule schedule = scheduleQueryService.save(newSchedule);
-
-        scheduleNotification(userInfo, personalScheduleRequest, schedule);
-
+        PersonalSchedule personalSchedule = createPersonalSchedule(user);
+        Schedule schedule = create(personalSchedule, personalScheduleRequest);
         return PersonalScheduleResponse.from(schedule);
     }
 
@@ -112,10 +86,27 @@ public class PersonalScheduleService {
         return scheduleQueryService.findOverlapSchedule(userId, scheduleRequest);
     }
 
+    private Schedule create(PersonalSchedule personalSchedule, PersonalScheduleRequest personalScheduleRequest) {
+        Schedule newSchedule = Schedule.builder()
+                .personalSchedule(personalSchedule)
+                .title(personalScheduleRequest.title())
+                .content(personalScheduleRequest.content())
+                .scheduleDate(personalScheduleRequest.scheduleDate())
+                .startTime(personalScheduleRequest.startTime())
+                .endTime(personalScheduleRequest.endTime())
+                .isComplete(false)
+                .type(ScheduleType.PERSONAL)
+                .build();
 
-    private void scheduleNotification(UserInfo userInfo, PersonalScheduleRequest personalScheduleRequest, Schedule schedule) {
-        LocalDateTime start = LocalDateTime.of(personalScheduleRequest.scheduleDate(), LocalTime.ofSecondOfDay(personalScheduleRequest.startTime()));
-        NotificationDTO notification = NotificationDTO.createPersonalSchedule(userInfo.getUserCode(), personalScheduleRequest.title(), "/api/v1/schedule/" + schedule.getId(), String.valueOf(schedule.getScheduleDate()) + "-" + schedule.getStartTime());
-        notificationService.scheduleNotification(notification, start.minusHours(1));
+        personalSchedule.getSchedules().add(newSchedule);
+        return scheduleQueryService.save(newSchedule);
+    }
+
+    private PersonalSchedule createPersonalSchedule(User user) {
+        PersonalSchedule personalSchedule = PersonalSchedule.builder()
+                .user(user)
+                .build();
+        personalScheduleRepository.save(personalSchedule);
+        return personalSchedule;
     }
 }

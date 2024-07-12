@@ -4,25 +4,27 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.tukorea.planding.global.audit.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Notification {
+public class Notification extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String userCode;
 
-    @Column(name = "message")
+    @Column(name = "scheduleCount")
     private String message;
 
     @Column(name = "group_name")
@@ -34,24 +36,18 @@ public class Notification {
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
 
-    @Column(name = "created_at")
+    @Column(name = "schedule_Date")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private LocalDateTime createdAt;
-
-    @Column(name = "schedule_time")
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private LocalDateTime scheduleTime;
+    private LocalDate scheduleDate;
 
     @Builder
-    public Notification(String userCode, String message, String groupName, String url, NotificationType notificationType, LocalDateTime createdAt, LocalDateTime scheduleTime) {
+    public Notification(String userCode, String message, String groupName, String url, NotificationType notificationType, LocalDate scheduleDate) {
         this.userCode = userCode;
         this.message = message;
         this.groupName = groupName;
         this.url = url;
         this.notificationType = notificationType;
-        this.createdAt = createdAt;
-        this.scheduleTime = scheduleTime;
+        this.scheduleDate = scheduleDate;
     }
 }

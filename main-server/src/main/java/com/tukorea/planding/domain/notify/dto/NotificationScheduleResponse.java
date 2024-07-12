@@ -14,11 +14,11 @@ public class NotificationScheduleResponse {
     private String url;
     private LocalDateTime createdAt;
 
-    public static NotificationScheduleResponse of(Notification notification){
+    public static NotificationScheduleResponse of(Notification notification) {
         return NotificationScheduleResponse.builder()
                 .groupName(notification.getGroupName())
                 .message(notification.getMessage())
-                .createdAt(notification.getCreatedAt())
+                .createdAt(notification.getCreatedDate())
                 .url(notification.getUrl())
                 .build();
     }
