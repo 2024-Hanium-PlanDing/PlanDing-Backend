@@ -1,6 +1,6 @@
 package com.tukorea.planding.global.config;
 
-import com.tukorea.planding.domain.notify.service.NotificationSubscriber;
+import com.tukorea.planding.domain.notify.service.SseNotificationSubscriber;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
@@ -49,7 +49,7 @@ public class RedisConfig {
 
     // 알림 전송
     @Bean
-    public MessageListenerAdapter listenerAdapter(NotificationSubscriber subscriber) {
+    public MessageListenerAdapter listenerAdapter(SseNotificationSubscriber subscriber) {
         return new MessageListenerAdapter(subscriber, "handleMessage");
     }
 }

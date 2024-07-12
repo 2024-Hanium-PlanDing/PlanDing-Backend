@@ -15,7 +15,7 @@ import java.io.IOException;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class NotificationSubscriber implements MessageListener {
+public class SseNotificationSubscriber implements MessageListener {
 
     private final ObjectMapper objectMapper;
     private final SseEmitterService sseEmitterService;
@@ -25,11 +25,11 @@ public class NotificationSubscriber implements MessageListener {
         try {
             String channel = new String(message.getChannel())
                     .substring("notification.user.".length());
-            log.info("Received message on channel: {}", channel); // 채널 이름 로깅
+            log.info("Received scheduleCount on channel: {}", channel); // 채널 이름 로깅
             NotificationDTO notification = objectMapper.readValue(message.getBody(), NotificationDTO.class);
             sseEmitterService.sendNotificationToClient(channel, notification);
         } catch (IOException e) {
-            log.error("Failed to handle message", e);
+            log.error("Failed to handle scheduleCount", e);
         }
     }
 }

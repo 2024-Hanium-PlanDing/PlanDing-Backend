@@ -1,5 +1,6 @@
 package com.tukorea.planding.domain.notify.service;
 
+import com.tukorea.planding.domain.notify.dto.DailyNotificationDto;
 import com.tukorea.planding.domain.notify.dto.NotificationDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -13,7 +14,7 @@ public class RedisMessageService {
 
     private static final String CHANNEL_PREFIX = "notification.user.";
     private final RedisMessageListenerContainer container;
-    private final NotificationSubscriber subscriber;
+    private final SseNotificationSubscriber subscriber;
     private final RedisTemplate<String, Object> redisTemplate;
 
     // 채널 구독
@@ -21,7 +22,7 @@ public class RedisMessageService {
         container.addMessageListener(subscriber, ChannelTopic.of(getChannelName(channel)));
     }
 
-    // 이벤트 발행
+    // 스케줄 이벤트 발행
     public void publish(String channel, NotificationDTO notificationDto) {
         redisTemplate.convertAndSend(getChannelName(channel), notificationDto);
     }
