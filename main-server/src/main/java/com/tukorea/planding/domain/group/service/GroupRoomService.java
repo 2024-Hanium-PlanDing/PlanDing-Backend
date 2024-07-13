@@ -100,12 +100,14 @@ public class GroupRoomService {
                 .collect(Collectors.toList());
 
         return GroupUserResponse.builder()
+                .id(groupRoom.getId())
                 .users(userInfoSimples)
                 .groupCode(groupRoom.getGroupCode())
                 .name(groupRoom.getName())
                 .description(groupRoom.getDescription())
                 .createdBy(LocalDate.from(groupRoom.getCreatedDate()))
                 .thumbnailUrl(groupRoom.getThumbnail())
+                .isGroupAdmin(groupRoom.getOwner().equals(userInfo.getUserCode()))
                 .build();
     }
 

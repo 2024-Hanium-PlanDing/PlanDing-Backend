@@ -8,13 +8,14 @@ import java.util.List;
 
 @Builder
 public record GroupUserResponse(
-        String id,
+        Long id,
         String name,
         String groupCode,
         String description,
         String thumbnailUrl,
         LocalDate createdBy,
-        List<UserInfoSimple> users
+        List<UserInfoSimple> users,
+        boolean isGroupAdmin
 ) {
 
 }

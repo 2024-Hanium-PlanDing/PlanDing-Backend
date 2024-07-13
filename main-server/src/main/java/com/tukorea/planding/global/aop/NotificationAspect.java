@@ -2,13 +2,12 @@ package com.tukorea.planding.global.aop;
 
 import com.tukorea.planding.domain.notify.service.NotificationHandler;
 import com.tukorea.planding.domain.schedule.dto.request.PersonalScheduleRequest;
-import com.tukorea.planding.domain.schedule.dto.request.ScheduleRequest;
 import com.tukorea.planding.domain.schedule.dto.response.PersonalScheduleResponse;
-import com.tukorea.planding.domain.schedule.entity.Schedule;
 import com.tukorea.planding.domain.user.dto.UserInfo;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
+
 @Aspect
 @Component
 @RequiredArgsConstructor
@@ -19,8 +18,9 @@ public class NotificationAspect {
     @AfterReturning(pointcut = "execution(* com.tukorea.planding.domain.schedule.service.PersonalScheduleService.createSchedule(..)) && args(userInfo, personalScheduleRequest)", returning = "personalScheduleResponse")
     public void registerNotification(UserInfo userInfo, PersonalScheduleRequest personalScheduleRequest, PersonalScheduleResponse personalScheduleResponse) {
         // 예약된 알림 등록 로직
-
-        notificationHandler.scheduleBeforeOneHour(userInfo.getUserCode(), personalScheduleResponse);
+        // 1시간전 등록
+        notificationHandler.registerScheduleBeforeOneHour(userInfo.getUserCode(), personalScheduleResponse);
+        notificationHandler.registerScheduleBeforeDay(userInfo.getUserCode(), personalScheduleResponse);
     }
 
 //    @AfterThrowing(pointcut = "execution(* com.example.ScheduleService.createSchedule(..))", throwing = "ex")
