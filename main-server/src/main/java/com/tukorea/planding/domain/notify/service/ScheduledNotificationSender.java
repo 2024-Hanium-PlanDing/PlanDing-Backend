@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,13 +34,18 @@ public class ScheduledNotificationSender {
     @Scheduled(fixedRate = 60000)  // 1분마다 실행
     @Transactional
     public void sendScheduleNotifications() {
-
-        Set<ZSetOperations.TypedTuple<Object>> dueNotifications = scheduleNotificationService.getDueNotifications();
+        LocalDateTime now = LocalDateTime.now().withSecond(0).withNano(0);
+        Set<ZSetOperations.TypedTuple<Object>> dueNotifications = scheduleNotificationService.getDueNotifications(now);
 
         for (ZSetOperations.TypedTuple<Object> tuple : dueNotifications) {
             NotificationDTO notification = (NotificationDTO) tuple.getValue();
-            notificationHandler.sendPersonalNotification(notification.getUserCode(), notification);
-            scheduleNotificationService.removeNotification(notification);
+            long score = tuple.getScore().longValue();
+            LocalDateTime notificationDateTime = LocalDateTime.of(LocalDate.parse(notification.getDate()), LocalTime.of(Integer.parseInt(notification.getTime()), 0));
+
+            if (score == notificationDateTime.minusHours(1).toEpochSecond(ZoneOffset.UTC)) {
+                notificationHandler.sendPersonalNotification(notification.getUserCode(), notification);
+                scheduleNotificationService.removeNotification(notification);
+            }
         }
     }
 
