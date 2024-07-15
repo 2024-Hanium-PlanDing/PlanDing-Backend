@@ -34,15 +34,20 @@ public class ScheduledNotificationSender {
     @Scheduled(fixedRate = 60000)  // 1분마다 실행
     @Transactional
     public void sendScheduleNotifications() {
-        LocalDateTime now = LocalDateTime.now().withSecond(0).withNano(0);
-        Set<ZSetOperations.TypedTuple<Object>> dueNotifications = scheduleNotificationService.getDueNotifications(now);
+
+        LocalDateTime now = LocalDateTime.now();
+        Set<ZSetOperations.TypedTuple<Object>> dueNotifications = scheduleNotificationService.getDueNotifications();
 
         for (ZSetOperations.TypedTuple<Object> tuple : dueNotifications) {
             NotificationDTO notification = (NotificationDTO) tuple.getValue();
-            long score = tuple.getScore().longValue();
-            LocalDateTime notificationDateTime = LocalDateTime.of(LocalDate.parse(notification.getDate()), LocalTime.of(Integer.parseInt(notification.getTime()), 0));
 
-            if (score == notificationDateTime.minusHours(1).toEpochSecond(ZoneOffset.UTC)) {
+            Number scoreNumber = tuple.getScore();
+            long score = scoreNumber.longValue();
+            LocalDateTime decodedDateTime = LocalDateTime.ofEpochSecond(score, 0, ZoneOffset.UTC);
+
+
+            // 1시간 전 로직
+            if (decodedDateTime.toLocalDate().equals(now.toLocalDate()) && decodedDateTime.getHour() == now.getHour()) {
                 notificationHandler.sendPersonalNotification(notification.getUserCode(), notification);
                 scheduleNotificationService.removeNotification(notification);
             }
