@@ -1,6 +1,7 @@
 package com.tukorea.planding.global.aop;
 
 import com.tukorea.planding.domain.notify.service.NotificationHandler;
+import com.tukorea.planding.domain.notify.service.schedule.PersonalScheduleNotificationHandler;
 import com.tukorea.planding.domain.schedule.dto.request.PersonalScheduleRequest;
 import com.tukorea.planding.domain.schedule.dto.response.PersonalScheduleResponse;
 import com.tukorea.planding.domain.user.dto.UserInfo;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class PersonalNotificationAspect {
 
-    private final NotificationHandler notificationHandler;
+    private final PersonalScheduleNotificationHandler notificationHandler;
 
     /**
      * 스케줄 생성시 알람 등록

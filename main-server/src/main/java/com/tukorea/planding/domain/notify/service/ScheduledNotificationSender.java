@@ -2,6 +2,7 @@ package com.tukorea.planding.domain.notify.service;
 
 import com.tukorea.planding.domain.notify.dto.DailyNotificationDto;
 import com.tukorea.planding.domain.notify.dto.NotificationDTO;
+import com.tukorea.planding.domain.notify.service.schedule.PersonalScheduleNotificationHandler;
 import com.tukorea.planding.domain.schedule.entity.Schedule;
 import com.tukorea.planding.domain.schedule.entity.ScheduleType;
 import com.tukorea.planding.domain.schedule.repository.ScheduleRepository;
@@ -28,7 +29,7 @@ import java.util.stream.Collectors;
 public class ScheduledNotificationSender {
 
     private final ScheduleNotificationService scheduleNotificationService;
-    private final NotificationHandler notificationHandler;
+    private final PersonalScheduleNotificationHandler notificationHandler;
     private final ScheduleRepository scheduleRepository;
 
     @Scheduled(fixedRate = 60000)  // 1분마다 실행
