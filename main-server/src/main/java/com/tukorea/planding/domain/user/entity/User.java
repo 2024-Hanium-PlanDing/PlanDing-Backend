@@ -45,6 +45,12 @@ public class User extends BaseEntity {
     @Column(name = "user_code", nullable = false, unique = true)
     private String userCode;
 
+    @Column(name = "alarm")
+    private boolean alarm = true;
+
+    @Column(name = "fcm_token")
+    private String fcmToken;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<UserGroup> userGroup = new HashSet<>();
 
@@ -52,7 +58,7 @@ public class User extends BaseEntity {
     private final List<GroupFavorite> groupFavorites = new ArrayList<>();
 
     @Builder
-    public User(String email, String profileImage, String username, Role role, SocialType socialType, String socialId, String userCode) {
+    public User(String email, String profileImage, String username, Role role, SocialType socialType, String socialId, String userCode, String fcmToken) {
         this.email = email;
         this.profileImage = profileImage;
         this.username = username;
@@ -60,14 +66,19 @@ public class User extends BaseEntity {
         this.socialType = socialType;
         this.socialId = socialId;
         this.userCode = userCode;
+        this.fcmToken = fcmToken;
     }
-
-
-
 
     public static String createCode() {
         String c = UUID.randomUUID().toString();
         return "#" + c.substring(0, 4);
     }
 
+    public void updateFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
+    }
+
+    public void updateAlarm(boolean alarm) {
+        this.alarm = alarm;
+    }
 }

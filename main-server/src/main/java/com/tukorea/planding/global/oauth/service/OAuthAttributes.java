@@ -1,12 +1,10 @@
 package com.tukorea.planding.global.oauth.service;
 
-import com.tukorea.planding.domain.notify.entity.UserNotificationSetting;
-import com.tukorea.planding.global.oauth.details.Role;
-import com.tukorea.planding.global.oauth.userInfo.KakaoOAuth2UserInfo;
-
-import com.tukorea.planding.global.oauth.userInfo.OAuth2UserInfo;
 import com.tukorea.planding.domain.user.entity.SocialType;
 import com.tukorea.planding.domain.user.entity.User;
+import com.tukorea.planding.global.oauth.details.Role;
+import com.tukorea.planding.global.oauth.userInfo.KakaoOAuth2UserInfo;
+import com.tukorea.planding.global.oauth.userInfo.OAuth2UserInfo;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -44,14 +42,6 @@ public class OAuthAttributes {
                 .profileImage(oauth2UserInfo.getProfileImage())
                 .role(Role.USER)
                 .userCode(userCode)
-                .build();
-    }
-
-    public UserNotificationSetting toNotificationSetting(User user) {
-        return UserNotificationSetting.builder()
-                .userCode(user.getUserCode())
-                .scheduleNotificationEnabled(true)
-                .groupScheduleNotificationEnabled(true)
                 .build();
     }
 }

@@ -21,7 +21,7 @@ public class UserGroupQueryService {
     }
 
     public boolean checkUserAccessToGroupRoom(String groupCode, String userCode) {
-        return userGroupRepository.existsByGroupRoomIdAndUserId(groupCode, userCode);
+        return userGroupRepository.existsByGroupRoomAndUser(groupCode, userCode);
     }
 
     public List<User> findUserByIsConnectionFalse(Long groupRoomId) {

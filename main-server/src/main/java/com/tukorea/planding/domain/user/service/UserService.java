@@ -1,10 +1,6 @@
 package com.tukorea.planding.domain.user.service;
 
-import com.tukorea.planding.domain.group.entity.GroupFavorite;
-import com.tukorea.planding.domain.group.entity.GroupRoom;
 import com.tukorea.planding.domain.group.service.RedisGroupInviteService;
-import com.tukorea.planding.domain.notify.entity.UserNotificationSetting;
-import com.tukorea.planding.domain.notify.repository.setting.UserNotificationSettingRepository;
 import com.tukorea.planding.domain.user.dto.AndroidLoginRequest;
 import com.tukorea.planding.domain.user.dto.ProfileResponse;
 import com.tukorea.planding.domain.user.dto.UserInfo;
@@ -15,28 +11,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserQueryService userQueryService;
     private final RedisGroupInviteService redisGroupInviteService;
-    private final UserNotificationSettingRepository userNotificationSettingRepository;
 
-
-    @Transactional(readOnly = true)
-    public List<GroupRoom> findFavoriteGroupsByUserId(UserInfo userInfo) {
-        return userQueryService.getUserByUserCode(userInfo.getUserCode())
-                .getGroupFavorites()
-                .stream()
-                .map(GroupFavorite::getGroupRoom)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional
     public User createUserFromRequest(AndroidLoginRequest androidLoginRequest) {
 
         String userCode = generateUniqueUserCode();
@@ -51,15 +33,6 @@ public class UserService {
                 .build();
 
         User savedUser = userQueryService.save(user);
-
-        UserNotificationSetting defaultSetting = UserNotificationSetting.builder()
-                .userCode(userCode)
-                .scheduleNotificationEnabled(true)
-                .groupScheduleNotificationEnabled(true)
-                .build();
-
-        userNotificationSettingRepository.save(defaultSetting);
-
         return savedUser;
     }
 
@@ -84,5 +57,29 @@ public class UserService {
             userCode = User.createCode();
         } while (userQueryService.existsByUserCode(userCode));
         return userCode;
+    }
+
+    public void updateAlarmSetting(String userCode, boolean alarmSetting) {
+        User user = userQueryService.getUserByUserCode(userCode);
+        user.updateAlarm(alarmSetting);
+    }
+
+    @Transactional(readOnly = true)
+    public String getFcmTokenByUserCode(String userCode) {
+        User user = userQueryService.getUserByUserCode(userCode);
+        if (user != null) {
+            return user.getFcmToken();
+        } else {
+            throw new IllegalArgumentException("User not found");
+        }
+    }
+
+    public void updateFcmToken(String userCode, String fcmToken) {
+        User user = userQueryService.getUserByUserCode(userCode);
+        if (user != null) {
+            user.updateFcmToken(fcmToken);
+        } else {
+            throw new IllegalArgumentException("User not found");
+        }
     }
 }

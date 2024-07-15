@@ -37,6 +37,9 @@ public class GroupRoom extends BaseEntity {
     @Column(name = "thumbnail")
     private String thumbnail;
 
+    @Column(name = "alarm")
+    private boolean alarm = true;
+
     @OneToMany(mappedBy = "groupRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<UserGroup> userGroups = new HashSet<>();
 
@@ -79,4 +82,7 @@ public class GroupRoom extends BaseEntity {
         this.thumbnail = thumbnail;
     }
 
+    public void updateAlarm(boolean alarm) {
+        this.alarm = alarm;
+    }
 }

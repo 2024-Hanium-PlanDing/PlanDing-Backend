@@ -1,7 +1,5 @@
 package com.tukorea.planding.global.oauth.service;
 
-import com.tukorea.planding.domain.notify.entity.UserNotificationSetting;
-import com.tukorea.planding.domain.notify.repository.setting.UserNotificationSettingRepository;
 import com.tukorea.planding.domain.user.repository.UserRepository;
 import com.tukorea.planding.domain.user.entity.SocialType;
 import com.tukorea.planding.domain.user.entity.User;
@@ -26,7 +24,6 @@ public class CustomOAuth2Service implements OAuth2UserService<OAuth2UserRequest,
 
     private final UserRepository userRepository;
     private final UserService userService;
-    private final UserNotificationSettingRepository userNotificationSettingRepository;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -73,8 +70,6 @@ public class CustomOAuth2Service implements OAuth2UserService<OAuth2UserRequest,
         log.info("신규 회원가입");
         String userCode = userService.generateUniqueUserCode();
         User createdUser = attributes.toEntity(socialType, attributes.getOauth2UserInfo(), userCode);
-        UserNotificationSetting notificationSetting = attributes.toNotificationSetting(createdUser);
-        userNotificationSettingRepository.save(notificationSetting);
         return userRepository.save(createdUser);
     }
 

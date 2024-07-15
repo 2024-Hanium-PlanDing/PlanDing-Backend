@@ -18,7 +18,7 @@ public class UserGroupRepositoryCustomImpl implements UserGroupRepositoryCustom 
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public boolean existsByGroupRoomIdAndUserId(String groupCode, String userCode) {
+    public boolean existsByGroupRoomAndUser(String groupCode, String userCode) {
         return queryFactory.selectFrom(userGroup)
                 .where(userGroup.groupRoom.groupCode.eq(groupCode)
                         .and(userGroup.user.userCode.eq(userCode)))
@@ -49,12 +49,5 @@ public class UserGroupRepositoryCustomImpl implements UserGroupRepositoryCustom 
                 .fetchCount();
 
         return count > 0;
-    }
-
-    @Override
-    public List<UserGroup> findAllUsersByGroupId(Long groupRoomId) {
-        return queryFactory.selectFrom(userGroup)
-                .where(userGroup.groupRoom.id.eq(groupRoomId))
-                .fetch();
     }
 }

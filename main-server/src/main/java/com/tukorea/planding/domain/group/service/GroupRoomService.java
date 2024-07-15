@@ -125,4 +125,12 @@ public class GroupRoomService {
     private GroupResponse toGroupResponse(GroupRoom groupRoom) {
         return GroupResponse.from(groupRoom);
     }
+
+    public void updateGroupRoomAlarmSetting(String userCode, String groupCode, boolean alarmEnabled) {
+        if (!groupQueryService.existGroupInUser(userCode, groupCode)) {
+            throw new BusinessException(ErrorCode.ACCESS_DENIED);
+        }
+        GroupRoom groupRoom = groupQueryService.getGroupByCode(groupCode);
+        groupRoom.updateAlarm(alarmEnabled);
+    }
 }
