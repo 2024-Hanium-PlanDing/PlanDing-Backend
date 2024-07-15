@@ -10,4 +10,6 @@ public class CommonUtils {
     public static CommonResponse<?> fail(ErrorResponse error) {
         return new CommonResponse<>(false, null, error);
     }
+
+    public static CommonResponse<?> successWithEmptyData() {return new CommonResponse<>(true, null, null);}
 }
