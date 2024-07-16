@@ -1,5 +1,7 @@
 package com.tukorea.planding.domain.schedule.controller;
 
+import com.tukorea.planding.common.CommonResponse;
+import com.tukorea.planding.common.CommonUtils;
 import com.tukorea.planding.domain.schedule.dto.request.GroupScheduleAttendanceRequest;
 import com.tukorea.planding.domain.schedule.service.GroupScheduleAttendanceService;
 import com.tukorea.planding.domain.user.dto.UserInfo;
@@ -21,8 +23,8 @@ public class GroupScheduleAttendanceController {
 
     @PostMapping()
     @Operation(summary = "스케줄 참여 여부 선택")
-    public ResponseEntity<?> participationGroupSchedule(@AuthenticationPrincipal UserInfo userInfo, @RequestBody GroupScheduleAttendanceRequest status) {
+    public CommonResponse<?> participationGroupSchedule(@AuthenticationPrincipal UserInfo userInfo, @RequestBody GroupScheduleAttendanceRequest status) {
         groupScheduleAttendanceService.participationGroupSchedule(userInfo, status);
-        return new ResponseEntity<>("스케줄 참여여부 변경 완료되었습니다.", HttpStatus.OK);
+        return CommonUtils.successWithEmptyData();
     }
 }
