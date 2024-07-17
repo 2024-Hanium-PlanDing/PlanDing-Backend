@@ -17,7 +17,6 @@ public record GroupScheduleResponse(
         LocalDate scheduleDate,
         Integer startTime,
         Integer endTime,
-        boolean isComplete,
         DayOfWeek day,
         ScheduleType type,
         String groupName,
@@ -31,7 +30,6 @@ public record GroupScheduleResponse(
                 .scheduleDate(schedule.getScheduleDate())
                 .startTime(schedule.getStartTime())
                 .endTime(schedule.getEndTime())
-                .isComplete(schedule.isComplete())
                 .day(schedule.getScheduleDate().getDayOfWeek())
                 .type(ScheduleType.GROUP)
                 .groupName(groupName)

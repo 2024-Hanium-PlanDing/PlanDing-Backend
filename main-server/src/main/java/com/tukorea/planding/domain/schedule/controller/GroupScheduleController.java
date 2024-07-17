@@ -2,13 +2,13 @@ package com.tukorea.planding.domain.schedule.controller;
 
 import com.tukorea.planding.common.CommonResponse;
 import com.tukorea.planding.common.CommonUtils;
-import com.tukorea.planding.domain.schedule.dto.request.GroupScheduleRequest;
+import com.tukorea.planding.domain.schedule.dto.request.websocket.SendCreateScheduleDTO;
+import com.tukorea.planding.domain.schedule.dto.request.websocket.SendDeleteScheduleDTO;
+import com.tukorea.planding.domain.schedule.dto.request.websocket.SendUpdateScheduleDTO;
 import com.tukorea.planding.domain.schedule.dto.response.GroupScheduleResponse;
 import com.tukorea.planding.domain.schedule.dto.response.ScheduleResponse;
 import com.tukorea.planding.domain.schedule.service.GroupScheduleService;
 import com.tukorea.planding.domain.user.dto.UserInfo;
-import com.tukorea.planding.global.error.BusinessException;
-import com.tukorea.planding.global.error.ErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -17,7 +17,9 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -29,20 +31,24 @@ public class GroupScheduleController {
 
     private final GroupScheduleService groupScheduleService;
 
-    @MessageMapping("/schedule/{groupCode}") // schedule 경로로 메시지를 보내면
+    @MessageMapping("/schedule/create/{groupCode}") // schedule 경로로 메시지를 보내면
     @SendTo("/sub/schedule/{groupCode}")    // /sub/schedule/{group_code} 을 구독한 유저에게 메시지를 뿌림
-    public CommonResponse<?> handleGroupSchedule(@DestinationVariable String groupCode, @Valid GroupScheduleRequest request) {
-        return switch (request.action()) {
-            case CREATE -> CommonUtils.success(groupScheduleService.createGroupSchedule(groupCode, request));
-            case UPDATE -> CommonUtils.success(groupScheduleService.updateScheduleByGroupRoom(groupCode, request));
-            case DELETE -> {
-                groupScheduleService.deleteScheduleByGroupRoom(groupCode, request);
-                yield null;
-            }
-            default -> throw new BusinessException(ErrorCode.SCHEDULE_NOT_FOUND);
-        };
+    public CommonResponse<?> createGroupSchedule(@DestinationVariable String groupCode, @Valid SendCreateScheduleDTO request) {
+        return CommonUtils.success(groupScheduleService.createGroupSchedule(groupCode, request));
     }
 
+    @MessageMapping("/schedule/update/{groupCode}") // schedule 경로로 메시지를 보내면
+    @SendTo("/sub/schedule/{groupCode}")    // /sub/schedule/{group_code} 을 구독한 유저에게 메시지를 뿌림
+    public CommonResponse<?> updateGroupSchedule(@DestinationVariable String groupCode, @Valid SendUpdateScheduleDTO request) {
+        return CommonUtils.success(groupScheduleService.updateScheduleByGroupRoom(groupCode, request));
+    }
+
+    @MessageMapping("/schedule/delete/{groupCode}") // schedule 경로로 메시지를 보내면
+    @SendTo("/sub/schedule/{groupCode}")    // /sub/schedule/{group_code} 을 구독한 유저에게 메시지를 뿌림
+    public CommonResponse<?> deleteGroupSchedule(@DestinationVariable String groupCode, @Valid SendDeleteScheduleDTO request) {
+        return CommonUtils.success(groupScheduleService.deleteScheduleByGroupRoom(groupCode, request));
+
+    }
 
     @Operation(summary = "그룹 스케줄: 작성 목록 조회")
     @GetMapping("/api/v1/group-rooms/{groupCode}")

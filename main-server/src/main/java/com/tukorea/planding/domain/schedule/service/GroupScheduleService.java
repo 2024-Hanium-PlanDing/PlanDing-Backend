@@ -4,9 +4,13 @@ import com.tukorea.planding.domain.group.entity.GroupRoom;
 import com.tukorea.planding.domain.group.service.query.GroupQueryService;
 import com.tukorea.planding.domain.group.service.query.UserGroupQueryService;
 import com.tukorea.planding.domain.schedule.dto.request.GroupScheduleRequest;
+import com.tukorea.planding.domain.schedule.dto.request.websocket.SendCreateScheduleDTO;
+import com.tukorea.planding.domain.schedule.dto.request.websocket.SendDeleteScheduleDTO;
+import com.tukorea.planding.domain.schedule.dto.request.websocket.SendUpdateScheduleDTO;
 import com.tukorea.planding.domain.schedule.dto.response.GroupScheduleResponse;
 import com.tukorea.planding.domain.schedule.dto.response.ScheduleResponse;
 import com.tukorea.planding.domain.schedule.dto.response.UserScheduleAttendance;
+import com.tukorea.planding.domain.schedule.dto.response.websocket.SendGroupResponse;
 import com.tukorea.planding.domain.schedule.entity.*;
 import com.tukorea.planding.domain.schedule.repository.GroupScheduleAttendanceRepository;
 import com.tukorea.planding.domain.schedule.repository.GroupScheduleRepository;
@@ -40,7 +44,8 @@ public class GroupScheduleService {
     private final ApplicationEventPublisher eventPublisher;
 
 
-    public ScheduleResponse createGroupSchedule(String groupCode, GroupScheduleRequest request) {
+    public SendGroupResponse createGroupSchedule(String groupCode, SendCreateScheduleDTO request) {
+        log.info("Create 그룹스케줄 groupCode: {}, request: {}", groupCode, request);
         checkUserAccessToGroupRoom(groupCode, request.userCode());
         checkRequestGroupRoom(groupCode, request.groupCode());
 
@@ -68,8 +73,7 @@ public class GroupScheduleService {
         Schedule savedSchedule = scheduleQueryService.save(newSchedule);
 
         notifyUsers(groupRoom, savedSchedule);
-
-        return ScheduleResponse.from(savedSchedule);
+        return SendGroupResponse.from(savedSchedule, Action.CREATE);
     }
 
     @Transactional(readOnly = true)
@@ -95,21 +99,23 @@ public class GroupScheduleService {
                 .collect(Collectors.toList());
     }
 
-    public ScheduleResponse updateScheduleByGroupRoom(String groupCode, GroupScheduleRequest request) {
+    public SendGroupResponse updateScheduleByGroupRoom(String groupCode, SendUpdateScheduleDTO request) {
+        log.info("Updated 그룹스케줄 groupCode: {}, request: {}", groupCode, request);
         checkUserAccessToGroupRoom(groupCode, request.userCode());
         checkRequestGroupRoom(groupCode, request.groupCode());
 
         Schedule schedule = scheduleQueryService.findScheduleById(request.scheduleId());
         schedule.update(request.title(), request.content(), request.startTime(), request.endTime());
 
-        return ScheduleResponse.from(schedule);
+        return SendGroupResponse.from(schedule, Action.UPDATE);
     }
 
-    public void deleteScheduleByGroupRoom(String groupCode, GroupScheduleRequest request) {
+    public SendGroupResponse deleteScheduleByGroupRoom(String groupCode, SendDeleteScheduleDTO request) {
+        log.info("DELETE 그룹스케줄 groupCode: {}, request: {}", groupCode, request);
         checkUserAccessToGroupRoom(groupCode, request.userCode());
         checkRequestGroupRoom(groupCode, request.groupCode());
-
         scheduleQueryService.deleteById(request.scheduleId());
+        return SendGroupResponse.delete(request.scheduleId(), Action.DELETE);
     }
 
     public List<ScheduleResponse> getWeekSchedule(LocalDate startDate, LocalDate endDate, UserInfo userInfo) {

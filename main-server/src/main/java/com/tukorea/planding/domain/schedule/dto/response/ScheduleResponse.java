@@ -15,7 +15,6 @@ public record ScheduleResponse(
         LocalDate scheduleDate,
         Integer startTime,
         Integer endTime,
-        boolean complete,
         String groupName,
         ScheduleType type
 ) {
@@ -28,7 +27,6 @@ public record ScheduleResponse(
                 .scheduleDate(schedule.getScheduleDate())
                 .startTime(schedule.getStartTime())
                 .endTime(schedule.getEndTime())
-                .complete(schedule.isComplete())
                 .type(schedule.getType())
                 .groupName(schedule.getType() == ScheduleType.GROUP ? schedule.getGroupSchedule().getGroupRoom().getName() : null)
                 .build();

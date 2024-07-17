@@ -1,9 +1,14 @@
 package com.tukorea.planding.global.websocket;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.tukorea.planding.domain.group.service.UserGroupService;
 import com.tukorea.planding.domain.group.service.query.GroupQueryService;
 import com.tukorea.planding.domain.schedule.dto.request.GroupScheduleRequest;
+import com.tukorea.planding.domain.schedule.entity.Action;
 import com.tukorea.planding.global.config.security.jwt.JwtTokenHandler;
+import io.swagger.v3.core.util.ObjectMapperFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -15,6 +20,8 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+
 @Order(Ordered.HIGHEST_PRECEDENCE + 99)
 @Component
 @RequiredArgsConstructor
@@ -24,6 +31,7 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
     private final JwtTokenHandler jwtTokenHandler;
     private final WebSocketRegistry webSocketRegistry;
     private final UserGroupService userGroupService;
+    private final ObjectMapper objectMapper;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -33,10 +41,14 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
             handleConnect(accessor);
         } else if (StompCommand.DISCONNECT.equals(accessor.getCommand())) {
             handleDisconnect(accessor);
+        } else if (StompCommand.SEND.equals(accessor.getCommand())) {
+            log.info("PUB: {}", accessor.getDestination());
         }
+
 
         return message;
     }
+
 
     /*
     웹소켓 연결시 웹소켓 세션과 유저의 정보를 관리하기 위해 3가지 정보를 추출
