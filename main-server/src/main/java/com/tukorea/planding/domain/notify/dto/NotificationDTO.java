@@ -6,7 +6,9 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.tukorea.planding.domain.notify.entity.NotificationType;
 import com.tukorea.planding.domain.schedule.dto.request.PersonalScheduleRequest;
+import com.tukorea.planding.domain.schedule.dto.response.GroupScheduleResponse;
 import com.tukorea.planding.domain.schedule.dto.response.PersonalScheduleResponse;
+import com.tukorea.planding.domain.schedule.dto.response.ScheduleResponse;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -54,14 +56,14 @@ public class NotificationDTO {
     }
 
     // 그룹 스케줄 생성 시 필요한 빌더 메서드
-    public static NotificationDTO createGroupSchedule(String receiverCode, String message, String url, Integer time, String groupName) {
+    public static NotificationDTO createGroupSchedule(String receiverCode, ScheduleResponse response) {
         return NotificationDTO.builder()
                 .userCode(receiverCode)
-                .message(message)
-                .url(url)
+                .message(response.content())
+                .url("/api/v1/schedule/" + response.id())
                 .notificationType(NotificationType.GROUP_SCHEDULE)
-                .time(time)
-                .groupName(groupName)
+                .time(response.startTime())
+                .groupName(response.groupName())
                 .build();
     }
 
