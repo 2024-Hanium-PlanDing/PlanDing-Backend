@@ -24,7 +24,6 @@ public class GroupScheduleAttendanceController {
     @PostMapping()
     @Operation(summary = "스케줄 참여 여부 선택")
     public CommonResponse<?> participationGroupSchedule(@AuthenticationPrincipal UserInfo userInfo, @RequestBody GroupScheduleAttendanceRequest status) {
-        groupScheduleAttendanceService.participationGroupSchedule(userInfo, status);
-        return CommonUtils.successWithEmptyData();
+        return CommonUtils.success(groupScheduleAttendanceService.participationGroupSchedule(userInfo, status));
     }
 }

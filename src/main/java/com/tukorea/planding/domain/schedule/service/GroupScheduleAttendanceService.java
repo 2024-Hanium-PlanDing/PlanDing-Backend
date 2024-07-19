@@ -1,6 +1,7 @@
 package com.tukorea.planding.domain.schedule.service;
 
 import com.tukorea.planding.domain.schedule.dto.request.GroupScheduleAttendanceRequest;
+import com.tukorea.planding.domain.schedule.dto.response.GroupScheduleAttendanceResponse;
 import com.tukorea.planding.domain.schedule.entity.GroupScheduleAttendance;
 import com.tukorea.planding.domain.schedule.entity.Schedule;
 import com.tukorea.planding.domain.schedule.repository.GroupScheduleAttendanceRepository;
@@ -17,12 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class GroupScheduleAttendanceService {
 
-    private final GroupScheduleAttendanceRepository groupScheduleAttendanceRepository;
     private final UserQueryService userQueryService;
     private final ScheduleQueryService scheduleQueryService;
+    private final GroupScheduleAttendanceRepository groupScheduleAttendanceRepository;
 
     @Transactional
-    public void participationGroupSchedule(UserInfo userInfo, GroupScheduleAttendanceRequest request) {
+    public GroupScheduleAttendanceResponse participationGroupSchedule(UserInfo userInfo, GroupScheduleAttendanceRequest request) {
         User user = userQueryService.getUserByUserCode(userInfo.getUserCode());
         Schedule schedule = scheduleQueryService.findScheduleById(request.scheduleId());
 
@@ -48,5 +49,18 @@ public class GroupScheduleAttendanceService {
         }
 
         groupScheduleAttendanceRepository.save(attendance);
+
+        return GroupScheduleAttendanceResponse.builder()
+                .scheduleId(schedule.getId())
+                .scheduleTitle(schedule.getTitle())
+                .startTime(schedule.getStartTime())
+                .scheduleDate(schedule.getScheduleDate())
+                .content(schedule.getContent())
+                .groupCode(schedule.getGroupSchedule().getGroupRoom().getGroupCode())
+                .groupName(schedule.getGroupSchedule().getGroupRoom().getName())
+                .userName(user.getUsername())
+                .userCode(user.getUserCode())
+                .status(attendance.getStatus())
+                .build();
     }
 }
