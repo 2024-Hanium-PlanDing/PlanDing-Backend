@@ -129,7 +129,7 @@ public class GroupRoomService {
     }
 
     public void updateGroupRoomAlarmSetting(String userCode, String groupCode, boolean alarmEnabled) {
-        if (!groupQueryService.existGroupInUser(userCode, groupCode)) {
+        if (!groupQueryService.existGroupInUser(groupCode, userCode)) {
             throw new BusinessException(ErrorCode.ACCESS_DENIED);
         }
         GroupRoom groupRoom = groupQueryService.getGroupByCode(groupCode);

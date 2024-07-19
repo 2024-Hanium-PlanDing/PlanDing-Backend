@@ -22,7 +22,7 @@ public class UserGroupRepositoryCustomImpl implements UserGroupRepositoryCustom 
         return queryFactory.selectFrom(userGroup)
                 .where(userGroup.groupRoom.groupCode.eq(groupCode)
                         .and(userGroup.user.userCode.eq(userCode)))
-                .fetchCount() > 0;
+                .fetchFirst() != null;
     }
 
     @Override
