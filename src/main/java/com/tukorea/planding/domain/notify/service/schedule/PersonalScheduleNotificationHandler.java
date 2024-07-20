@@ -10,6 +10,7 @@ import com.tukorea.planding.domain.notify.service.ScheduleNotificationService;
 import com.tukorea.planding.domain.schedule.dto.response.PersonalScheduleResponse;
 import com.tukorea.planding.domain.user.dto.UserInfo;
 import com.tukorea.planding.domain.user.service.UserQueryService;
+import com.tukorea.planding.global.error.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -22,7 +23,7 @@ import java.time.LocalTime;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class PersonalScheduleNotificationHandler {
+public class PersonalScheduleNotificationHandler implements NotificationHandler {
 
     private final RedisMessageService redisMessageService;
     private final NotificationRepository notificationRepository;
@@ -30,14 +31,15 @@ public class PersonalScheduleNotificationHandler {
     private final UserQueryService userQueryService;
 
     // 개인 스케줄 알림 코드
-    public void sendPersonalNotification(String userCode, NotificationDTO request) {
+    @Override
+    public void sendNotification(NotificationDTO request) {
         try {
-            if (!userQueryService.getUserByUserCode(userCode).isAlarm()) {
+            if (!userQueryService.getUserByUserCode(request.getUserCode()).isAlarm()) {
                 return;
             }
 
             Notification notification = Notification.builder()
-                    .userCode(userCode)
+                    .userCode(request.getUserCode())
                     .groupName(null)
                     .notificationType(NotificationType.PERSONAL_SCHEDULE)
                     .scheduleDate(LocalDate.parse(request.getDate()))
@@ -48,34 +50,14 @@ public class PersonalScheduleNotificationHandler {
             notificationRepository.save(notification);
             String channel = request.getUserCode();
             redisMessageService.publish(channel, request);
+        } catch (BusinessException e) {
+            log.warn("[Personal Schedule] 알람 전송 실패 - 접근 권한 없음 to user {}:{}", request.getUserCode(), e.getMessage());
         } catch (Exception e) {
-            log.error("알람 전송 실패 to user {}:{}", userCode, e.getMessage(), e);
+            log.error("[Personal Schedule] 알람 전송 실패 to user {}:{}", request.getUserCode(), e.getMessage(), e);
         }
-
     }
 
-    public void sendDailyNotification(String userCode, DailyNotificationDto request) {
-        try {
-            if (!userQueryService.getUserByUserCode(userCode).isAlarm()) {
-                return;
-            }
 
-            Notification notification = Notification.builder()
-                    .userCode(userCode)
-                    .groupName(null)
-                    .notificationType(NotificationType.DAILY)
-                    .scheduleDate(request.date())
-                    .message(request.message())
-                    .url(null)
-                    .build();
-
-            notificationRepository.save(notification);
-            redisMessageService.publish(userCode, NotificationDTO.createDailySchedule(userCode, request.message(), null, String.valueOf(request.date()), null));
-        } catch (Exception e) {
-            log.error("정시 스케줄 알람 전송 실패 to user {}:{}", userCode, e.getMessage(), e);
-        }
-
-    }
 
     public void registerScheduleBeforeDay(String userCode, PersonalScheduleResponse request) {
         // 자정 알림
@@ -96,10 +78,10 @@ public class PersonalScheduleNotificationHandler {
         try {
             LocalTime starTime = LocalTime.of(request.startTime(), 0);
             LocalDateTime oneHourBefore = LocalDateTime.of(request.scheduleDate(), starTime).minusHours(1);
-            NotificationDTO oneHourBeforeNotification = NotificationDTO.createPersonalSchedule(request.id(), userCode, request);
+            NotificationDTO oneHourBeforeNotification = NotificationDTO.createPersonalSchedule(userCode, request);
             scheduleNotificationService.scheduleNotification(oneHourBeforeNotification, oneHourBefore);
         } catch (Exception e) {
-            log.error("스케줄 알람 등록 실패 for user {}: {}", userCode, e.getMessage(), e);
+            log.error("[Personal Schedule] 1시간 전 알림 등록 실패 for user {}: {}", userCode, e.getMessage(), e);
         }
     }
 
@@ -108,18 +90,16 @@ public class PersonalScheduleNotificationHandler {
             NotificationDTO notification = scheduleNotificationService.getNotificationByScheduleId(scheduleId);
             if (notification != null) {
                 scheduleNotificationService.removeNotification(notification);
-                log.info("update 기존 알람 삭제 scheduleId {}: {}", scheduleId, notification.getMessage());
+                log.info("[Personal Schedule] 기존 그룹 알람 삭제 성공 scheduleId: {}, message: {}", scheduleId, notification.getMessage());
             }
 
             LocalTime starTime = LocalTime.of(request.startTime(), 0);
             LocalDateTime oneHourBefore = LocalDateTime.of(request.scheduleDate(), starTime).minusHours(1);
-            NotificationDTO oneHourBeforeNotification = NotificationDTO.createPersonalSchedule(scheduleId, userInfo.getUserCode(), request);
+            NotificationDTO oneHourBeforeNotification = NotificationDTO.createPersonalSchedule(userInfo.getUserCode(), request);
             scheduleNotificationService.scheduleNotification(oneHourBeforeNotification, oneHourBefore);
         } catch (Exception e) {
-            log.error("한 시간전 알림 업데이트 실패 scheduleId {}:{}", scheduleId, e.getMessage(), e);
+            log.error("[Personal Schedule] 1시간 전 알림 업데이트 실패 for user {}: {}", userInfo.getUserCode(), e.getMessage(), e);
         }
-
-
     }
 
     public void deleteScheduleBeforeOneHour(Long scheduleId) {
@@ -127,10 +107,9 @@ public class PersonalScheduleNotificationHandler {
             NotificationDTO notification = scheduleNotificationService.getNotificationByScheduleId(scheduleId);
             if (notification != null) {
                 scheduleNotificationService.removeNotification(notification);
-                log.info("delete 기존 알람 삭제 scheduleId {}: {}", scheduleId, notification.getMessage());
             }
         } catch (Exception e) {
-            log.error("한 시간전 알림 업데이트 실패 scheduleId {}:{}", scheduleId, e.getMessage(), e);
+            log.error("[Personal Schedule] 1시간 전 알림 삭제 실패 scheduleId: {}", scheduleId, e.getMessage(), e);
         }
 
     }

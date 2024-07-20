@@ -63,8 +63,12 @@ public enum ErrorCode {
     /**
      * User Alert Setting
      */
-    SETTING_NOT_FOUND("NOTIFICATION-001", "설정을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+    SETTING_NOT_FOUND("NOTIFICATION-001", "설정을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
+    /**
+     * Alarm
+     */
+    ALARM_NOT_FOUND("ALARM-001", "알람값이 존재하지 않습니다.", HttpStatus.NOT_FOUND);
 
     private final String errorCode;
     private final String message;
