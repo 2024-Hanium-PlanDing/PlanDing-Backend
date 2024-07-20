@@ -3,7 +3,9 @@ package com.tukorea.planding.domain.schedule.service;
 import com.tukorea.planding.domain.group.entity.GroupRoom;
 import com.tukorea.planding.domain.group.service.query.GroupQueryService;
 import com.tukorea.planding.domain.group.service.query.UserGroupQueryService;
-import com.tukorea.planding.domain.schedule.dto.request.GroupScheduleRequest;
+import com.tukorea.planding.domain.notify.service.ScheduleNotificationService;
+import com.tukorea.planding.domain.notify.service.schedule.GroupScheduleNotificationHandler;
+import com.tukorea.planding.domain.schedule.dto.request.ScheduleRequest;
 import com.tukorea.planding.domain.schedule.dto.request.websocket.SendCreateScheduleDTO;
 import com.tukorea.planding.domain.schedule.dto.request.websocket.SendDeleteScheduleDTO;
 import com.tukorea.planding.domain.schedule.dto.request.websocket.SendUpdateScheduleDTO;
@@ -23,6 +25,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -42,6 +46,7 @@ public class GroupScheduleService {
     private final GroupScheduleRepository groupScheduleRepository;
     private final GroupScheduleAttendanceRepository groupScheduleAttendanceRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final GroupScheduleNotificationHandler groupScheduleNotificationHandler;
 
 
     public SendGroupResponse createGroupSchedule(String groupCode, SendCreateScheduleDTO request) {
@@ -73,7 +78,50 @@ public class GroupScheduleService {
         Schedule savedSchedule = scheduleQueryService.save(newSchedule);
 
         notifyUsers(groupRoom, savedSchedule);
+
+        /* 커밋 이후 수행(알람등록) */
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+            @Override
+            public void afterCommit() {
+                groupScheduleNotificationHandler.registerScheduleBeforeOneHour(request.userCode(), savedSchedule);
+            }
+        });
         return SendGroupResponse.from(savedSchedule, Action.CREATE);
+    }
+
+    public SendGroupResponse updateScheduleByGroupRoom(String groupCode, SendUpdateScheduleDTO request) {
+        log.info("Updated 그룹스케줄 groupCode: {}, request: {}", groupCode, request);
+        checkUserAccessToGroupRoom(groupCode, request.userCode());
+        checkRequestGroupRoom(groupCode, request.groupCode());
+
+        Schedule schedule = scheduleQueryService.findScheduleById(request.scheduleId());
+        schedule.update(request.title(), request.content(), request.startTime(), request.endTime());
+
+        /* 커밋 이후 수행(알람수정) */
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+            @Override
+            public void afterCommit() {
+                groupScheduleNotificationHandler.updateScheduleBeforeOneHour(request.userCode(), schedule);
+            }
+        });
+
+        return SendGroupResponse.from(schedule, Action.UPDATE);
+    }
+
+    public SendGroupResponse deleteScheduleByGroupRoom(String groupCode, SendDeleteScheduleDTO request) {
+        log.info("DELETE 그룹스케줄 groupCode: {}, request: {}", groupCode, request);
+        checkUserAccessToGroupRoom(groupCode, request.userCode());
+        checkRequestGroupRoom(groupCode, request.groupCode());
+        scheduleQueryService.deleteById(request.scheduleId());
+
+        /* 커밋 이후 수행(알람삭제) */
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+            @Override
+            public void afterCommit() {
+                groupScheduleNotificationHandler.deleteScheduleBeforeOneHour(request.scheduleId());
+            }
+        });
+        return SendGroupResponse.delete(request.scheduleId(), Action.DELETE);
     }
 
     @Transactional(readOnly = true)
@@ -97,25 +145,6 @@ public class GroupScheduleService {
         return schedules.stream()
                 .map(schedule -> GroupScheduleResponse.from(schedule, groupRoom.getName(), getUserScheduleAttendances(groupRoom, schedule.getId())))
                 .collect(Collectors.toList());
-    }
-
-    public SendGroupResponse updateScheduleByGroupRoom(String groupCode, SendUpdateScheduleDTO request) {
-        log.info("Updated 그룹스케줄 groupCode: {}, request: {}", groupCode, request);
-        checkUserAccessToGroupRoom(groupCode, request.userCode());
-        checkRequestGroupRoom(groupCode, request.groupCode());
-
-        Schedule schedule = scheduleQueryService.findScheduleById(request.scheduleId());
-        schedule.update(request.title(), request.content(), request.startTime(), request.endTime());
-
-        return SendGroupResponse.from(schedule, Action.UPDATE);
-    }
-
-    public SendGroupResponse deleteScheduleByGroupRoom(String groupCode, SendDeleteScheduleDTO request) {
-        log.info("DELETE 그룹스케줄 groupCode: {}, request: {}", groupCode, request);
-        checkUserAccessToGroupRoom(groupCode, request.userCode());
-        checkRequestGroupRoom(groupCode, request.groupCode());
-        scheduleQueryService.deleteById(request.scheduleId());
-        return SendGroupResponse.delete(request.scheduleId(), Action.DELETE);
     }
 
     public List<ScheduleResponse> getWeekSchedule(LocalDate startDate, LocalDate endDate, UserInfo userInfo) {
