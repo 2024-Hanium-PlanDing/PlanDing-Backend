@@ -1,5 +1,6 @@
 package com.tukorea.planding.domain.group.service;
 
+import com.tukorea.planding.domain.chat.repository.ChatRoomRepository;
 import com.tukorea.planding.domain.group.dto.request.GroupInviteRequest;
 import com.tukorea.planding.domain.group.dto.response.GroupInviteAcceptResponse;
 import com.tukorea.planding.domain.group.dto.response.GroupInviteMessageResponse;
@@ -16,11 +17,14 @@ import com.tukorea.planding.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class GroupInviteService {
     private final UserQueryService userQueryService;
@@ -28,9 +32,9 @@ public class GroupInviteService {
     private final UserGroupQueryService userGroupQueryService;
     private final NotificationEventHandler eventHandler;
     private final RedisGroupInviteService redisGroupInviteService;
+    private final ChatRoomRepository chatRoomRepository;
 
 
-    @Transactional
     public GroupInviteMessageResponse inviteGroupRoom(UserInfo userInfo, GroupInviteRequest groupInviteRequest) {
         // 초대하는 사용자와 초대 대상 사용자가 같은지 확인
         if (userInfo.getUserCode().equals(groupInviteRequest.userCode())) {
@@ -59,7 +63,6 @@ public class GroupInviteService {
         return groupInviteMessageResponse;
     }
 
-    @Transactional
     public GroupInviteAcceptResponse acceptInvitation(UserInfo userInfo, String code, String groupCode) {
         User user = userQueryService.getUserByUserCode(userInfo.getUserCode());
         GroupRoom group = groupQueryService.getGroupByCode(groupCode);
@@ -69,14 +72,22 @@ public class GroupInviteService {
 
         redisGroupInviteService.deleteInvitation(userInfo.getUserCode(), code);
 
+        /** 채팅방 참여 **/
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+            @Override
+            public void afterCommit() {
+                chatRoomRepository.enterChatRoom(groupCode);
+            }
+        });
+
         return GroupInviteAcceptResponse.builder().groupCode(groupCode).build();
     }
 
+    @Transactional(readOnly = true)
     public List<GroupInviteMessageResponse> getInvitations(UserInfo userInfo) {
         return redisGroupInviteService.getAllInvitations(userInfo.getUserCode());
     }
 
-    @Transactional
     public void declineInvitation(UserInfo userInfo, String inviteCode) {
         redisGroupInviteService.deleteInvitation(userInfo.getUserCode(), inviteCode);
     }

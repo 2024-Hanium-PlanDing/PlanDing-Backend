@@ -1,9 +1,11 @@
 package com.tukorea.planding.domain.group.service;
 
+import com.tukorea.planding.domain.chat.repository.ChatRoomRepository;
+import com.tukorea.planding.domain.chat.service.ChatRoomService;
 import com.tukorea.planding.domain.group.dto.request.GroupCreateRequest;
 import com.tukorea.planding.domain.group.dto.request.GroupUpdateRequest;
-import com.tukorea.planding.domain.group.dto.response.GroupResponse;
 import com.tukorea.planding.domain.group.dto.response.GroupInformationResponse;
+import com.tukorea.planding.domain.group.dto.response.GroupResponse;
 import com.tukorea.planding.domain.group.entity.GroupRoom;
 import com.tukorea.planding.domain.group.entity.UserGroup;
 import com.tukorea.planding.domain.group.service.query.GroupQueryService;
@@ -18,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
@@ -35,7 +39,9 @@ public class GroupRoomService {
     private final UserGroupQueryService userGroupQueryService;
     private final GroupQueryService groupQueryService;
     private final GroupRoomFactory groupRoomFactory;
-    private final GroupFavoriteService groupFavoriteService;
+    private final ChatRoomService chatRoomService;
+    private final ChatRoomRepository chatRoomRepository;
+
 
     public GroupResponse createGroupRoom(UserInfo userInfo, GroupCreateRequest createGroupRoom, MultipartFile thumbnailFile) {
         User user = userQueryService.getUserByUserCode(userInfo.getUserCode());
@@ -46,6 +52,12 @@ public class GroupRoomService {
 
         // 중간테이블에 유저, 그룹 정보 저장
         userGroupQueryService.save(userGroup);
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+            @Override
+            public void afterCommit() {
+                chatRoomService.createChatRoomForGroup(savedGroupRoom.getGroupCode());
+            }
+        });
         return toGroupResponse(newGroupRoom);
     }
 
@@ -122,6 +134,12 @@ public class GroupRoomService {
         } else {
             userGroupQueryService.delete(userGroup);
         }
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+            @Override
+            public void afterCommit() {
+                chatRoomRepository.leaveChatRoom(groupCode);
+            }
+        });
     }
 
     private GroupResponse toGroupResponse(GroupRoom groupRoom) {
