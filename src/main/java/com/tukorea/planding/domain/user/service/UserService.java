@@ -3,14 +3,13 @@ package com.tukorea.planding.domain.user.service;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.tukorea.planding.domain.group.service.RedisGroupInviteService;
+import com.tukorea.planding.domain.notify.dto.FcmDTO;
 import com.tukorea.planding.domain.notify.dto.NotificationDTO;
 import com.tukorea.planding.domain.user.dto.AndroidLoginRequest;
 import com.tukorea.planding.domain.user.dto.ProfileResponse;
 import com.tukorea.planding.domain.user.dto.UserInfo;
 import com.tukorea.planding.domain.user.entity.SocialType;
 import com.tukorea.planding.domain.user.entity.User;
-import com.tukorea.planding.global.error.BusinessException;
-import com.tukorea.planding.global.error.ErrorCode;
 import com.tukorea.planding.global.oauth.details.Role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -77,35 +76,11 @@ public class UserService {
         return user.getFcmToken();
     }
 
-    public void updateFcmToken(String userCode, String fcmToken) {
+    public void updateFcmToken(String userCode, FcmDTO fcmDTO) {
         User user = userQueryService.getUserByUserCode(userCode);
-        log.info(userCode, fcmToken);
-        user.updateFcmToken(fcmToken);
-        log.info("FCM 토큰 업데이트 완료");
-    }
-
-    public void sendNotification(NotificationDTO notificationDTO) {
-        String fcmToken = getFcmTokenByUserCode(notificationDTO.getUserCode());
-        if (fcmToken != null) {
-            Message message = Message.builder()
-                    .setToken(fcmToken)
-                    .putData("message", notificationDTO.getMessage())
-                    .putData("date", notificationDTO.getDate())
-                    .putData("url", notificationDTO.getUrl())
-                    .putData("userCode", notificationDTO.getUserCode())
-                    .putData("type", String.valueOf(notificationDTO.getNotificationType()))
-                    .putData("time", String.valueOf(notificationDTO.getTime()))
-                    .build();
-
-            try {
-                FirebaseMessaging.getInstance().send(message);
-                log.info("FCM 알림 전송 성공: " + message);
-            } catch (Exception e) {
-                log.error("FCM 알림 전송 실패: " + e.getMessage(), e);
-            }
-        } else {
-            log.warn("FCM 토큰을 찾을 수 없습니다." + notificationDTO.getUserCode());
-        }
+        log.info(userCode, fcmDTO.fcmToken());
+        user.updateFcmToken(fcmDTO.fcmToken());
+        log.info("FCM 토큰 업데이트 완료: 사용자 코드: {}, FCM 토큰: {}", userCode, fcmDTO.fcmToken());
     }
 
 }

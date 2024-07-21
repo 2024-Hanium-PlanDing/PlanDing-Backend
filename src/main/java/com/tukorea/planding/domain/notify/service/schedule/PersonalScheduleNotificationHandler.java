@@ -1,12 +1,12 @@
 package com.tukorea.planding.domain.notify.service.schedule;
 
-import com.tukorea.planding.domain.notify.dto.DailyNotificationDto;
 import com.tukorea.planding.domain.notify.dto.NotificationDTO;
 import com.tukorea.planding.domain.notify.entity.Notification;
 import com.tukorea.planding.domain.notify.entity.NotificationType;
 import com.tukorea.planding.domain.notify.repository.NotificationRepository;
 import com.tukorea.planding.domain.notify.service.RedisMessageService;
 import com.tukorea.planding.domain.notify.service.ScheduleNotificationService;
+import com.tukorea.planding.domain.notify.service.fcm.FCMService;
 import com.tukorea.planding.domain.schedule.dto.response.PersonalScheduleResponse;
 import com.tukorea.planding.domain.user.dto.UserInfo;
 import com.tukorea.planding.domain.user.service.UserQueryService;
@@ -14,7 +14,6 @@ import com.tukorea.planding.global.error.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,6 +28,7 @@ public class PersonalScheduleNotificationHandler implements NotificationHandler 
     private final NotificationRepository notificationRepository;
     private final ScheduleNotificationService scheduleNotificationService;
     private final UserQueryService userQueryService;
+    private final FCMService fcmService;
 
     // 개인 스케줄 알림 코드
     @Override
@@ -48,15 +48,17 @@ public class PersonalScheduleNotificationHandler implements NotificationHandler 
                     .build();
 
             notificationRepository.save(notification);
+            // SSE
             String channel = request.getUserCode();
             redisMessageService.publish(channel, request);
+            // FCM
+            fcmService.personalPublish(request);
         } catch (BusinessException e) {
             log.warn("[Personal Schedule] 알람 전송 실패 - 접근 권한 없음 to user {}:{}", request.getUserCode(), e.getMessage());
         } catch (Exception e) {
             log.error("[Personal Schedule] 알람 전송 실패 to user {}:{}", request.getUserCode(), e.getMessage(), e);
         }
     }
-
 
 
     public void registerScheduleBeforeDay(String userCode, PersonalScheduleResponse request) {

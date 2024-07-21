@@ -7,6 +7,7 @@ import com.tukorea.planding.domain.notify.entity.NotificationType;
 import com.tukorea.planding.domain.notify.repository.NotificationRepository;
 import com.tukorea.planding.domain.notify.service.RedisMessageService;
 import com.tukorea.planding.domain.notify.service.ScheduleNotificationService;
+import com.tukorea.planding.domain.notify.service.fcm.FCMService;
 import com.tukorea.planding.domain.schedule.entity.Schedule;
 import com.tukorea.planding.domain.schedule.entity.ScheduleStatus;
 import com.tukorea.planding.domain.schedule.repository.GroupScheduleAttendanceRepository;
@@ -30,6 +31,7 @@ public class GroupScheduleNotificationHandler implements NotificationHandler {
     private final ScheduleNotificationService scheduleNotificationService;
     private final GroupQueryService groupQueryService;
     private final GroupScheduleAttendanceRepository attendanceRepository;
+    private final FCMService fcmService;
 
 
     @Override
@@ -47,8 +49,11 @@ public class GroupScheduleNotificationHandler implements NotificationHandler {
                     .build();
 
             notificationRepository.save(notification);
+            // SSE
             String channel = request.getUserCode();
             redisMessageService.publish(channel, request);
+            // FCM
+            fcmService.groupPublish(request);
         } catch (BusinessException e) {
             log.warn("[Group Schedule] 알람 전송 실패 - 접근 권한 없음 to user {}:{}", request.getUserCode(), e.getMessage());
         } catch (Exception e) {
