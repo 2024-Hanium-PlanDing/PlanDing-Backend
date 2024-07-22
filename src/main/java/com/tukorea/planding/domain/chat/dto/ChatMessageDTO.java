@@ -7,6 +7,8 @@ public class ChatMessageDTO {
     private String groupCode;
     private String content;
     private String sender;
+    private String profileImage;
+    private String name;
     private MessageType type;
 
     public enum MessageType {
