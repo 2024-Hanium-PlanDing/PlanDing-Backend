@@ -16,7 +16,7 @@ public class ChatController {
     private final ChatRoomRepository chatRoomRepository;
 
     @MessageMapping("/chat/{groupCode}")
-    @SendTo("/sub/chat/room/{groupCode}")
+    @SendTo("/sub/chat/{groupCode}")
     public ChatMessageDTO message(@Payload ChatMessageDTO messageDTO) {
         if (ChatMessageDTO.MessageType.JOIN.equals(messageDTO.getType())) {
             chatRoomRepository.enterChatRoom(messageDTO.getGroupCode());

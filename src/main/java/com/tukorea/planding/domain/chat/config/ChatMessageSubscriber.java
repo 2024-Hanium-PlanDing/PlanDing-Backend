@@ -26,7 +26,7 @@ public class ChatMessageSubscriber implements MessageListener {
                     .substring("chat.room.".length());
             log.info("Chat Message To {}", channel);
             ChatMessageDTO chatMessageDTO = objectMapper.readValue(message.getBody(), ChatMessageDTO.class);
-            messageTemplate.convertAndSend("/sub/chat/room/" + channel, chatMessageDTO);
+            messageTemplate.convertAndSend("/sub/chat/" + channel, chatMessageDTO);
         } catch (IOException e) {
             log.error("Failed to handle scheduleCount", e);
         }
