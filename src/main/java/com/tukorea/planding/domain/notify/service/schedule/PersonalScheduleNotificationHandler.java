@@ -53,6 +53,7 @@ public class PersonalScheduleNotificationHandler implements NotificationHandler 
             redisMessageService.publish(channel, request);
             // FCM
             fcmService.personalPublish(request);
+            log.info("[Personal Schedule] 알람 전송 성공 to user {}", request.getUserCode());
         } catch (BusinessException e) {
             log.warn("[Personal Schedule] 알람 전송 실패 - 접근 권한 없음 to user {}:{}", request.getUserCode(), e.getMessage());
         } catch (Exception e) {

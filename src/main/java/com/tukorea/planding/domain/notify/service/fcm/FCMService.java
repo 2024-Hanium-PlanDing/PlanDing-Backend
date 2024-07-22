@@ -16,6 +16,7 @@ public class FCMService {
     private final UserService userService;
 
     public void personalPublish(NotificationDTO notificationDTO) {
+
         String fcmToken = userService.getFcmTokenByUserCode(notificationDTO.getUserCode());
         if (fcmToken != null) {
             Message message = Message.builder()
@@ -28,10 +29,9 @@ public class FCMService {
                     .putData("type", String.valueOf(notificationDTO.getNotificationType()))
                     .putData("time", String.valueOf(notificationDTO.getTime()))
                     .build();
-
             try {
                 FirebaseMessaging.getInstance().send(message);
-                log.info("[Personal Schedule] FCM 알림 전송 성공: " + message);
+                log.info("[Personal Schedule] FCM 알림 전송 성공: " + message.toString());
             } catch (Exception e) {
                 log.error("[Personal Schedule] FCM 알림 전송 실패: " + e.getMessage(), e);
             }
@@ -58,7 +58,7 @@ public class FCMService {
 
             try {
                 FirebaseMessaging.getInstance().send(message);
-                log.info("[Group Schedule] FCM 알림 전송 성공: " + message);
+                log.info("[Group Schedule] FCM 알림 전송 성공: " + message.toString());
             } catch (Exception e) {
                 log.error("[Group Schedule] FCM 알림 전송 실패: " + e.getMessage(), e);
             }
