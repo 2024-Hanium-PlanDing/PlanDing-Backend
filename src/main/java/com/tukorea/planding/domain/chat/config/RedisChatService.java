@@ -1,6 +1,7 @@
 package com.tukorea.planding.domain.chat.config;
 
 import com.tukorea.planding.domain.chat.dto.ChatMessageDTO;
+import com.tukorea.planding.domain.chat.dto.MessageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -22,8 +23,8 @@ public class RedisChatService {
     }
 
     // 메시지 발행
-    public void publish(String channel, ChatMessageDTO chatMessageDto) {
-        redisTemplate.convertAndSend(getChannelName(channel), chatMessageDto);
+    public void publish(String channel, MessageResponse response) {
+        redisTemplate.convertAndSend(getChannelName(channel), response);
     }
 
     // 구독 삭제
