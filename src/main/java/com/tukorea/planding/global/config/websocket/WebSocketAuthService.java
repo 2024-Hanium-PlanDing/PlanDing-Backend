@@ -27,15 +27,14 @@ public class WebSocketAuthService {
         String jwt = accessor.getFirstNativeHeader("Authorization");
         String groupCode = accessor.getFirstNativeHeader("groupCode");
 
-
         if (jwt != null && jwt.startsWith("Bearer ")) {
             jwt = jwt.substring(7);
             if (jwtTokenHandler.validateToken(jwt)) {
                 String userCode = jwtTokenHandler.extractClaim(jwt, claims -> claims.get("code", String.class));
-             
+                // 유저코드 저장
+                accessor.getSessionAttributes().put("userCode", userCode);
                 // 웹소켓 세션설정
                 webSocketRegistry.register(sessionId, new UserInfoSession(userCode, groupCode));
-
                 // 유저 그룹 접속 업데이트
                 userGroupService.updateConnectionStatus(userCode, groupCode, true);
             }
