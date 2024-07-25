@@ -1,4 +1,4 @@
-package com.tukorea.planding.global.config;
+package com.tukorea.planding.global.config.websocket;
 
 import com.tukorea.planding.global.websocket.WebSocketAuthInterceptor;
 import lombok.RequiredArgsConstructor;
