@@ -1,6 +1,6 @@
 package com.tukorea.planding.domain.chat.config;
 
-import com.tukorea.planding.domain.chat.dto.ChatMessageDTO;
+import com.tukorea.planding.domain.chat.dto.MessageRequest;
 import com.tukorea.planding.domain.chat.dto.MessageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;

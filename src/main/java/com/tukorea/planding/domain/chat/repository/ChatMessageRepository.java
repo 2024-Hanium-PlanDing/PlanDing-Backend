@@ -8,5 +8,8 @@ import java.util.List;
 
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
     List<ChatMessage> findByCreatedAtBefore(LocalDateTime dateTime);
+
     void deleteByCreatedAtBefore(LocalDateTime dateTime);
+
+    List<ChatMessage> findByGroupCode(String groupCode);
 }

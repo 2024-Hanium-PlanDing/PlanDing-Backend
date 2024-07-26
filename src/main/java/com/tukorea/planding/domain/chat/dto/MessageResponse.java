@@ -7,8 +7,11 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
+
 @Builder
 public record MessageResponse(
+        Long id,
+        String userCode,
         String name,
         String profileImage,
         String message,
