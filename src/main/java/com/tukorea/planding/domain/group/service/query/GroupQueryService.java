@@ -44,8 +44,8 @@ public class GroupQueryService {
         groupRoomRepository.delete(groupRoom);
     }
 
-    public boolean existById(Long groupId) {
-        return groupRoomRepository.existsById(groupId);
+    public boolean existsByGroupCode(String groupCode) {
+        return groupRoomRepository.existsByGroupCode(groupCode);
     }
 
     public List<User> getGroupUsers(String groupCode) {

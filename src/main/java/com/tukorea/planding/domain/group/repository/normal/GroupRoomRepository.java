@@ -9,6 +9,6 @@ import java.util.Optional;
 
 public interface GroupRoomRepository extends JpaRepository<GroupRoom, Long>, GroupRoomRepositoryCustom {
     Optional<GroupRoom> findByGroupCode(String groupCode);
-    boolean existsById(Long groupRoomId);
+    boolean existsByGroupCode(String groupCode);
 
 }

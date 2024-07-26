@@ -4,7 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record GroupInviteRequest(
-        Long groupId,
+        String groupCode,
         String userCode
 ) {
 
