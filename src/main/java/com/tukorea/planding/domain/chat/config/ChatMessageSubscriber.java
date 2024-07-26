@@ -2,6 +2,7 @@ package com.tukorea.planding.domain.chat.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tukorea.planding.domain.chat.dto.MessageRequest;
+import com.tukorea.planding.domain.chat.dto.MessageResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.Message;
@@ -25,8 +26,8 @@ public class ChatMessageSubscriber implements MessageListener {
             log.info("Received Redis message: {}", new String(message.getBody()));  // 추가된 로그
             String channel = new String(message.getChannel())
                     .substring("chat.room.".length());
-            MessageRequest messageRequest = objectMapper.readValue(message.getBody(), MessageRequest.class);
-            messageTemplate.convertAndSend("/sub/chat/" + channel, messageRequest);
+            MessageResponse messageResponse = objectMapper.readValue(message.getBody(), MessageResponse.class);
+            messageTemplate.convertAndSend("/sub/chat/" + channel, messageResponse);
         } catch (IOException e) {
             log.error("채팅 실패: {}", e.getMessage(), e);
         }
