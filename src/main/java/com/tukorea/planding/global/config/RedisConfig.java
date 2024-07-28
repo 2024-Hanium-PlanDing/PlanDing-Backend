@@ -1,5 +1,6 @@
 package com.tukorea.planding.global.config;
 
+import com.tukorea.planding.domain.chat.config.ChatMessageSubscriber;
 import com.tukorea.planding.domain.notify.service.SseNotificationSubscriber;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
@@ -40,16 +41,25 @@ public class RedisConfig {
 
     @Bean
     public RedisMessageListenerContainer redisContainer(RedisConnectionFactory connectionFactory,
-                                                        MessageListenerAdapter listenerAdapter) {
+                                                        MessageListenerAdapter chatMessageListenerAdapter,
+                                                        MessageListenerAdapter notificationListenerAdapter
+    ) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
-        container.addMessageListener(listenerAdapter, new PatternTopic("notification.user.*"));
+        container.addMessageListener(chatMessageListenerAdapter, new PatternTopic("chat.room.*"));
+        container.addMessageListener(notificationListenerAdapter, new PatternTopic("notification.user.*"));
         return container;
     }
 
     // 알림 전송
     @Bean
-    public MessageListenerAdapter listenerAdapter(SseNotificationSubscriber subscriber) {
-        return new MessageListenerAdapter(subscriber, "handleMessage");
+    public MessageListenerAdapter notificationListenerAdapter(SseNotificationSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "onMessage");
     }
+
+    @Bean
+    public MessageListenerAdapter chatMessageListenerAdapter(ChatMessageSubscriber subscriber) {
+        return new MessageListenerAdapter(subscriber, "onMessage");
+    }
+
 }

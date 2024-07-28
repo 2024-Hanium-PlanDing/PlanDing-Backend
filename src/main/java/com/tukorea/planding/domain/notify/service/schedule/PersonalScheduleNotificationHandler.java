@@ -9,6 +9,7 @@ import com.tukorea.planding.domain.notify.service.ScheduleNotificationService;
 import com.tukorea.planding.domain.notify.service.fcm.FCMService;
 import com.tukorea.planding.domain.schedule.dto.response.PersonalScheduleResponse;
 import com.tukorea.planding.domain.user.dto.UserInfo;
+import com.tukorea.planding.domain.user.entity.User;
 import com.tukorea.planding.domain.user.service.UserQueryService;
 import com.tukorea.planding.global.error.BusinessException;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,8 @@ public class PersonalScheduleNotificationHandler implements NotificationHandler 
     @Override
     public void sendNotification(NotificationDTO request) {
         try {
-            if (!userQueryService.getUserByUserCode(request.getUserCode()).isAlarm()) {
+            User user = userQueryService.getUserByUserCode(request.getUserCode());
+            if (!user.isAlarm()) {
                 return;
             }
 
