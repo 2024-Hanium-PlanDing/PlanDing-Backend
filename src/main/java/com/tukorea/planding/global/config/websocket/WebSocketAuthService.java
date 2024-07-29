@@ -27,6 +27,7 @@ public class WebSocketAuthService {
         String jwt = accessor.getFirstNativeHeader("Authorization");
         String groupCode = accessor.getFirstNativeHeader("groupCode");
 
+
         if (jwt != null && jwt.startsWith("Bearer ")) {
             jwt = jwt.substring(7);
             if (jwtTokenHandler.validateToken(jwt)) {
@@ -39,7 +40,7 @@ public class WebSocketAuthService {
                 userGroupService.updateConnectionStatus(userCode, groupCode, true);
             }
         } else {
-            log.error("JWT token not found or invalid format");
+            log.error("WebSocket 에러: JWT token not found or invalid format");
         }
     }
 
