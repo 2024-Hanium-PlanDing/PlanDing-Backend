@@ -50,7 +50,7 @@ public class GroupInviteService {
             throw new BusinessException(ErrorCode.UNAUTHORIZED_GROUP_ROOM_INVITATION);
         }
 
-        if (groupQueryService.existGroupInUser(groupInviteRequest.groupCode(), userInfo.getUserCode())) {
+        if (groupQueryService.existGroupInUser(groupInviteRequest.groupCode(), groupInviteRequest.userCode())) {
             throw new BusinessException(ErrorCode.USER_ALREADY_IN_GROUP);
         }
 
