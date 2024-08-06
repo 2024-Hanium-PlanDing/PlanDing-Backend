@@ -41,20 +41,20 @@ public class GroupInviteService {
             throw new BusinessException(ErrorCode.CANNOT_INVITE_YOURSELF);
         }
         // 그룹이 존재하는지
-        if (!groupQueryService.existById(groupInviteRequest.groupId())) {
+        if (!groupQueryService.existsByGroupCode(groupInviteRequest.groupCode())) {
             throw new BusinessException(ErrorCode.GROUP_ROOM_NOT_FOUND);
         }
 
-        GroupRoom group = groupQueryService.getGroupById(groupInviteRequest.groupId());
+        GroupRoom group = groupQueryService.getGroupByCode(groupInviteRequest.groupCode());
         if (!group.getOwner().equals(userInfo.getUserCode())) {
             throw new BusinessException(ErrorCode.UNAUTHORIZED_GROUP_ROOM_INVITATION);
         }
 
-        if (groupQueryService.existGroupInUser(groupInviteRequest.userCode(), groupInviteRequest.groupId())) {
+        if (groupQueryService.existGroupInUser(groupInviteRequest.groupCode(), userInfo.getUserCode())) {
             throw new BusinessException(ErrorCode.USER_ALREADY_IN_GROUP);
         }
 
-        GroupInviteMessageResponse groupInviteMessageResponse = GroupInviteMessageResponse.create("IN" + UUID.randomUUID(), groupInviteRequest.groupId(), groupInviteRequest.userCode(), userInfo.getId());
+        GroupInviteMessageResponse groupInviteMessageResponse = GroupInviteMessageResponse.create("IN" + UUID.randomUUID(), group.getId(), groupInviteRequest.userCode(), userInfo.getId());
 
         redisGroupInviteService.createInvitation(groupInviteRequest.userCode(), groupInviteMessageResponse);
 
@@ -77,6 +77,7 @@ public class GroupInviteService {
             @Override
             public void afterCommit() {
                 chatRoomRepository.enterChatRoom(groupCode);
+
             }
         });
 
