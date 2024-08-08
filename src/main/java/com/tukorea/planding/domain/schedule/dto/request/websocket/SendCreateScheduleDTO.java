@@ -9,10 +9,6 @@ import java.time.LocalDate;
 @Builder
 @ValidScheduleTime
 public record SendCreateScheduleDTO(
-        @NotNull(message = "Group code 필수")
-        String groupCode,
-        @NotNull(message = "User code 필수")
-        String userCode,
         String title,
         String content,
         LocalDate scheduleDate,
