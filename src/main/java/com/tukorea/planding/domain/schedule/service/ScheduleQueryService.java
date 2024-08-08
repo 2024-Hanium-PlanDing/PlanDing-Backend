@@ -3,6 +3,7 @@ package com.tukorea.planding.domain.schedule.service;
 import com.tukorea.planding.domain.schedule.dto.request.ScheduleRequest;
 import com.tukorea.planding.domain.schedule.dto.response.ScheduleResponse;
 import com.tukorea.planding.domain.schedule.entity.Schedule;
+import com.tukorea.planding.domain.schedule.repository.GroupScheduleAttendanceRepository;
 import com.tukorea.planding.domain.schedule.repository.GroupScheduleRepository;
 import com.tukorea.planding.domain.schedule.repository.ScheduleRepository;
 import com.tukorea.planding.global.error.BusinessException;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 public class ScheduleQueryService {
 
     private final ScheduleRepository scheduleRepository;
-    private final GroupScheduleRepository groupScheduleRepository;
+    private final GroupScheduleAttendanceRepository groupScheduleAttendanceRepository;
 
     public List<ScheduleResponse> findOverlapSchedule(Long userId, ScheduleRequest scheduleRequest) {
         List<Schedule> overlapSchedules = scheduleRepository.findOverlapSchedules(userId, scheduleRequest.scheduleDate(), scheduleRequest.startTime(), scheduleRequest.endTime());
@@ -66,12 +67,10 @@ public class ScheduleQueryService {
         scheduleRepository.delete(schedule);
     }
 
-    public void deleteById(Long scheduleId) {
-        scheduleRepository.deleteById(scheduleId);
-    }
-
-    public void deleteGroupScheduleById(Long scheduleId){
-        groupScheduleRepository.deleteById(scheduleId);
+    public void deleteGroupScheduleById(Long scheduleId) {
+        Schedule schedule = findScheduleById(scheduleId);
+        groupScheduleAttendanceRepository.deleteBySchedule(schedule);
+        scheduleRepository.delete(schedule);
     }
 
     public List<Schedule> findByUserAndScheduleDateBetween(Long userId, LocalDate startOfWeek, LocalDate endOfWeek) {
