@@ -44,7 +44,7 @@ public class GroupRoomController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public CommonResponse<GroupResponse> createGroupRoom(@AuthenticationPrincipal UserInfo userInfo,
                                                          @RequestPart(value = "request") GroupCreateRequest createGroupRoom,
-                                                         @RequestPart(value = "thumbnail") MultipartFile thumbnailFile) {
+                                                         @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnailFile) {
         GroupResponse groupResponse = groupRoomService.createGroupRoom(userInfo, createGroupRoom, thumbnailFile);
         return CommonUtils.success(groupResponse);
     }
