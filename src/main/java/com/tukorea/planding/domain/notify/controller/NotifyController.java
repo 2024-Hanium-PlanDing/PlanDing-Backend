@@ -1,5 +1,9 @@
 package com.tukorea.planding.domain.notify.controller;
 
+import com.tukorea.planding.common.CommonResponse;
+import com.tukorea.planding.common.CommonUtils;
+import com.tukorea.planding.domain.notify.dto.NotificationReadRequest;
+import com.tukorea.planding.domain.notify.dto.NotificationScheduleResponse;
 import com.tukorea.planding.domain.notify.service.NotificationHandler;
 import com.tukorea.planding.domain.user.dto.UserInfo;
 import io.swagger.v3.oas.annotations.Operation;
@@ -7,10 +11,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import java.util.List;
 
 @Tag(name = "Notify", description = "알림 메시지 관련")
 @RestController
@@ -25,6 +29,20 @@ public class NotifyController {
     @GetMapping(value = "/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter subscribe(@AuthenticationPrincipal UserInfo userInfo) {
         return notificationHandler.subscribe(userInfo.getUserCode());
+    }
+
+    @Operation(description = "스케줄 타입 알람 목록 가져온다")
+    @GetMapping("/schedules")
+    public CommonResponse<List<NotificationScheduleResponse>> getNotifications(@AuthenticationPrincipal UserInfo userInfo){
+        List<NotificationScheduleResponse> response = notificationHandler.getNotifications(userInfo);
+        return CommonUtils.success(response);
+    }
+
+    @Operation(description = "스케줄 타입의 알람을 읽는다")
+    @PostMapping("/read")
+    public CommonResponse<?> markNotificationAsRead(@RequestBody NotificationReadRequest notificationReadRequest) {
+        notificationHandler.markNotificationAsRead(notificationReadRequest);
+        return CommonUtils.successWithEmptyData();
     }
 
 }

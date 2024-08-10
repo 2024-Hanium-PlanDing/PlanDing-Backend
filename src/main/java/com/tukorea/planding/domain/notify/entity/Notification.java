@@ -12,7 +12,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -41,13 +40,20 @@ public class Notification extends BaseEntity {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDate scheduleDate;
 
+    private boolean isRead = false;
+
     @Builder
-    public Notification(String userCode, String message, String groupName, String url, NotificationType notificationType, LocalDate scheduleDate) {
+    public Notification(String userCode, String message, String groupName, String url, NotificationType notificationType, LocalDate scheduleDate, boolean isRead) {
         this.userCode = userCode;
         this.message = message;
         this.groupName = groupName;
         this.url = url;
         this.notificationType = notificationType;
         this.scheduleDate = scheduleDate;
+        this.isRead = isRead;
+    }
+
+    public void updateRead() {
+        this.isRead = true;
     }
 }
