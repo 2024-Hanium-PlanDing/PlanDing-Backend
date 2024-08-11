@@ -38,6 +38,13 @@ public class NotifyController {
         return CommonUtils.success(response);
     }
 
+    @Operation(description = "스케줄 타입 알람을 삭제한다")
+    @DeleteMapping("/{scheduleId}")
+    public CommonResponse<?> deleteNotification(@AuthenticationPrincipal UserInfo userInfo,@PathVariable Long scheduleId){
+        notificationHandler.deleteNotification(userInfo,scheduleId);
+        return CommonUtils.successWithEmptyData();
+    }
+
     @Operation(description = "스케줄 타입의 알람을 읽는다")
     @PostMapping("/read")
     public CommonResponse<?> markNotificationAsRead(@RequestBody NotificationReadRequest notificationReadRequest) {

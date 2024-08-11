@@ -35,7 +35,6 @@ public class RedisGroupInviteService {
     public List<GroupInviteMessageResponse> getAllInvitations(String userCode) {
         String key = "userInvites:" + userCode;
         List<Object> values = redisTemplate.opsForHash().values(key);
-
         return values.stream()
                 .map(value -> convertJsonToObject((String) value, GroupInviteMessageResponse.class))
                 .collect(Collectors.toList());

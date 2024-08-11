@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -54,7 +55,7 @@ public class GroupInviteService {
             throw new BusinessException(ErrorCode.USER_ALREADY_IN_GROUP);
         }
 
-        GroupInviteMessageResponse groupInviteMessageResponse = GroupInviteMessageResponse.create("IN" + UUID.randomUUID(), group.getId(), groupInviteRequest.userCode(), userInfo.getId());
+        GroupInviteMessageResponse groupInviteMessageResponse = GroupInviteMessageResponse.create("IN" + UUID.randomUUID(), group.getGroupCode(), group.getName(), groupInviteRequest.userCode(), userInfo.getId(), LocalDateTime.now());
 
         redisGroupInviteService.createInvitation(groupInviteRequest.userCode(), groupInviteMessageResponse);
 
