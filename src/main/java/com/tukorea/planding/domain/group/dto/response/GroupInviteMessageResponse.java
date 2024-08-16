@@ -11,13 +11,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class GroupInviteMessageResponse {
     private String inviteCode;
-    private String groupCod;
+    private String groupCode;
     private String groupName;
     private String invitedUserCode;
-    private Long invitingUserId;
     private LocalDateTime createdAt;
 
-    public static GroupInviteMessageResponse create(String inviteCode, String groupCode, String groupName, String invitedUserCode, Long invitingUserId, LocalDateTime createdAt) {
-        return new GroupInviteMessageResponse(inviteCode, groupCode, groupName, invitedUserCode, invitingUserId, createdAt);
+    public static GroupInviteMessageResponse create(String inviteCode, String groupCode, String groupName, String invitedUserCode, LocalDateTime createdAt) {
+        return new GroupInviteMessageResponse(inviteCode, groupCode, groupName, invitedUserCode, createdAt);
     }
 }

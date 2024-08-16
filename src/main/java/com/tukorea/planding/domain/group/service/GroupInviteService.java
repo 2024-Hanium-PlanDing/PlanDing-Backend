@@ -45,17 +45,19 @@ public class GroupInviteService {
         if (!groupQueryService.existsByGroupCode(groupInviteRequest.groupCode())) {
             throw new BusinessException(ErrorCode.GROUP_ROOM_NOT_FOUND);
         }
-
-        GroupRoom group = groupQueryService.getGroupByCode(groupInviteRequest.groupCode());
-        if (!group.getOwner().equals(userInfo.getUserCode())) {
-            throw new BusinessException(ErrorCode.UNAUTHORIZED_GROUP_ROOM_INVITATION);
-        }
-
+        // 그룹안에 초대자가 존재하는지
         if (groupQueryService.existGroupInUser(groupInviteRequest.groupCode(), groupInviteRequest.userCode())) {
             throw new BusinessException(ErrorCode.USER_ALREADY_IN_GROUP);
         }
+        // 그룹안에 속해있는지
+        if (!groupQueryService.existGroupInUser(groupInviteRequest.groupCode(), userInfo.getUserCode())) {
+            throw new BusinessException(ErrorCode.ACCESS_DENIED);
+        }
 
-        GroupInviteMessageResponse groupInviteMessageResponse = GroupInviteMessageResponse.create("IN" + UUID.randomUUID(), group.getGroupCode(), group.getName(), groupInviteRequest.userCode(), userInfo.getId(), LocalDateTime.now());
+        GroupRoom group = groupQueryService.getGroupByCode(groupInviteRequest.groupCode());
+
+
+        GroupInviteMessageResponse groupInviteMessageResponse = GroupInviteMessageResponse.create("IN" + UUID.randomUUID(), group.getGroupCode(), group.getName(), groupInviteRequest.userCode(), LocalDateTime.now());
 
         redisGroupInviteService.createInvitation(groupInviteRequest.userCode(), groupInviteMessageResponse);
 
