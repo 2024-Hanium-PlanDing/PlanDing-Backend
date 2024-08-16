@@ -4,6 +4,10 @@ import com.tukorea.planding.domain.group.entity.GroupRoom;
 import com.tukorea.planding.domain.group.repository.normal.GroupRoomRepository;
 import com.tukorea.planding.domain.group.repository.normal.GroupRoomRepositoryCustom;
 import com.tukorea.planding.domain.group.repository.usergroup.UserGroupRepository;
+import com.tukorea.planding.domain.schedule.entity.GroupSchedule;
+import com.tukorea.planding.domain.schedule.entity.Schedule;
+import com.tukorea.planding.domain.schedule.repository.GroupScheduleRepository;
+import com.tukorea.planding.domain.schedule.service.ScheduleQueryService;
 import com.tukorea.planding.domain.user.entity.User;
 import com.tukorea.planding.global.error.BusinessException;
 import com.tukorea.planding.global.error.ErrorCode;
@@ -12,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -19,7 +24,9 @@ import java.util.List;
 public class GroupQueryService {
 
     private final GroupRoomRepository groupRoomRepository;
+    private final GroupScheduleRepository groupScheduleRepository;
     private final UserGroupRepository userGroupRepository;
+    private final ScheduleQueryService scheduleQueryService;
 
     public GroupRoom createGroup(GroupRoom groupRoom) {
         return groupRoomRepository.save(groupRoom);
@@ -41,6 +48,11 @@ public class GroupQueryService {
 
 
     public void delete(GroupRoom groupRoom) {
+        List<GroupSchedule> schedules = groupScheduleRepository.findAllByGroupRoomId(groupRoom.getId());
+        for (GroupSchedule schedule : schedules) {
+            schedule.getSchedules().stream()
+                    .forEach(s -> scheduleQueryService.deleteGroupScheduleById(s.getId()));
+        }
         groupRoomRepository.delete(groupRoom);
     }
 
