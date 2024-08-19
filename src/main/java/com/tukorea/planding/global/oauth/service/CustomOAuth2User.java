@@ -20,9 +20,9 @@ public class CustomOAuth2User extends DefaultOAuth2User {
     /**
      * Constructs a {@code DefaultOAuth2User} using the provided parameters.
      *
-     * @param authorities      the authorities granted to the user
-     * @param attributes       the attributes about the user
-     * @param nameAttributeKey the key used to access the user's &quot;name&quot; from
+     * @param authorities      the authorities granted to the userCodes
+     * @param attributes       the attributes about the userCodes
+     * @param nameAttributeKey the key used to access the userCodes's &quot;name&quot; from
      *                         {@link #getAttributes()}
      */
     public CustomOAuth2User(Collection<? extends GrantedAuthority> authorities, Map<String, Object> attributes, String nameAttributeKey,

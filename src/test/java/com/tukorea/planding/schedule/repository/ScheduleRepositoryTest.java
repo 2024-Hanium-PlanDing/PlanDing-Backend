@@ -5,8 +5,8 @@
 //import com.tukorea.planding.domain.schedule.repository.ScheduleRepository;
 //import com.tukorea.planding.domain.schedule.repository.ScheduleRepositoryCustom;
 //import com.tukorea.planding.domain.schedule.repository.ScheduleRepositoryCustomImpl;
-//import com.tukorea.planding.domain.user.entity.User;
-//import com.tukorea.planding.domain.user.repository.UserRepository;
+//import com.tukorea.planding.domain.userCodes.entity.User;
+//import com.tukorea.planding.domain.userCodes.repository.UserRepository;
 //import com.tukorea.planding.global.oauth.details.Role;
 //import jakarta.persistence.EntityManager;
 //import org.junit.jupiter.api.BeforeEach;
@@ -46,18 +46,18 @@
 //        final String email = "test@google.com";
 //        final String userCode = "#test";
 //
-//        User user = User.builder()
+//        User userCodes = User.builder()
 //                .userCode(userCode)
 //                .email(email)
 //                .role(Role.USER)
 //                .build();
 //
-//        testUser = userRepository.save(user);
+//        testUser = userRepository.save(userCodes);
 //    }
 //
-//    private Schedule createAndSaveSchedule(User user, LocalTime startTime, LocalTime endTime) {
+//    private Schedule createAndSaveSchedule(User userCodes, LocalTime startTime, LocalTime endTime) {
 //        return Schedule.builder()
-//                .user(user)
+//                .userCodes(userCodes)
 //                .scheduleDate(LocalDate.now())
 //                .title("title")
 //                .content("content")

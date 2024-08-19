@@ -47,7 +47,7 @@ public class RedisConfig {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         container.addMessageListener(chatMessageListenerAdapter, new PatternTopic("chat.room.*"));
-        container.addMessageListener(notificationListenerAdapter, new PatternTopic("notification.user.*"));
+        container.addMessageListener(notificationListenerAdapter, new PatternTopic("notification.userCodes.*"));
         return container;
     }
 

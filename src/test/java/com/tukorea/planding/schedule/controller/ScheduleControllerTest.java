@@ -2,8 +2,8 @@
 //
 //import com.fasterxml.jackson.databind.ObjectMapper;
 //import com.tukorea.planding.domain.schedule.service.ScheduleService;
-//import com.tukorea.planding.domain.user.entity.User;
-//import com.tukorea.planding.domain.user.mapper.UserMapper;
+//import com.tukorea.planding.domain.userCodes.entity.User;
+//import com.tukorea.planding.domain.userCodes.mapper.UserMapper;
 //import com.tukorea.planding.global.config.security.SecurityConfig;
 //import com.tukorea.planding.global.config.security.jwt.JwtAuthenticationFilter;
 //import org.junit.jupiter.api.Test;
@@ -48,7 +48,7 @@
 //    @Test
 //    @WithMockUser
 //    void createSchedule() throws Exception{
-//        User user = User.builder()
+//        User userCodes = User.builder()
 //                .email("test")
 //                .build();
 //
@@ -56,7 +56,7 @@
 //                .title("test")
 //                .build();
 //
-//        given(scheduleService.createSchedule(UserMapper.toUserInfo(user),schedule)).willThrow(UsernameNotFoundException.class);
+//        given(scheduleService.createSchedule(UserMapper.toUserInfo(userCodes),schedule)).willThrow(UsernameNotFoundException.class);
 //
 //
 //        ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/schedule")

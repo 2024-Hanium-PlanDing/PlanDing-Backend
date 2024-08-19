@@ -17,9 +17,9 @@
 //import com.tukorea.planding.domain.schedule.entity.Schedule;
 //import com.tukorea.planding.domain.schedule.entity.ScheduleStatus;
 //import com.tukorea.planding.domain.schedule.repository.ScheduleRepository;
-//import com.tukorea.planding.domain.user.entity.User;
-//import com.tukorea.planding.domain.user.mapper.UserMapper;
-//import com.tukorea.planding.domain.user.repository.UserRepository;
+//import com.tukorea.planding.domain.userCodes.entity.User;
+//import com.tukorea.planding.domain.userCodes.mapper.UserMapper;
+//import com.tukorea.planding.domain.userCodes.repository.UserRepository;
 //import com.tukorea.planding.global.error.BusinessException;
 //import com.tukorea.planding.global.error.ErrorCode;
 //import com.tukorea.planding.global.oauth.details.Role;
@@ -69,8 +69,8 @@
 //    @Test
 //    @DisplayName("성공: 유저 A가 작성한 스케줄 조회")
 //    public void createGroupScheduleTest() {
-//        User user = createUserAndSave(TEST_EMAIL, "code");
-//        GroupResponse groupRoom = groupRoomService.createGroupRoom(UserMapper.toUserInfo(user), GroupCreateRequest
+//        User userCodes = createUserAndSave(TEST_EMAIL, "code");
+//        GroupResponse groupRoom = groupRoomService.createGroupRoom(UserMapper.toUserInfo(userCodes), GroupCreateRequest
 //                .builder()
 //                .name("group_name")
 //                .build());
@@ -78,7 +78,7 @@
 //        LocalTime startTime = LocalTime.of(7, 0);
 //        LocalTime endTime = LocalTime.of(9, 0);
 //
-//        ScheduleRequest requestSchedule = createGroupScheduleRequest(user.getUserCode(), startTime, endTime, TEST_TITLE, TEST_CONTENT, TEST_DATE);
+//        ScheduleRequest requestSchedule = createGroupScheduleRequest(userCodes.getUserCode(), startTime, endTime, TEST_TITLE, TEST_CONTENT, TEST_DATE);
 //
 //        // 스케줄 생성
 //        groupScheduleService.createGroupSchedule(groupRoom.code(), requestSchedule);
@@ -166,8 +166,8 @@
 //    @Test
 //    @DisplayName("성공: 유저 A가 작성한 스케줄 수정")
 //    public void update1() {
-//        User user = createUserAndSave(TEST_EMAIL, "code");
-//        GroupResponse groupRoom = groupRoomService.createGroupRoom(UserMapper.toUserInfo(user), GroupCreateRequest
+//        User userCodes = createUserAndSave(TEST_EMAIL, "code");
+//        GroupResponse groupRoom = groupRoomService.createGroupRoom(UserMapper.toUserInfo(userCodes), GroupCreateRequest
 //                .builder()
 //                .name("group_name")
 //                .build());
@@ -175,7 +175,7 @@
 //        LocalTime startTime = LocalTime.of(7, 0);
 //        LocalTime endTime = LocalTime.of(9, 0);
 //
-//        ScheduleRequest requestSchedule = createGroupScheduleRequest(user.getUserCode(), startTime, endTime, TEST_TITLE, TEST_CONTENT, TEST_DATE);
+//        ScheduleRequest requestSchedule = createGroupScheduleRequest(userCodes.getUserCode(), startTime, endTime, TEST_TITLE, TEST_CONTENT, TEST_DATE);
 //
 //
 //        // 스케줄 생성
@@ -193,7 +193,7 @@
 //                .build();
 //
 //        //when
-//        scheduleService.updateScheduleByGroupRoom(groupRoom.id(), schedule.getId(), updateSchedule, UserMapper.toUserInfo(user));
+//        scheduleService.updateScheduleByGroupRoom(groupRoom.id(), schedule.getId(), updateSchedule, UserMapper.toUserInfo(userCodes));
 //
 //        //then
 //        Schedule result = scheduleRepository.findById(groupSchedule.id())
@@ -257,8 +257,8 @@
 //    @Test
 //    @DisplayName("실패: 외부 유저C가 수정")
 //    public void update3() {
-//        User user = createUserAndSave(TEST_EMAIL, "code");
-//        GroupResponse groupRoom = groupRoomService.createGroupRoom(UserMapper.toUserInfo(user), GroupCreateRequest
+//        User userCodes = createUserAndSave(TEST_EMAIL, "code");
+//        GroupResponse groupRoom = groupRoomService.createGroupRoom(UserMapper.toUserInfo(userCodes), GroupCreateRequest
 //                .builder()
 //                .name("group_name")
 //                .build());
@@ -268,7 +268,7 @@
 //        LocalTime startTime = LocalTime.of(7, 0);
 //        LocalTime endTime = LocalTime.of(9, 0);
 //
-//        ScheduleRequest requestSchedule = createGroupScheduleRequest(user.getUserCode(), startTime, endTime, TEST_TITLE, TEST_CONTENT, TEST_DATE);
+//        ScheduleRequest requestSchedule = createGroupScheduleRequest(userCodes.getUserCode(), startTime, endTime, TEST_TITLE, TEST_CONTENT, TEST_DATE);
 //
 //        // 스케줄 생성
 //        ScheduleResponse groupSchedule = groupScheduleService.createGroupSchedule(groupRoom.code(), requestSchedule);
@@ -291,8 +291,8 @@
 //    @Test
 //    @DisplayName("성공: 유저 A가 작성한 스케줄 삭제")
 //    public void delete1() {
-//        User user = createUserAndSave(TEST_EMAIL, "code");
-//        GroupResponse groupRoom = groupRoomService.createGroupRoom(UserMapper.toUserInfo(user), GroupCreateRequest
+//        User userCodes = createUserAndSave(TEST_EMAIL, "code");
+//        GroupResponse groupRoom = groupRoomService.createGroupRoom(UserMapper.toUserInfo(userCodes), GroupCreateRequest
 //                .builder()
 //                .name("group_name")
 //                .build());
@@ -300,13 +300,13 @@
 //        LocalTime startTime = LocalTime.of(7, 0);
 //        LocalTime endTime = LocalTime.of(9, 0);
 //
-//        ScheduleRequest requestSchedule = createGroupScheduleRequest(user.getUserCode(), startTime, endTime, TEST_TITLE, TEST_CONTENT, TEST_DATE);
+//        ScheduleRequest requestSchedule = createGroupScheduleRequest(userCodes.getUserCode(), startTime, endTime, TEST_TITLE, TEST_CONTENT, TEST_DATE);
 //
 //
 //        // 스케줄 생성
 //        ScheduleResponse groupSchedule = groupScheduleService.createGroupSchedule(groupRoom.code(), requestSchedule);
 //
-//        scheduleService.deleteScheduleByGroupRoom(groupRoom.id(), groupSchedule.id(), UserMapper.toUserInfo(user));
+//        scheduleService.deleteScheduleByGroupRoom(groupRoom.id(), groupSchedule.id(), UserMapper.toUserInfo(userCodes));
 //
 //
 //        assertThrows(BusinessException.class, () -> scheduleRepository.findById(groupSchedule.id()).orElseThrow(() -> new BusinessException(ErrorCode.SCHEDULE_NOT_FOUND)));
@@ -350,8 +350,8 @@
 //    @Test
 //    @DisplayName("실패: 외부 유저 C가 수정")
 //    public void delete3() {
-//        User user = createUserAndSave(TEST_EMAIL, "code");
-//        GroupResponse groupRoom = groupRoomService.createGroupRoom(UserMapper.toUserInfo(user), GroupCreateRequest
+//        User userCodes = createUserAndSave(TEST_EMAIL, "code");
+//        GroupResponse groupRoom = groupRoomService.createGroupRoom(UserMapper.toUserInfo(userCodes), GroupCreateRequest
 //                .builder()
 //                .name("group_name")
 //                .build());
@@ -361,7 +361,7 @@
 //        LocalTime startTime = LocalTime.of(7, 0);
 //        LocalTime endTime = LocalTime.of(9, 0);
 //
-//        ScheduleRequest requestSchedule = createGroupScheduleRequest(user.getUserCode(), startTime, endTime, TEST_TITLE, TEST_CONTENT, TEST_DATE);
+//        ScheduleRequest requestSchedule = createGroupScheduleRequest(userCodes.getUserCode(), startTime, endTime, TEST_TITLE, TEST_CONTENT, TEST_DATE);
 //
 //
 //        // 스케줄 생성
@@ -423,12 +423,12 @@
 //    }
 //
 //    private User createUserAndSave(String email, String userCode) {
-//        User user = User.builder()
+//        User userCodes = User.builder()
 //                .email(email)
 //                .userCode(userCode)
 //                .role(Role.USER)
 //                .build();
-//        return userRepository.save(user);
+//        return userRepository.save(userCodes);
 //    }
 //
 //

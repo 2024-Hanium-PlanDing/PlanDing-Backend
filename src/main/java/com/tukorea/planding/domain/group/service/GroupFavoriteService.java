@@ -41,7 +41,7 @@ public class GroupFavoriteService {
     }
 
     public GroupFavoriteResponse addFavorite(UserInfo userInfo, String groupCode) {
-        log.info("Add 그룹 즐겨찾기 for user {} and group {}", userInfo.getUserCode(), groupCode);
+        log.info("Add 그룹 즐겨찾기 for userCodes {} and group {}", userInfo.getUserCode(), groupCode);
         if (groupFavoriteRepository.existsByUserAndGroupRoom(userInfo.getUserCode(), groupCode)) {
             throw new BusinessException(ErrorCode.FAVORITE_ALREADY_ADD);
         }
@@ -51,12 +51,12 @@ public class GroupFavoriteService {
 
         GroupFavorite groupFavorite = GroupFavorite.createGroupFavorite(user, groupRoom);
         GroupFavorite save = groupFavoriteRepository.save(groupFavorite);
-        log.info("그룹 즐겨찾기 등록완료  for user {} and group {}", userInfo.getUserCode(), groupCode);
+        log.info("그룹 즐겨찾기 등록완료  for userCodes {} and group {}", userInfo.getUserCode(), groupCode);
         return GroupFavoriteResponse.from(save);
     }
 
     public void deleteFavorite(UserInfo userInfo, String groupCode) {
-        log.info("Deleting 그룹 즐겨찾기 for user {} and group {}", userInfo.getUserCode(), groupCode);
+        log.info("Deleting 그룹 즐겨찾기 for userCodes {} and group {}", userInfo.getUserCode(), groupCode);
         try {
             groupFavoriteRepository.deleteByUserIdAndGroupRoomId(userInfo.getId(), groupCode);
         } catch (EmptyResultDataAccessException e) {

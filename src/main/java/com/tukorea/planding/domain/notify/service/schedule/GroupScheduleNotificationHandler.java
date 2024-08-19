@@ -55,9 +55,9 @@ public class GroupScheduleNotificationHandler implements NotificationHandler {
             // FCM
             fcmService.groupPublish(request);
         } catch (BusinessException e) {
-            log.warn("[Group Schedule] 알람 전송 실패 - 접근 권한 없음 to user {}:{}", request.getUserCode(), e.getMessage());
+            log.warn("[Group Schedule] 알람 전송 실패 - 접근 권한 없음 to userCodes {}:{}", request.getUserCode(), e.getMessage());
         } catch (Exception e) {
-            log.error("[Group Schedule] 알람 전송 실패 to user {}:{}", request.getUserCode(), e.getMessage(), e);
+            log.error("[Group Schedule] 알람 전송 실패 to userCodes {}:{}", request.getUserCode(), e.getMessage(), e);
         }
     }
 
@@ -70,7 +70,7 @@ public class GroupScheduleNotificationHandler implements NotificationHandler {
             NotificationDTO oneHourBeforeNotification = NotificationDTO.createGroupSchedule(userCode, response);
             scheduleNotificationService.scheduleNotification(oneHourBeforeNotification, oneHourBefore);
         } catch (Exception e) {
-            log.error("[Group Schedule] 1시간 전 알림 등록 실패 for user {}: {}", userCode, e.getMessage(), e);
+            log.error("[Group Schedule] 1시간 전 알림 등록 실패 for userCodes {}: {}", userCode, e.getMessage(), e);
         }
     }
 
@@ -87,7 +87,7 @@ public class GroupScheduleNotificationHandler implements NotificationHandler {
             NotificationDTO oneHourBeforeNotification = NotificationDTO.createGroupSchedule(userCode, schedule);
             scheduleNotificationService.scheduleNotification(oneHourBeforeNotification, oneHourBefore);
         } catch (Exception e) {
-            log.error("[Group Schedule] 1시간 전 알림 업데이트 실패 for user {}: {}", userCode, e.getMessage(), e);
+            log.error("[Group Schedule] 1시간 전 알림 업데이트 실패 for userCodes {}: {}", userCode, e.getMessage(), e);
         }
     }
 

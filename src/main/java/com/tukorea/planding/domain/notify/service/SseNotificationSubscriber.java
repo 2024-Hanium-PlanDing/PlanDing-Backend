@@ -24,7 +24,7 @@ public class SseNotificationSubscriber implements MessageListener {
     public void onMessage(Message message, byte[] pattern) {
         try {
             String channel = new String(message.getChannel())
-                    .substring("notification.user.".length());
+                    .substring("notification.userCodes.".length());
             log.info("Received scheduleCount on channel: {}", channel); // 채널 이름 로깅
             NotificationDTO notification = objectMapper.readValue(message.getBody(), NotificationDTO.class);
             sseEmitterService.sendNotificationToClient(channel, notification);

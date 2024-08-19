@@ -4,10 +4,10 @@
 //import com.tukorea.planding.domain.schedule.repository.ScheduleRepositoryCustomImpl;
 //import com.tukorea.planding.domain.schedule.service.ScheduleQueryService;
 //import com.tukorea.planding.domain.schedule.service.ScheduleService;
-//import com.tukorea.planding.domain.user.entity.SocialType;
-//import com.tukorea.planding.domain.user.entity.User;
-//import com.tukorea.planding.domain.user.mapper.UserMapper;
-//import com.tukorea.planding.domain.user.service.UserQueryService;
+//import com.tukorea.planding.domain.userCodes.entity.SocialType;
+//import com.tukorea.planding.domain.userCodes.entity.User;
+//import com.tukorea.planding.domain.userCodes.mapper.UserMapper;
+//import com.tukorea.planding.domain.userCodes.service.UserQueryService;
 //import com.tukorea.planding.global.oauth.details.Role;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
@@ -49,9 +49,9 @@
 //    private Schedule schedule;
 //    private ScheduleRequest scheduleRequest;
 //
-//    private Schedule createAndSaveSchedule(User user, LocalTime startTime, LocalTime endTime) {
+//    private Schedule createAndSaveSchedule(User userCodes, LocalTime startTime, LocalTime endTime) {
 //        return Schedule.builder()
-//                .user(user)
+//                .userCodes(userCodes)
 //                .scheduleDate(LocalDate.now())
 //                .title("title")
 //                .content("content")

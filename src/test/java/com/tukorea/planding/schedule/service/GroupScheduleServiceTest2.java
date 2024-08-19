@@ -11,9 +11,9 @@
 //import com.tukorea.planding.domain.schedule.repository.GroupScheduleRepository;
 //import com.tukorea.planding.domain.schedule.service.GroupScheduleService;
 //import com.tukorea.planding.domain.schedule.service.ScheduleQueryService;
-//import com.tukorea.planding.domain.user.entity.SocialType;
-//import com.tukorea.planding.domain.user.entity.User;
-//import com.tukorea.planding.domain.user.service.UserQueryService;
+//import com.tukorea.planding.domain.userCodes.entity.SocialType;
+//import com.tukorea.planding.domain.userCodes.entity.User;
+//import com.tukorea.planding.domain.userCodes.service.UserQueryService;
 //import com.tukorea.planding.global.oauth.details.Role;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
@@ -60,7 +60,7 @@
 //    @Mock
 //    private ApplicationEventPublisher eventPublisher;
 //
-//    private User user;
+//    private User userCodes;
 //    private GroupRoom groupRoom;
 //    private ScheduleRequest scheduleRequest;
 //    private GroupSchedule groupSchedule;
@@ -70,7 +70,7 @@
 //    public void setup() {
 //        MockitoAnnotations.openMocks(this);
 //
-//        user = User.builder()
+//        userCodes = User.builder()
 //                .userCode("testUser")
 //                .build();
 //
@@ -94,7 +94,7 @@
 //
 //    @Test
 //    public void 그룹스케줄_생성_성공() {
-//        when(userQueryService.getUserByUserCode("testUser")).thenReturn(user);
+//        when(userQueryService.getUserByUserCode("testUser")).thenReturn(userCodes);
 //        when(groupQueryService.getGroupByCode("testGroup")).thenReturn(groupRoom);
 //        when(scheduleQueryService.save(any(Schedule.class))).thenReturn(schedule);
 //        when(userGroupQueryService.findUserByIsConnectionFalse(anyLong())).thenReturn(new ArrayList<>());

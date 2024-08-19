@@ -55,11 +55,11 @@ public class PersonalScheduleNotificationHandler implements NotificationHandler 
             redisMessageService.publish(channel, request);
             // FCM
             fcmService.personalPublish(request);
-            log.info("[Personal Schedule] 알람 전송 성공 to user {}", request.getUserCode());
+            log.info("[Personal Schedule] 알람 전송 성공 to userCodes {}", request.getUserCode());
         } catch (BusinessException e) {
-            log.warn("[Personal Schedule] 알람 전송 실패 - 접근 권한 없음 to user {}:{}", request.getUserCode(), e.getMessage());
+            log.warn("[Personal Schedule] 알람 전송 실패 - 접근 권한 없음 to userCodes {}:{}", request.getUserCode(), e.getMessage());
         } catch (Exception e) {
-            log.error("[Personal Schedule] 알람 전송 실패 to user {}:{}", request.getUserCode(), e.getMessage(), e);
+            log.error("[Personal Schedule] 알람 전송 실패 to userCodes {}:{}", request.getUserCode(), e.getMessage(), e);
         }
     }
 
@@ -73,7 +73,7 @@ public class PersonalScheduleNotificationHandler implements NotificationHandler 
                     userCode, request.title(), request.id(), String.valueOf(request.scheduleDate()), request.startTime());
             scheduleNotificationService.scheduleNotification(oneDayBeforeNotification, oneDayBefore);
         } catch (Exception e) {
-            log.error("정시 스케줄 알람 등록 실패 for user {}: {}", userCode, e.getMessage(), e);
+            log.error("정시 스케줄 알람 등록 실패 for userCodes {}: {}", userCode, e.getMessage(), e);
         }
 
     }
@@ -86,7 +86,7 @@ public class PersonalScheduleNotificationHandler implements NotificationHandler 
             NotificationDTO oneHourBeforeNotification = NotificationDTO.createPersonalSchedule(userCode, request);
             scheduleNotificationService.scheduleNotification(oneHourBeforeNotification, oneHourBefore);
         } catch (Exception e) {
-            log.error("[Personal Schedule] 1시간 전 알림 등록 실패 for user {}: {}", userCode, e.getMessage(), e);
+            log.error("[Personal Schedule] 1시간 전 알림 등록 실패 for userCodes {}: {}", userCode, e.getMessage(), e);
         }
     }
 
@@ -103,7 +103,7 @@ public class PersonalScheduleNotificationHandler implements NotificationHandler 
             NotificationDTO oneHourBeforeNotification = NotificationDTO.createPersonalSchedule(userInfo.getUserCode(), request);
             scheduleNotificationService.scheduleNotification(oneHourBeforeNotification, oneHourBefore);
         } catch (Exception e) {
-            log.error("[Personal Schedule] 1시간 전 알림 업데이트 실패 for user {}: {}", userInfo.getUserCode(), e.getMessage(), e);
+            log.error("[Personal Schedule] 1시간 전 알림 업데이트 실패 for userCodes {}: {}", userInfo.getUserCode(), e.getMessage(), e);
         }
     }
 

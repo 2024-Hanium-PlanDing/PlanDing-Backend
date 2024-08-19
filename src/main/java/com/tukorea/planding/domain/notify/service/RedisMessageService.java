@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class RedisMessageService {
 
-    private static final String CHANNEL_PREFIX = "notification.user.";
+    private static final String CHANNEL_PREFIX = "notification.userCodes.";
     private final RedisMessageListenerContainer container;
     private final SseNotificationSubscriber subscriber;
     private final RedisTemplate<String, Object> redisTemplate;

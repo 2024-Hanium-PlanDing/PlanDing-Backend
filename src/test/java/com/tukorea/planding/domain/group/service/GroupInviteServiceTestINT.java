@@ -90,7 +90,7 @@ class GroupInviteServiceTestINT {
         GroupRoom groupRoom = createGroupRoom(userA, "group_name", "description");
 
         GroupInviteRequest groupInviteRequest = GroupInviteRequest.builder()
-                .groupId(groupRoom.getId())
+                .groupCode(groupRoom.getGroupCode())
                 .userCode(userB.getUserCode())
                 .build();
 

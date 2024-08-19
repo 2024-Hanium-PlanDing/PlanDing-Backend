@@ -9,10 +9,10 @@
 //import com.tukorea.planding.domain.group.service.GroupRoomService;
 //import com.tukorea.planding.domain.group.service.GroupInviteService;
 //import com.tukorea.planding.domain.group.service.UserGroupService;
-//import com.tukorea.planding.domain.user.mapper.UserMapper;
-//import com.tukorea.planding.domain.user.repository.UserRepository;
-//import com.tukorea.planding.domain.user.entity.User;
-//import com.tukorea.planding.domain.user.dto.UserInfo;
+//import com.tukorea.planding.domain.userCodes.mapper.UserMapper;
+//import com.tukorea.planding.domain.userCodes.repository.UserRepository;
+//import com.tukorea.planding.domain.userCodes.entity.User;
+//import com.tukorea.planding.domain.userCodes.dto.UserInfo;
 //import com.tukorea.planding.global.oauth.details.Role;
 //import org.junit.jupiter.api.DisplayName;
 //import org.junit.jupiter.api.Test;
@@ -42,16 +42,16 @@
 //    @Test
 //    @DisplayName("유저 A가 그룹방을 생성한다.")
 //    void createGroupRoom() {
-//        User user = User.builder()
+//        User userCodes = User.builder()
 //                .email("userEmail")
 //                .username("test")
 //                .role(Role.USER)
 //                .userCode("#abcd")
 //                .build();
 //
-//        UserInfo userInfo = UserMapper.toUserInfo(user);
+//        UserInfo userInfo = UserMapper.toUserInfo(userCodes);
 //
-//        userRepository.save(user);
+//        userRepository.save(userCodes);
 //
 //        GroupResponse groupRoom = groupRoomService.createGroupRoom(userInfo, GroupCreateRequest.builder()
 //                .name("first_group")

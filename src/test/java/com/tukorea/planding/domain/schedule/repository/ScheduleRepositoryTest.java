@@ -5,8 +5,8 @@
 //import com.tukorea.planding.domain.schedule.entity.ScheduleType;
 //import com.tukorea.planding.domain.schedule.repository.PersonalScheduleRepository;
 //import com.tukorea.planding.domain.schedule.repository.ScheduleRepository;
-//import com.tukorea.planding.domain.user.entity.User;
-//import com.tukorea.planding.domain.user.repository.UserRepository;
+//import com.tukorea.planding.domain.userCodes.entity.User;
+//import com.tukorea.planding.domain.userCodes.repository.UserRepository;
 //import com.tukorea.planding.global.config.QueryDslConfig;
 //import com.tukorea.planding.global.oauth.details.Role;
 //import org.junit.jupiter.api.BeforeEach;
@@ -50,7 +50,7 @@
 //
 //    private Schedule createAndSaveSchedule(LocalTime startTime, LocalTime endTime) {
 //        PersonalSchedule personalSchedule = personalScheduleRepository.save(PersonalSchedule.builder()
-//                .user(testUser)
+//                .userCodes(testUser)
 //                .build());
 //        return Schedule.builder()
 //                .scheduleDate(LocalDate.now())

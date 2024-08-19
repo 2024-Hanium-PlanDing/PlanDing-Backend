@@ -1,5 +1,6 @@
 package com.tukorea.planding.domain.schedule.entity;
 
+import com.tukorea.planding.domain.planner.entity.Planner;
 import com.tukorea.planding.global.audit.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -8,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Entity
@@ -50,6 +53,9 @@ public class Schedule extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_schedule_id")
     private GroupSchedule groupSchedule;
+
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<Planner> planners = new ArrayList<>();
 
     @Builder
     public Schedule(String title, String content, LocalDate scheduleDate, Integer startTime, Integer endTime, boolean isComplete, ScheduleType type, PersonalSchedule personalSchedule, GroupSchedule groupSchedule) {

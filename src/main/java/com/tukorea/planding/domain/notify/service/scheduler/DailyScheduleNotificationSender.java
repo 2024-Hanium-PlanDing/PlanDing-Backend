@@ -90,7 +90,7 @@ public class DailyScheduleNotificationSender {
             notificationRepository.save(notification);
             redisMessageService.publish(request.userCode(), NotificationDTO.createDailySchedule(request.userCode(), request.message(), null, String.valueOf(request.date()), null));
         } catch (Exception e) {
-            log.error("정시 스케줄 알람 전송 실패 to user {}:{}", request.userCode(), e.getMessage(), e);
+            log.error("정시 스케줄 알람 전송 실패 to userCodes {}:{}", request.userCode(), e.getMessage(), e);
         }
 
     }
