@@ -14,9 +14,11 @@ public class GroupInviteMessageResponse {
     private String groupCode;
     private String groupName;
     private String invitedUserCode;
+    private String userName;
+    private GroupResponse groupResponse;
     private LocalDateTime createdAt;
 
-    public static GroupInviteMessageResponse create(String inviteCode, String groupCode, String groupName, String invitedUserCode, LocalDateTime createdAt) {
-        return new GroupInviteMessageResponse(inviteCode, groupCode, groupName, invitedUserCode, createdAt);
+    public static GroupInviteMessageResponse create(String inviteCode, String groupCode, String groupName, String invitedUserCode, String userName, GroupResponse response, LocalDateTime createdAt) {
+        return new GroupInviteMessageResponse(inviteCode, groupCode, groupName, invitedUserCode, userName, response, createdAt);
     }
 }

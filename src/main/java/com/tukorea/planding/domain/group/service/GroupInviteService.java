@@ -4,6 +4,7 @@ import com.tukorea.planding.domain.chat.repository.ChatRoomRepository;
 import com.tukorea.planding.domain.group.dto.request.GroupInviteRequest;
 import com.tukorea.planding.domain.group.dto.response.GroupInviteAcceptResponse;
 import com.tukorea.planding.domain.group.dto.response.GroupInviteMessageResponse;
+import com.tukorea.planding.domain.group.dto.response.GroupResponse;
 import com.tukorea.planding.domain.group.entity.GroupRoom;
 import com.tukorea.planding.domain.group.entity.UserGroup;
 import com.tukorea.planding.domain.group.service.query.GroupQueryService;
@@ -55,9 +56,8 @@ public class GroupInviteService {
         }
 
         GroupRoom group = groupQueryService.getGroupByCode(groupInviteRequest.groupCode());
-
-
-        GroupInviteMessageResponse groupInviteMessageResponse = GroupInviteMessageResponse.create("IN" + UUID.randomUUID(), group.getGroupCode(), group.getName(), groupInviteRequest.userCode(), LocalDateTime.now());
+        
+        GroupInviteMessageResponse groupInviteMessageResponse = GroupInviteMessageResponse.create("IN" + UUID.randomUUID(), group.getGroupCode(), group.getName(), groupInviteRequest.userCode(), userInfo.getUsername(), GroupResponse.from(group), LocalDateTime.now());
 
         redisGroupInviteService.createInvitation(groupInviteRequest.userCode(), groupInviteMessageResponse);
 
