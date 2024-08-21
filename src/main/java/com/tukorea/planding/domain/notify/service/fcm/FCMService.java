@@ -2,11 +2,17 @@ package com.tukorea.planding.domain.notify.service.fcm;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
+import com.tukorea.planding.domain.group.entity.GroupRoom;
+import com.tukorea.planding.domain.notify.dto.alarm.DailyNotificationDto;
 import com.tukorea.planding.domain.notify.dto.alarm.NotificationDTO;
+import com.tukorea.planding.domain.notify.entity.NotificationType;
+import com.tukorea.planding.domain.schedule.entity.Schedule;
 import com.tukorea.planding.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import static com.tukorea.planding.domain.schedule.entity.QSchedule.schedule;
 
 @Service
 @Slf4j
@@ -64,6 +70,50 @@ public class FCMService {
             }
         } else {
             log.warn("[Group Schedule] FCM 토큰을 찾을 수 없습니다." + notificationDTO.getUserCode());
+        }
+    }
+
+    public void dailyPublish(DailyNotificationDto dailyNotificationDto) {
+        String fcmToken = userService.getFcmTokenByUserCode(dailyNotificationDto.userCode());
+        if (fcmToken != null) {
+            Message message = Message.builder()
+                    .setToken(fcmToken)
+                    .putData("group", String.valueOf(dailyNotificationDto.group()))
+                    .putData("personal", String.valueOf(dailyNotificationDto.personal()))
+                    .putData("date", String.valueOf(dailyNotificationDto.date()))
+                    .putData("userCode", dailyNotificationDto.userCode())
+                    .putData("type", String.valueOf(NotificationType.DAILY))
+                    .build();
+            try {
+                FirebaseMessaging.getInstance().send(message);
+                log.info("[Daily] FCM 알림 전송 성공: " + message.toString());
+            } catch (Exception e) {
+                log.error("[Daily Schedule] FCM 알림 전송 실패: " + e.getMessage(), e);
+            }
+        } else {
+            log.warn("[Daily Schedule] FCM 토큰을 찾을 수 없습니다." + dailyNotificationDto.userCode());
+        }
+    }
+
+    public void notifyGroupScheduleCreation(String userCode, String groupName, String title, String url) {
+        String fcmToken = userService.getFcmTokenByUserCode(userCode);
+        if (fcmToken != null) {
+            Message message = Message.builder()
+                    .setToken(fcmToken)
+                    .putData("groupName", groupName)
+                    .putData("title", title)
+                    .putData("userCode", userCode)
+                    .putData("type", String.valueOf(NotificationType.GROUP_SCHEDULE))
+                    .putData("url", url)
+                    .build();
+            try {
+                FirebaseMessaging.getInstance().send(message);
+                log.info("[GROUP_SCHEDULE_CREATE] FCM 알림 전송 성공: userCode={}, title={}", userCode, title);
+            } catch (Exception e) {
+                log.error("[GROUP_SCHEDULE_CREATE] FCM 알림 전송 실패: userCode={}, error={}", userCode, e.getMessage(), e);
+            }
+        } else {
+            log.warn("[GROUP_SCHEDULE_CREATE] FCM 토큰을 찾을 수 없습니다: userCode={}", userCode);
         }
     }
 }

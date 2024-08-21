@@ -42,7 +42,6 @@ public class PersonalScheduleNotificationHandler implements NotificationHandler 
 
             Notification notification = Notification.builder()
                     .userCode(request.getUserCode())
-                    .groupName(null)
                     .notificationType(NotificationType.PERSONAL_SCHEDULE)
                     .scheduleDate(LocalDate.parse(request.getDate()))
                     .message(request.getMessage())

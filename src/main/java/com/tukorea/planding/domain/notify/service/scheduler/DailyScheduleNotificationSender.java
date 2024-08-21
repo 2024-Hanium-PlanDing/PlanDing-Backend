@@ -6,6 +6,7 @@ import com.tukorea.planding.domain.notify.entity.Notification;
 import com.tukorea.planding.domain.notify.entity.NotificationType;
 import com.tukorea.planding.domain.notify.repository.NotificationRepository;
 import com.tukorea.planding.domain.notify.service.RedisMessageService;
+import com.tukorea.planding.domain.notify.service.fcm.FCMService;
 import com.tukorea.planding.domain.schedule.entity.Schedule;
 import com.tukorea.planding.domain.schedule.entity.ScheduleType;
 import com.tukorea.planding.domain.schedule.repository.ScheduleRepository;
@@ -32,6 +33,7 @@ public class DailyScheduleNotificationSender {
     private final UserQueryService userQueryService;
     private final NotificationRepository notificationRepository;
     private final RedisMessageService redisMessageService;
+    private final FCMService fcmService;
 
     @Scheduled(cron = "0 0 0 * * ?") // 매일 자정에 실행
     public void sendDailyScheduleNotifications() {
@@ -60,13 +62,16 @@ public class DailyScheduleNotificationSender {
 
                 DailyNotificationDto notification = DailyNotificationDto.builder()
                         .userCode(user.getUserCode())
-                        .message(String.format("오늘의 일정: 개인 %d개, 그룹 %d개", personalCount, groupCount))
+                        .personal(personalCount)
+                        .group(groupCount)
                         .url("/api/v1/common/schedule/today")
                         .date(today)
                         .build();
 
                 sendDailyNotification(notification);
-                log.info("알림 전송 완료: 사용자 코드 = {}, 메시지 = {}", user.getUserCode(), notification.message());
+                //FCM
+                fcmService.dailyPublish(notification);
+                log.info("알림 전송 완료: 사용자 코드 = {}, 개인 = {}, 그룹 = {}", user.getUserCode(), notification.personal(), notification.group());
             });
         } catch (Exception e) {
             log.error("일일 스케줄 알림 전송 중 오류 발생: {}", e.getMessage(), e);
@@ -79,15 +84,19 @@ public class DailyScheduleNotificationSender {
                 return;
             }
 
+            String message = String.format("오늘의 일정: 개인 %d개, 그룹 %d개",
+                    request.personal(), request.group());
+
+
             Notification notification = Notification.builder()
                     .userCode(request.userCode())
                     .notificationType(NotificationType.DAILY)
                     .scheduleDate(request.date())
-                    .message(request.message())
+                    .message(message)
                     .build();
 
             notificationRepository.save(notification);
-            redisMessageService.publish(request.userCode(), NotificationDTO.createDailySchedule(request.userCode(), request.message(), null, String.valueOf(request.date()), null));
+            redisMessageService.publish(request.userCode(), NotificationDTO.createDailySchedule(notification.getUserCode(), notification.getMessage(), null, String.valueOf(notification.getScheduleDate()), null));
         } catch (Exception e) {
             log.error("정시 스케줄 알람 전송 실패 to userCodes {}:{}", request.userCode(), e.getMessage(), e);
         }

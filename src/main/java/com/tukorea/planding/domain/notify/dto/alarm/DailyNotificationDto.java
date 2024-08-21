@@ -7,7 +7,8 @@ import java.time.LocalDate;
 @Builder
 public record DailyNotificationDto(
         String userCode,
-        String message,
+        Long personal,
+        Long group,
         String url,
         LocalDate date
 ) {
