@@ -1,7 +1,7 @@
 package com.tukorea.planding.domain.notify.service;
 
 import com.tukorea.planding.domain.group.dto.GroupInviteEvent;
-import com.tukorea.planding.domain.notify.dto.NotificationDTO;
+import com.tukorea.planding.domain.notify.dto.alarm.NotificationDTO;
 import com.tukorea.planding.domain.notify.entity.NotificationType;
 import com.tukorea.planding.domain.schedule.service.GroupScheduleCreatedEvent;
 import lombok.RequiredArgsConstructor;

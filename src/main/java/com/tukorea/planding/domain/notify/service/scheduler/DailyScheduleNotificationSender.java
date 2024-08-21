@@ -1,14 +1,13 @@
 package com.tukorea.planding.domain.notify.service.scheduler;
 
-import com.tukorea.planding.domain.notify.dto.DailyNotificationDto;
-import com.tukorea.planding.domain.notify.dto.NotificationDTO;
+import com.tukorea.planding.domain.notify.dto.alarm.DailyNotificationDto;
+import com.tukorea.planding.domain.notify.dto.alarm.NotificationDTO;
 import com.tukorea.planding.domain.notify.entity.Notification;
 import com.tukorea.planding.domain.notify.entity.NotificationType;
 import com.tukorea.planding.domain.notify.repository.NotificationRepository;
 import com.tukorea.planding.domain.notify.service.RedisMessageService;
 import com.tukorea.planding.domain.schedule.entity.Schedule;
 import com.tukorea.planding.domain.schedule.entity.ScheduleType;
-import com.tukorea.planding.domain.schedule.repository.PersonalScheduleRepository;
 import com.tukorea.planding.domain.schedule.repository.ScheduleRepository;
 import com.tukorea.planding.domain.user.entity.User;
 import com.tukorea.planding.domain.user.service.UserQueryService;

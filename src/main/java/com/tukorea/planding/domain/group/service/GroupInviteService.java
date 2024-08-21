@@ -56,7 +56,7 @@ public class GroupInviteService {
         }
 
         GroupRoom group = groupQueryService.getGroupByCode(groupInviteRequest.groupCode());
-        
+
         GroupInviteMessageResponse groupInviteMessageResponse = GroupInviteMessageResponse.create("IN" + UUID.randomUUID(), group.getGroupCode(), group.getName(), groupInviteRequest.userCode(), userInfo.getUsername(), GroupResponse.from(group), LocalDateTime.now());
 
         redisGroupInviteService.createInvitation(groupInviteRequest.userCode(), groupInviteMessageResponse);

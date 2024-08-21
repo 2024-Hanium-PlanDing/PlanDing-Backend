@@ -1,7 +1,7 @@
 package com.tukorea.planding.domain.notify.service.schedule;
 
 import com.tukorea.planding.domain.group.service.query.GroupQueryService;
-import com.tukorea.planding.domain.notify.dto.NotificationDTO;
+import com.tukorea.planding.domain.notify.dto.alarm.NotificationDTO;
 import com.tukorea.planding.domain.notify.entity.Notification;
 import com.tukorea.planding.domain.notify.entity.NotificationType;
 import com.tukorea.planding.domain.notify.repository.NotificationRepository;

@@ -1,21 +1,9 @@
-package com.tukorea.planding.domain.notify.dto;
+package com.tukorea.planding.domain.notify.dto.alarm;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.tukorea.planding.domain.notify.entity.NotificationType;
-import com.tukorea.planding.domain.schedule.dto.request.PersonalScheduleRequest;
-import com.tukorea.planding.domain.schedule.dto.request.websocket.SendCreateScheduleDTO;
-import com.tukorea.planding.domain.schedule.dto.response.GroupScheduleAttendanceResponse;
-import com.tukorea.planding.domain.schedule.dto.response.GroupScheduleResponse;
 import com.tukorea.planding.domain.schedule.dto.response.PersonalScheduleResponse;
-import com.tukorea.planding.domain.schedule.dto.response.ScheduleResponse;
 import com.tukorea.planding.domain.schedule.entity.Schedule;
 import lombok.*;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -46,7 +34,6 @@ public class NotificationDTO {
                 .time(response.startTime())
                 .build();
     }
-
 
     public static NotificationDTO createDailySchedule(String receiverCode, String message, Long scheduleId, String date, Integer time) {
         return NotificationDTO.builder()

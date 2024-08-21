@@ -1,4 +1,4 @@
-package com.tukorea.planding.domain.notify.dto;
+package com.tukorea.planding.domain.notify.dto.alarm;
 
 import lombok.Builder;
 

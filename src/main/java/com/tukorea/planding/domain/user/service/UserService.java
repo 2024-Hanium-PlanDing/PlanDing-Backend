@@ -1,10 +1,7 @@
 package com.tukorea.planding.domain.user.service;
 
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.Message;
 import com.tukorea.planding.domain.group.service.RedisGroupInviteService;
 import com.tukorea.planding.domain.notify.dto.FcmDTO;
-import com.tukorea.planding.domain.notify.dto.NotificationDTO;
 import com.tukorea.planding.domain.user.dto.AndroidLoginRequest;
 import com.tukorea.planding.domain.user.dto.ProfileResponse;
 import com.tukorea.planding.domain.user.dto.UserInfo;
