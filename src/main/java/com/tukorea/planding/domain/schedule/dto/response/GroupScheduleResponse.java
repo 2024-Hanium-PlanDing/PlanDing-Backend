@@ -1,6 +1,5 @@
 package com.tukorea.planding.domain.schedule.dto.response;
 
-import com.tukorea.planding.domain.planner.dto.GroupPlannerResponse;
 import com.tukorea.planding.domain.schedule.entity.Schedule;
 import com.tukorea.planding.domain.schedule.entity.ScheduleType;
 import lombok.Builder;
@@ -8,7 +7,6 @@ import lombok.Builder;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Builder
 public record GroupScheduleResponse(
@@ -21,9 +19,7 @@ public record GroupScheduleResponse(
         DayOfWeek day,
         ScheduleType type,
         String groupName,
-        List<UserScheduleAttendance> userScheduleAttendances,
-        List<GroupPlannerResponse> planners
-) {
+        List<UserScheduleAttendance> userScheduleAttendances) {
     public static GroupScheduleResponse from(Schedule schedule, String groupName, List<UserScheduleAttendance> attendances) {
         return GroupScheduleResponse.builder()
                 .id(schedule.getId())
@@ -36,9 +32,6 @@ public record GroupScheduleResponse(
                 .type(ScheduleType.GROUP)
                 .groupName(groupName)
                 .userScheduleAttendances(attendances)
-                .planners(schedule.getPlanners().stream()
-                        .map(GroupPlannerResponse::fromEntity)
-                        .collect(Collectors.toList()))
                 .build();
     }
 }

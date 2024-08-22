@@ -22,9 +22,8 @@ public record PersonalScheduleResponse(
         Integer endTime,
         boolean complete,
         ScheduleType type,
-        DayOfWeek day,
-        List<PersonalPlannerResponse> planners
-) {
+        DayOfWeek day
+        ) {
 
     public static PersonalScheduleResponse from(Schedule schedule) {
         return PersonalScheduleResponse.builder()
@@ -37,9 +36,6 @@ public record PersonalScheduleResponse(
                 .complete(schedule.isComplete())
                 .day(schedule.getScheduleDate().getDayOfWeek())
                 .type(ScheduleType.PERSONAL)
-                .planners(schedule.getPlanners().stream()
-                        .map(PersonalPlannerResponse::fromEntity)
-                        .collect(Collectors.toList()))
                 .build();
     }
 

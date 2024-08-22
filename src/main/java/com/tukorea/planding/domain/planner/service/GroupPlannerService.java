@@ -12,6 +12,7 @@ import com.tukorea.planding.domain.planner.repository.PlannerUserRepository;
 import com.tukorea.planding.domain.schedule.entity.Action;
 import com.tukorea.planding.domain.schedule.entity.Schedule;
 import com.tukorea.planding.domain.schedule.service.ScheduleQueryService;
+import com.tukorea.planding.domain.user.dto.UserInfo;
 import com.tukorea.planding.domain.user.entity.User;
 import com.tukorea.planding.domain.user.service.UserQueryService;
 import com.tukorea.planding.global.error.BusinessException;
@@ -140,5 +141,17 @@ public class GroupPlannerService {
                 assignUserToPlanner(planner, user, PlannerRole.GENERAL);
             }
         }
+    }
+
+    public List<GroupPlannerResponse> getPlannersByGroupRoom(UserInfo userInfo, String groupCode, Long scheduleId) {
+        if (!userGroupQueryService.checkUserAccessToGroupRoom(groupCode, userInfo.getUserCode())) {
+            throw new BusinessException(ErrorCode.ACCESS_DENIED);
+        }
+        Schedule schedule = scheduleQueryService.findScheduleById(scheduleId);
+        List<Planner> planners = plannerRepository.findBySchedule(schedule);
+
+        return planners.stream()
+                .map(GroupPlannerResponse::fromEntity)
+                .collect(Collectors.toList());
     }
 }
