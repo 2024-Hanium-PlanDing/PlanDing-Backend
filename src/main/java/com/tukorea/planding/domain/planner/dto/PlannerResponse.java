@@ -1,15 +1,15 @@
-package com.tukorea.planding.domain.planner.dto.personal;
+package com.tukorea.planding.domain.planner.dto;
 
-import com.tukorea.planding.domain.notify.entity.NotificationType;
 import com.tukorea.planding.domain.planner.PlannerRole;
 import com.tukorea.planding.domain.planner.PlannerStatus;
 import com.tukorea.planding.domain.planner.entity.Planner;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Builder
-public record PersonalPlannerResponse(
+public record PlannerResponse(
         Long id,
         Integer plannerNumber,
         String title,
@@ -17,12 +17,10 @@ public record PersonalPlannerResponse(
         PlannerStatus status,
         LocalDateTime deadline,
         String managerCode,
-        NotificationType type,
-        Long scheduleId
+        List<String> userCodes
 ) {
-    public static PersonalPlannerResponse fromEntity(Planner planner) {
-        return PersonalPlannerResponse.builder()
-                .id(planner.getId())
+    public static PlannerResponse fromEntity(Planner planner) {
+        return PlannerResponse.builder().id(planner.getId())
                 .plannerNumber(planner.getPlannerNumber())
                 .title(planner.getTitle())
                 .content(planner.getContent())
@@ -33,8 +31,11 @@ public record PersonalPlannerResponse(
                         .findFirst()
                         .map(pu -> pu.getUser().getUserCode())
                         .orElse(null))
-                .type(NotificationType.PLANNER)
-                .scheduleId(planner.getSchedule().getId())
+                .userCodes(planner.getUsers().stream()
+                        .filter(pu -> pu.getRole() == PlannerRole.GENERAL)
+                        .findFirst()
+                        .map(pu -> pu.getUser().getUserCode())
+                        .stream().toList())
                 .build();
     }
 }
