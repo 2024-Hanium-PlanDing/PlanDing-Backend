@@ -9,6 +9,7 @@ import com.tukorea.planding.domain.planner.entity.Planner;
 import com.tukorea.planding.domain.planner.entity.PlannerUser;
 import com.tukorea.planding.domain.planner.repository.PlannerRepository;
 import com.tukorea.planding.domain.planner.repository.PlannerUserRepository;
+import com.tukorea.planding.domain.schedule.dto.response.ScheduleResponse;
 import com.tukorea.planding.domain.schedule.entity.Action;
 import com.tukorea.planding.domain.schedule.entity.Schedule;
 import com.tukorea.planding.domain.schedule.service.ScheduleQueryService;
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -143,7 +145,7 @@ public class GroupPlannerService {
         }
     }
 
-    public List<GroupPlannerResponse> getPlannersByGroupRoom(UserInfo userInfo, String groupCode, Long scheduleId) {
+    public List<GroupPlannerResponse> getPlannersByGroup(UserInfo userInfo, String groupCode, Long scheduleId) {
         if (!userGroupQueryService.checkUserAccessToGroupRoom(groupCode, userInfo.getUserCode())) {
             throw new BusinessException(ErrorCode.ACCESS_DENIED);
         }
@@ -151,6 +153,12 @@ public class GroupPlannerService {
         List<Planner> planners = plannerRepository.findBySchedule(schedule);
 
         return planners.stream()
+                .map(GroupPlannerResponse::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    public List<GroupPlannerResponse> getWeekPlannerByGroup(LocalDate startDate, LocalDate endDate, String groupCode, UserInfo userInfo) {
+        return plannerRepository.findAllByGroupAndDateRange(groupCode, startDate, endDate).stream()
                 .map(GroupPlannerResponse::fromEntity)
                 .collect(Collectors.toList());
     }

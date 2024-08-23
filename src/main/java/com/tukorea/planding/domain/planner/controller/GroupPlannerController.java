@@ -18,6 +18,7 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Tag(name = "GroupPlanner", description = "그룹플래너")
@@ -50,7 +51,15 @@ public class GroupPlannerController {
 
     @Operation(summary = "그룹 스케줄 플래너: 조회")
     @GetMapping("/api/v1/group-rooms/{groupCode}/planner/{scheduleId}")
-    public CommonResponse<List<GroupPlannerResponse>> getPlannersByGroupRoom(@AuthenticationPrincipal UserInfo userInfo, @PathVariable String groupCode, @PathVariable Long scheduleId) {
-        return CommonUtils.success(groupPlannerService.getPlannersByGroupRoom(userInfo, groupCode, scheduleId));
+    public CommonResponse<List<GroupPlannerResponse>> getPlannersByGroup(@AuthenticationPrincipal UserInfo userInfo, @PathVariable String groupCode, @PathVariable Long scheduleId) {
+        return CommonUtils.success(groupPlannerService.getPlannersByGroup(userInfo, groupCode, scheduleId));
+    }
+
+    @Operation(summary = "그룹 플래너 주간: 조회")
+    @GetMapping("/api/v1/group-rooms/planner/week/{groupCode}/{startDate}/{endDate}")
+    public CommonResponse<List<GroupPlannerResponse>> getWeekPlannerByGroup(@PathVariable String groupCode, @PathVariable LocalDate startDate,
+                                                                         @PathVariable LocalDate endDate
+            , @AuthenticationPrincipal UserInfo userInfo) {
+        return CommonUtils.success(groupPlannerService.getWeekPlannerByGroup(startDate, endDate, groupCode, userInfo));
     }
 }
