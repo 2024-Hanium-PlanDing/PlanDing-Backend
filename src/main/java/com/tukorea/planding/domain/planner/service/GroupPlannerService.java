@@ -5,6 +5,7 @@ import com.tukorea.planding.domain.planner.PlannerRole;
 import com.tukorea.planding.domain.planner.dto.PlannerRequest;
 import com.tukorea.planding.domain.planner.dto.GroupPlannerResponse;
 import com.tukorea.planding.domain.planner.dto.PlannerUpdateRequest;
+import com.tukorea.planding.domain.planner.dto.group.PlannerWeekResponse;
 import com.tukorea.planding.domain.planner.entity.Planner;
 import com.tukorea.planding.domain.planner.entity.PlannerUser;
 import com.tukorea.planding.domain.planner.repository.PlannerRepository;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -157,9 +159,9 @@ public class GroupPlannerService {
                 .collect(Collectors.toList());
     }
 
-    public List<GroupPlannerResponse> getWeekPlannerByGroup(LocalDate startDate, LocalDate endDate, String groupCode, UserInfo userInfo) {
+    public List<PlannerWeekResponse> getWeekPlannerByGroup(LocalDate startDate, LocalDate endDate, String groupCode, UserInfo userInfo) {
         return plannerRepository.findAllByGroupAndDateRange(groupCode, startDate, endDate).stream()
-                .map(GroupPlannerResponse::fromEntity)
+                .map(PlannerWeekResponse::fromEntity)
                 .collect(Collectors.toList());
     }
 }

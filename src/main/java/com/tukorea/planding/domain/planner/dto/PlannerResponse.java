@@ -7,6 +7,7 @@ import lombok.Builder;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Builder
 public record PlannerResponse(
@@ -16,9 +17,9 @@ public record PlannerResponse(
         String content,
         PlannerStatus status,
         LocalDateTime deadline,
-        String managerCode,
-        List<String> userCodes
-) {
+        PlannerUserResponse manager,
+        List<PlannerUserResponse> users
+        ) {
     public static PlannerResponse fromEntity(Planner planner) {
         return PlannerResponse.builder().id(planner.getId())
                 .plannerNumber(planner.getPlannerNumber())
@@ -26,16 +27,15 @@ public record PlannerResponse(
                 .content(planner.getContent())
                 .status(planner.getStatus())
                 .deadline(planner.getDeadline())
-                .managerCode(planner.getUsers().stream()
+                .manager(planner.getUsers().stream()
                         .filter(pu -> pu.getRole() == PlannerRole.MANAGER)
                         .findFirst()
-                        .map(pu -> pu.getUser().getUserCode())
+                        .map(PlannerUserResponse::fromEntity)
                         .orElse(null))
-                .userCodes(planner.getUsers().stream()
+                .users(planner.getUsers().stream()
                         .filter(pu -> pu.getRole() == PlannerRole.GENERAL)
-                        .findFirst()
-                        .map(pu -> pu.getUser().getUserCode())
-                        .stream().toList())
+                        .map(PlannerUserResponse::fromEntity)
+                        .collect(Collectors.toList()))
                 .build();
     }
 }

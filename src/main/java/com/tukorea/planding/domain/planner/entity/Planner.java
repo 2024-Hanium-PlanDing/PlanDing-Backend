@@ -2,6 +2,7 @@ package com.tukorea.planding.domain.planner.entity;
 
 import com.tukorea.planding.domain.planner.PlannerStatus;
 import com.tukorea.planding.domain.schedule.entity.Schedule;
+import com.tukorea.planding.global.audit.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,7 +15,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Planner {
+public class Planner extends BaseEntity {
 
     @Id
     @Column(name = "planner_id")
@@ -59,7 +60,7 @@ public class Planner {
         this.deadline = deadline;
     }
 
-    public void updateManager(){
+    public void updateManager() {
 
     }
 }

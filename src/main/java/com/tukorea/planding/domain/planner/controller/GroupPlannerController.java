@@ -6,6 +6,7 @@ import com.tukorea.planding.domain.planner.dto.GroupPlannerResponse;
 import com.tukorea.planding.domain.planner.dto.PlannerDeleteRequest;
 import com.tukorea.planding.domain.planner.dto.PlannerRequest;
 import com.tukorea.planding.domain.planner.dto.PlannerUpdateRequest;
+import com.tukorea.planding.domain.planner.dto.group.PlannerWeekResponse;
 import com.tukorea.planding.domain.planner.service.GroupPlannerService;
 import com.tukorea.planding.domain.user.dto.UserInfo;
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,8 +58,8 @@ public class GroupPlannerController {
 
     @Operation(summary = "그룹 플래너 주간: 조회")
     @GetMapping("/api/v1/group-rooms/planner/week/{groupCode}/{startDate}/{endDate}")
-    public CommonResponse<List<GroupPlannerResponse>> getWeekPlannerByGroup(@PathVariable String groupCode, @PathVariable LocalDate startDate,
-                                                                         @PathVariable LocalDate endDate
+    public CommonResponse<List<PlannerWeekResponse>> getWeekPlannerByGroup(@PathVariable String groupCode, @PathVariable LocalDate startDate,
+                                                                           @PathVariable LocalDate endDate
             , @AuthenticationPrincipal UserInfo userInfo) {
         return CommonUtils.success(groupPlannerService.getWeekPlannerByGroup(startDate, endDate, groupCode, userInfo));
     }

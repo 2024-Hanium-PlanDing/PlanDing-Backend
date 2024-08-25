@@ -32,6 +32,7 @@ public record GroupPlannerResponse(
 
     public static GroupPlannerResponse delete(Planner planner) {
         return GroupPlannerResponse.builder()
+                .scheduleId(planner.getSchedule().getId())
                 .type(NotificationType.PLANNER)
                 .action(Action.DELETE)
                 .build();
