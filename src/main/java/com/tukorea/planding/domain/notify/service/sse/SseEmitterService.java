@@ -1,6 +1,6 @@
 package com.tukorea.planding.domain.notify.service.sse;
 
-import com.tukorea.planding.domain.notify.dto.NotificationDTO;
+import com.tukorea.planding.domain.notify.dto.alarm.NotificationDTO;
 import com.tukorea.planding.domain.notify.repository.EmitterRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,12 +23,14 @@ public class SseEmitterService {
     }
 
     public void deleteEmitter(String emitterKey) {
+        log.info("emitter 삭제: {}",emitterKey);
         emitterRepository.deleteById(emitterKey);
     }
 
-    public void sendNotificationToClient(String emitterKey, NotificationDTO notificationDto) {
+    public void sendNotificationToClient(String emitterKey, NotificationDTO notificationDTO) {
+        log.info("sendNotificationToClient 동작 {}",emitterKey);
         emitterRepository.findById(emitterKey)
-                .ifPresent(emitter -> send(notificationDto, emitterKey, emitter));
+                .ifPresent(emitter -> send(notificationDTO, emitterKey, emitter));
     }
 
     public void send(Object data, String emitterKey, SseEmitter sseEmitter) {

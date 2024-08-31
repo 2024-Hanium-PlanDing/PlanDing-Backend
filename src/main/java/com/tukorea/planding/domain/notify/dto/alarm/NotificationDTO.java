@@ -14,6 +14,7 @@ public class NotificationDTO {
     // 식별 ID
     private Long scheduleId;
     private String userCode;
+    private String title;
     private String message;
     private String url;
     private NotificationType notificationType;
@@ -26,6 +27,7 @@ public class NotificationDTO {
     public static NotificationDTO createPersonalSchedule(String receiverCode, PersonalScheduleResponse response) {
         return NotificationDTO.builder()
                 .scheduleId(response.id())
+                .title(response.title())
                 .userCode(receiverCode)
                 .message(response.content())
                 .url("/api/v1/schedule/" + response.id())
@@ -51,6 +53,7 @@ public class NotificationDTO {
     public static NotificationDTO createGroupSchedule(String receiverCode, Schedule response) {
         return NotificationDTO.builder()
                 .scheduleId(response.getId())
+                .title(response.getTitle())
                 .userCode(receiverCode)
                 .message(response.getContent())
                 .url("/api/v1/schedule/" + response.getId())

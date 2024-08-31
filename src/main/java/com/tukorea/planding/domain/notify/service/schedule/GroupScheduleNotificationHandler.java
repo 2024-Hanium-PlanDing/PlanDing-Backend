@@ -44,6 +44,7 @@ public class GroupScheduleNotificationHandler implements NotificationHandler {
                     .groupName(request.getGroupName())
                     .notificationType(NotificationType.GROUP_SCHEDULE)
                     .scheduleDate(LocalDate.parse(request.getDate()))
+                    .title(request.getTitle())
                     .message(request.getMessage())
                     .url(request.getUrl())
                     .build();

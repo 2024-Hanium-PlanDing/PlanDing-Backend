@@ -2,17 +2,13 @@ package com.tukorea.planding.domain.notify.service.fcm;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
-import com.tukorea.planding.domain.group.entity.GroupRoom;
 import com.tukorea.planding.domain.notify.dto.alarm.DailyNotificationDto;
 import com.tukorea.planding.domain.notify.dto.alarm.NotificationDTO;
 import com.tukorea.planding.domain.notify.entity.NotificationType;
-import com.tukorea.planding.domain.schedule.entity.Schedule;
 import com.tukorea.planding.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import static com.tukorea.planding.domain.schedule.entity.QSchedule.schedule;
 
 @Service
 @Slf4j
@@ -28,6 +24,7 @@ public class FCMService {
             Message message = Message.builder()
                     .setToken(fcmToken)
                     .putData("scheduleId", String.valueOf(notificationDTO.getScheduleId()))
+                    .putData("title",notificationDTO.getTitle())
                     .putData("message", notificationDTO.getMessage())
                     .putData("date", notificationDTO.getDate())
                     .putData("url", notificationDTO.getUrl())
@@ -52,6 +49,7 @@ public class FCMService {
             Message message = Message.builder()
                     .setToken(fcmToken)
                     .putData("scheduleId", String.valueOf(notificationDTO.getScheduleId()))
+                    .putData("title",notificationDTO.getTitle())
                     .putData("message", notificationDTO.getMessage())
                     .putData("date", notificationDTO.getDate())
                     .putData("url", notificationDTO.getUrl())
