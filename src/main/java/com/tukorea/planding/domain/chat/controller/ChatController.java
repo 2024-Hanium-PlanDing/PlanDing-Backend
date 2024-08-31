@@ -7,6 +7,7 @@ import com.tukorea.planding.domain.chat.dto.MessageRequest;
 import com.tukorea.planding.domain.chat.dto.MessageResponse;
 import com.tukorea.planding.domain.chat.service.ChatService;
 import com.tukorea.planding.domain.user.dto.UserInfo;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -32,6 +33,7 @@ public class ChatController {
         return CommonUtils.success(messageResponse);
     }
 
+    @Operation(summary = "채팅방 내용 불러오기")
     @GetMapping("/{groupCode}/message")
     public CommonResponse<List<MessageResponse>> getMessages(@AuthenticationPrincipal UserInfo userInfo, @PathVariable String groupCode) {
         List<MessageResponse> responses = chatService.getMessages(userInfo, groupCode);

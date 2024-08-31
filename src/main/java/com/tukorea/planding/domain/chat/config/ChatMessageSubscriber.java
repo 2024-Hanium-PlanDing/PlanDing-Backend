@@ -1,6 +1,7 @@
 package com.tukorea.planding.domain.chat.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tukorea.planding.common.CommonUtils;
 import com.tukorea.planding.domain.chat.dto.MessageRequest;
 import com.tukorea.planding.domain.chat.dto.MessageResponse;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class ChatMessageSubscriber implements MessageListener {
             String channel = new String(message.getChannel())
                     .substring("chat.room.".length());
             MessageResponse messageResponse = objectMapper.readValue(message.getBody(), MessageResponse.class);
-            messageTemplate.convertAndSend("/sub/chat/" + channel, messageResponse);
+            messageTemplate.convertAndSend("/sub/chat/" + channel, CommonUtils.success(messageResponse));
         } catch (IOException e) {
             log.error("채팅 실패: {}", e.getMessage(), e);
         }
