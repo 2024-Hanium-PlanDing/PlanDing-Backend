@@ -9,6 +9,7 @@ import java.util.List;
 @Builder
 public record GroupInformationResponse(
         Long id,
+        String owner,
         String name,
         String groupCode,
         String description,

@@ -114,6 +114,7 @@ public class GroupRoomService {
 
         return GroupInformationResponse.builder()
                 .id(groupRoom.getId())
+                .owner(groupRoom.getOwner())
                 .users(userInfoSimples)
                 .groupCode(groupRoom.getGroupCode())
                 .name(groupRoom.getName())
