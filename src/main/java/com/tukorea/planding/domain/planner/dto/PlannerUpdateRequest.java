@@ -11,7 +11,7 @@ public record PlannerUpdateRequest(
         String content,
         PlannerStatus status,
         LocalDateTime deadline,
-        String manager,
+        String managerCode,
         List<String> userCodes,
         Long scheduleId
 ) {
