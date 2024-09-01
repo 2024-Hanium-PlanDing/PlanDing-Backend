@@ -1,16 +1,18 @@
 package com.tukorea.planding.domain.planner.service;
 
 import com.tukorea.planding.domain.group.service.query.UserGroupQueryService;
+import com.tukorea.planding.domain.notify.entity.NotificationType;
 import com.tukorea.planding.domain.planner.PlannerRole;
 import com.tukorea.planding.domain.planner.dto.PlannerRequest;
 import com.tukorea.planding.domain.planner.dto.GroupPlannerResponse;
+import com.tukorea.planding.domain.planner.dto.PlannerResponse;
 import com.tukorea.planding.domain.planner.dto.PlannerUpdateRequest;
 import com.tukorea.planding.domain.planner.dto.group.PlannerWeekResponse;
+import com.tukorea.planding.domain.planner.dto.SchedulePlannerResponse;
 import com.tukorea.planding.domain.planner.entity.Planner;
 import com.tukorea.planding.domain.planner.entity.PlannerUser;
 import com.tukorea.planding.domain.planner.repository.PlannerRepository;
 import com.tukorea.planding.domain.planner.repository.PlannerUserRepository;
-import com.tukorea.planding.domain.schedule.dto.response.ScheduleResponse;
 import com.tukorea.planding.domain.schedule.entity.Action;
 import com.tukorea.planding.domain.schedule.entity.Schedule;
 import com.tukorea.planding.domain.schedule.service.ScheduleQueryService;
@@ -24,8 +26,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -113,12 +115,28 @@ public class GroupPlannerService {
         }
     }
 
+    public PlannerResponse getPlannerByGroup(UserInfo userInfo, String groupCode, Long plannerId) {
+        if (!userGroupQueryService.checkUserAccessToGroupRoom(groupCode, userInfo.getUserCode())) {
+            throw new BusinessException(ErrorCode.ACCESS_DENIED);
+        }
+        Planner planner = plannerRepository.findById(plannerId)
+                .orElseThrow(() -> new IllegalArgumentException("Planner not found with id: " + plannerId));
+
+        return PlannerResponse.fromEntity(planner);
+    }
+
     public GroupPlannerResponse updateGroupPlanner(String userCode, String groupCode, PlannerUpdateRequest request) {
         if (!userGroupQueryService.checkUserAccessToGroupRoom(groupCode, userCode)) {
             throw new BusinessException(ErrorCode.ACCESS_DENIED);
         }
         Planner planner = plannerRepository.findById(request.plannerId())
                 .orElseThrow(() -> new IllegalArgumentException("Planner not found with id: " + request.plannerId()));
+
+        User newManager = userQueryService.getUserByUserCode(request.managerCode());
+        planner.updateManager(newManager);
+
+        updateUsers(planner, request.userCodes());
+
         planner.update(request.title(), request.content(), request.status(), request.deadline());
 
         return GroupPlannerResponse.fromEntity(planner, Action.UPDATE);
@@ -147,21 +165,31 @@ public class GroupPlannerService {
         }
     }
 
-    public List<GroupPlannerResponse> getPlannersByGroup(UserInfo userInfo, String groupCode, Long scheduleId) {
+    public SchedulePlannerResponse getPlannersByGroup(UserInfo userInfo, String groupCode, Long scheduleId) {
         if (!userGroupQueryService.checkUserAccessToGroupRoom(groupCode, userInfo.getUserCode())) {
             throw new BusinessException(ErrorCode.ACCESS_DENIED);
         }
         Schedule schedule = scheduleQueryService.findScheduleById(scheduleId);
         List<Planner> planners = plannerRepository.findBySchedule(schedule);
 
-        return planners.stream()
-                .map(GroupPlannerResponse::fromEntity)
-                .collect(Collectors.toList());
+        return SchedulePlannerResponse.fromEntity(planners, schedule);
     }
 
-    public List<PlannerWeekResponse> getWeekPlannerByGroup(LocalDate startDate, LocalDate endDate, String groupCode, UserInfo userInfo) {
-        return plannerRepository.findAllByGroupAndDateRange(groupCode, startDate, endDate).stream()
-                .map(PlannerWeekResponse::fromEntity)
+    public List<PlannerWeekResponse> findPlannersByGroupCodeAndDateRange(LocalDate startDate, LocalDate endDate, String groupCode, UserInfo userInfo) {
+        List<Planner> planners = plannerRepository.findAllByGroupAndDateRange(groupCode, startDate, endDate);
+
+        Map<Long, List<Planner>> groupedPlanners = planners.stream().collect(Collectors.groupingBy(planner -> planner.getSchedule().getId()));
+
+        return groupedPlanners.entrySet().stream()
+                .map(entry -> PlannerWeekResponse.builder()
+                        .scheduleId(entry.getKey())
+                        .scheduleTitle(entry.getValue().get(0).getSchedule().getTitle())
+                        .scheduleDate(entry.getValue().get(0).getSchedule().getScheduleDate())
+                        .planners(entry.getValue().stream()
+                                .map(PlannerResponse::fromEntity)
+                                .collect(Collectors.toList()))
+                        .type(NotificationType.PLANNER)
+                        .build())
                 .collect(Collectors.toList());
     }
 }

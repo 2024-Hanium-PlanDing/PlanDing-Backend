@@ -1,7 +1,9 @@
 package com.tukorea.planding.domain.planner.entity;
 
+import com.tukorea.planding.domain.planner.PlannerRole;
 import com.tukorea.planding.domain.planner.PlannerStatus;
 import com.tukorea.planding.domain.schedule.entity.Schedule;
+import com.tukorea.planding.domain.user.entity.User;
 import com.tukorea.planding.global.audit.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -60,7 +62,21 @@ public class Planner extends BaseEntity {
         this.deadline = deadline;
     }
 
-    public void updateManager() {
+    public void updateManager(User newManager) {
+        this.users.stream()
+                .filter(plannerUser -> plannerUser.getRole() == PlannerRole.MANAGER)
+                .forEach(plannerUser -> plannerUser.updateRole(PlannerRole.GENERAL));
 
+        this.users.stream()
+                .filter(plannerUser -> plannerUser.getUser().equals(newManager))
+                .findFirst()
+                .ifPresentOrElse(
+                        plannerUser -> plannerUser.updateRole(PlannerRole.MANAGER),
+                        () -> this.users.add(PlannerUser.builder()
+                                .planner(this)
+                                .user(newManager)
+                                .role(PlannerRole.MANAGER)
+                                .build())
+                );
     }
 }
