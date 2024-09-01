@@ -1,7 +1,8 @@
 package com.tukorea.planding.domain.notify.service;
 
-import com.tukorea.planding.domain.notify.dto.NotificationDTO;
+import com.tukorea.planding.domain.notify.dto.alarm.NotificationDTO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,7 @@ import java.time.ZoneOffset;
 import java.util.Set;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class ScheduleNotificationService {
 

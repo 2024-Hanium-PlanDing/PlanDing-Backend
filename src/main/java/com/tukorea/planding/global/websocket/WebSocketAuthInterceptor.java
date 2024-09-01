@@ -1,15 +1,6 @@
 package com.tukorea.planding.global.websocket;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.tukorea.planding.domain.group.service.UserGroupService;
-import com.tukorea.planding.domain.group.service.query.GroupQueryService;
-import com.tukorea.planding.domain.schedule.dto.request.GroupScheduleRequest;
-import com.tukorea.planding.domain.schedule.entity.Action;
-import com.tukorea.planding.global.config.security.jwt.JwtTokenHandler;
 import com.tukorea.planding.global.config.websocket.WebSocketAuthService;
-import io.swagger.v3.core.util.ObjectMapperFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -20,8 +11,6 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
 
 @Order(Ordered.HIGHEST_PRECEDENCE + 99)
 @Component

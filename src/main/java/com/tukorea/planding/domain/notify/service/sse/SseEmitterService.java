@@ -23,12 +23,10 @@ public class SseEmitterService {
     }
 
     public void deleteEmitter(String emitterKey) {
-        log.info("emitter 삭제: {}",emitterKey);
         emitterRepository.deleteById(emitterKey);
     }
 
     public void sendNotificationToClient(String emitterKey, NotificationDTO notificationDTO) {
-        log.info("sendNotificationToClient 동작 {}",emitterKey);
         emitterRepository.findById(emitterKey)
                 .ifPresent(emitter -> send(notificationDTO, emitterKey, emitter));
     }

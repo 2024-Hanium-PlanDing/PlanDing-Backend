@@ -14,7 +14,6 @@ import static com.tukorea.planding.domain.schedule.entity.QGroupScheduleAttendan
 import static com.tukorea.planding.domain.schedule.entity.QPersonalSchedule.personalSchedule;
 import static com.tukorea.planding.domain.schedule.entity.QSchedule.schedule;
 
-
 @RequiredArgsConstructor
 public class ScheduleRepositoryCustomImpl implements ScheduleRepositoryCustom {
 
