@@ -4,6 +4,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.tukorea.planding.domain.group.entity.GroupRoom;
 import com.tukorea.planding.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -20,13 +21,27 @@ public class GroupRoomRepositoryCustomImpl implements GroupRoomRepositoryCustom 
     private final JPAQueryFactory queryFactory;
 
     @Override
+    public List<GroupRoom> findGroupRoomsByUserId(Long userId, PageRequest request) {
+        return queryFactory.select(groupRoom)
+                .from(groupRoom)
+                .join(groupRoom.userGroups, userGroup).fetchJoin()
+                .where(groupRoom.userGroups.any().user.id.eq(userId))
+                .orderBy(groupRoom.createdDate.desc())
+                .offset(request.getPageNumber() * request.getPageSize())
+                .limit(request.getPageSize())
+                .fetch();
+    }
+
+    @Override
     public List<GroupRoom> findGroupRoomsByUserId(Long userId) {
         return queryFactory.select(groupRoom)
                 .from(groupRoom)
                 .join(groupRoom.userGroups, userGroup).fetchJoin()
                 .where(groupRoom.userGroups.any().user.id.eq(userId))
+                .orderBy(groupRoom.createdDate.desc())
                 .fetch();
     }
+
 
     @Override
     public List<User> getGroupUsers(String groupCode) {

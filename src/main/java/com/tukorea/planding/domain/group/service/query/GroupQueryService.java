@@ -12,6 +12,7 @@ import com.tukorea.planding.domain.user.entity.User;
 import com.tukorea.planding.global.error.BusinessException;
 import com.tukorea.planding.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,10 @@ public class GroupQueryService {
 
     public GroupRoom createGroup(GroupRoom groupRoom) {
         return groupRoomRepository.save(groupRoom);
+    }
+
+    public List<GroupRoom> findGroupsByUserId(Long userId, PageRequest request) {
+        return groupRoomRepository.findGroupRoomsByUserId(userId, request);
     }
 
     public List<GroupRoom> findGroupsByUserId(Long userId) {

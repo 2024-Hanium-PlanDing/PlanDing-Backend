@@ -19,6 +19,7 @@ import com.tukorea.planding.global.error.BusinessException;
 import com.tukorea.planding.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
@@ -88,13 +89,22 @@ public class GroupRoomService {
     }
 
     // 유저가 속한 그룹룸 가져오기
-    public List<GroupResponse> getAllGroupRoomByUser(UserInfo userInfo) {
-        List<GroupRoom> groupRooms = groupQueryService.findGroupsByUserId(userInfo.getId());
+    public List<GroupResponse> getAllGroupRoomByUser(UserInfo userInfo, PageRequest request) {
+        List<GroupRoom> groupRooms = groupQueryService.findGroupsByUserId(userInfo.getId(), request);
+
         return groupRooms.stream()
-                .sorted(Comparator.comparing(GroupRoom::getCreatedDate).reversed())
                 .map(this::toGroupResponse)
                 .collect(Collectors.toList());
     }
+
+    public List<GroupResponse> getAllGroupRoomByUser(UserInfo userInfo) {
+        List<GroupRoom> groupRooms = groupQueryService.findGroupsByUserId(userInfo.getId());
+
+        return groupRooms.stream()
+                .map(this::toGroupResponse)
+                .collect(Collectors.toList());
+    }
+
 
     @Transactional(readOnly = true)
     public GroupInformationResponse getGroupUsers(UserInfo userInfo, String groupCode) {

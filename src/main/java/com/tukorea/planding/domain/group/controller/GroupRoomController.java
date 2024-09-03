@@ -11,6 +11,8 @@ import com.tukorea.planding.domain.user.dto.UserInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +27,17 @@ import java.util.List;
 public class GroupRoomController {
 
     private final GroupRoomService groupRoomService;
+
+    @Operation(summary = "메인페이지 API 페이지네이션ver", description = "내 그룹 가져오기")
+    @GetMapping("/paging")
+    public CommonResponse<List<GroupResponse>> getAllGroupRoomByUser(@AuthenticationPrincipal UserInfo userInfo,
+                                                                     @RequestParam(defaultValue = "0") int page,
+                                                                     @RequestParam(defaultValue = "11") int size) {
+
+        PageRequest pageRequest = PageRequest.of(page, size);
+        List<GroupResponse> groupResponses = groupRoomService.getAllGroupRoomByUser(userInfo, pageRequest);
+        return CommonUtils.success(groupResponses);
+    }
 
     @Operation(summary = "메인페이지 API", description = "내 그룹 가져오기")
     @GetMapping()
