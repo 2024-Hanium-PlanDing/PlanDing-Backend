@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 @Builder
 public record PlannerResponse(
         Long id,
+        Long scheduleId,
         Integer plannerNumber,
         String title,
         String content,
@@ -19,9 +20,10 @@ public record PlannerResponse(
         LocalDateTime deadline,
         PlannerUserResponse manager,
         List<PlannerUserResponse> users
-        ) {
+) {
     public static PlannerResponse fromEntity(Planner planner) {
         return PlannerResponse.builder().id(planner.getId())
+                .scheduleId(planner.getSchedule().getId())
                 .plannerNumber(planner.getPlannerNumber())
                 .title(planner.getTitle())
                 .content(planner.getContent())

@@ -8,7 +8,6 @@ import lombok.Builder;
 @Builder
 public record GroupPlannerResponse(
         PlannerResponse planner,
-        Long scheduleId,
         NotificationType type,
         Action action
 ) {
@@ -16,7 +15,6 @@ public record GroupPlannerResponse(
     public static GroupPlannerResponse fromEntity(Planner planner) {
         return GroupPlannerResponse.builder()
                 .planner(PlannerResponse.fromEntity(planner))
-                .scheduleId(planner.getSchedule().getId())
                 .type(NotificationType.PLANNER)
                 .build();
     }
@@ -24,7 +22,6 @@ public record GroupPlannerResponse(
     public static GroupPlannerResponse fromEntity(Planner planner, Action action) {
         return GroupPlannerResponse.builder()
                 .planner(PlannerResponse.fromEntity(planner))
-                .scheduleId(planner.getSchedule().getId())
                 .type(NotificationType.PLANNER)
                 .action(action)
                 .build();
@@ -32,7 +29,7 @@ public record GroupPlannerResponse(
 
     public static GroupPlannerResponse delete(Planner planner) {
         return GroupPlannerResponse.builder()
-                .scheduleId(planner.getSchedule().getId())
+                .planner(PlannerResponse.fromEntity(planner))
                 .type(NotificationType.PLANNER)
                 .action(Action.DELETE)
                 .build();
