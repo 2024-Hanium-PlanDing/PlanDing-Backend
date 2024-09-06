@@ -3,6 +3,7 @@ package com.tukorea.planding.global.config.security;
 import com.tukorea.planding.global.UserLogoutHandler;
 import com.tukorea.planding.global.config.security.jwt.JwtAuthenticationEntryPoint;
 import com.tukorea.planding.global.config.security.jwt.JwtAuthenticationFilter;
+import com.tukorea.planding.global.config.security.jwt.JwtProperties;
 import com.tukorea.planding.global.oauth.handler.Oauth2SuccessHandler;
 import com.tukorea.planding.global.oauth.service.CustomOAuth2Service;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class SecurityConfig {
     private final String[] SWAGGER = {
             "/swagger-resources/**", "/v3/api-docs/", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/swagger-ui/index.html",
     };
+    private final JwtProperties jwtProperties;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -52,8 +54,9 @@ public class SecurityConfig {
                         .successHandler(oauth2SuccessHandler))
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .logout(logOut -> logOut.addLogoutHandler(userLogoutHandler)
+                .logout(logOut -> logOut
                         .logoutUrl("/logout")
+                        .addLogoutHandler(userLogoutHandler)
                         .permitAll());
 
 

@@ -1,5 +1,6 @@
 package com.tukorea.planding.global;
 
+import com.tukorea.planding.domain.auth.repository.TokenInfoCacheRepository;
 import com.tukorea.planding.global.config.security.jwt.JwtTokenHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,11 +16,12 @@ import org.springframework.stereotype.Component;
 public class UserLogoutHandler implements LogoutHandler {
 
     private final JwtTokenHandler jwtTokenHandler;
+    private final TokenInfoCacheRepository tokenInfoCacheRepository;
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        String token = jwtTokenHandler.extractAccessToken(request).get();
-        String email= jwtTokenHandler.extractSubject(token);
-        log.info("Redis: 로그아웃 완료");
+        String refreshToken = jwtTokenHandler.extractRefreshToken(request).orElse(null);
+        tokenInfoCacheRepository.delete(refreshToken);
+        log.info("로그아웃 성공");
     }
 }
