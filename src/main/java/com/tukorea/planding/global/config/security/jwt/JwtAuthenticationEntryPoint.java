@@ -36,7 +36,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         if (accessToken != null && !jwtTokenHandler.validateToken(accessToken)) {
             ErrorResponse errorResponse = new ErrorResponse(ErrorCode.EXPIRED_AUTH_TOKEN);
             sendErrorResponse(response, errorResponse);
-            return;
         }
     }
 

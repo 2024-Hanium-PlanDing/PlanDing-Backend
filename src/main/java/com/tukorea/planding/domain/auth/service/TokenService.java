@@ -23,14 +23,12 @@ public class TokenService {
         return tokenResponse;
     }
 
-    public TokenResponse reIssueToken(final String refreshToken) {
+    public String reIssueAccessToken(final String refreshToken) {
         String userCode = jwtTokenHandler.extractClaim(refreshToken, claims -> claims.get("code", String.class));
         Long userId = jwtTokenHandler.extractClaim(refreshToken, claims -> claims.get("id", Long.class));
 
-        String newRefreshToken = jwtTokenHandler.generateRefreshToken(userId, userCode);
-        tokenInfoCacheRepository.rename(refreshToken, newRefreshToken);
-
-        return createTokenResponse(userId, userCode);
+        String newAccessToken = jwtTokenHandler.generateAccessToken(userId, userCode);
+        return newAccessToken;
     }
 
     private TokenResponse createTokenResponse(final Long userId, final String userCode) {

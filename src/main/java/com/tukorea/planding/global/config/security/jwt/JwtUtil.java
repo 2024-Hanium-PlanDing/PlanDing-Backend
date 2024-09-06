@@ -1,5 +1,6 @@
 package com.tukorea.planding.global.config.security.jwt;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,5 +38,30 @@ public class JwtUtil {
     public void setRefreshTokenHeader(HttpServletResponse response, String refreshToken) {
         log.info("Refresh Token 헤더 설정");
         response.setHeader(jwtProperties.getRefreshHeader(), JwtConstant.BEARER.getValue() + refreshToken);
+    }
+
+    //TODO: https 배포시 수정
+    public Cookie setAccessTokenCookie(String accessToken) {
+        Cookie accessTokenCookie = new Cookie(jwtProperties.getAccessHeader(), accessToken);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setHttpOnly(false); // HttpOnly를 false로 설정해서 프론트에서 접근 가능하도록 함
+        accessTokenCookie.setMaxAge((int) jwtProperties.getAccessExpiration()); // 1시간 유효
+        return accessTokenCookie;
+    }
+
+    public Cookie setRefreshTokenCookie(String refreshToken) {
+        Cookie refreshTokenCookie = new Cookie(jwtProperties.getRefreshHeader(), refreshToken);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setHttpOnly(false); // HttpOnly를 false로 설정
+        refreshTokenCookie.setMaxAge((int) jwtProperties.getRefreshExpiration());
+        return refreshTokenCookie;
+    }
+
+    public void setTokensInResponse(HttpServletResponse response, String accessToken, String refreshToken) {
+        Cookie accessTokenCookie = setAccessTokenCookie(accessToken);
+        Cookie refreshTokenCookie = setRefreshTokenCookie(refreshToken);
+
+        response.addCookie(accessTokenCookie);
+        response.addCookie(refreshTokenCookie);
     }
 }

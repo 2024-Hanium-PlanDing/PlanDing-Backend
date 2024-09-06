@@ -29,12 +29,15 @@ public class TokenInfoCacheRepository {
 
     }
 
-    public void rename(
-            final String oldKey,
-            final String newKey
-    ) {
-        redisTemplate.rename(oldKey, newKey);
+    /**
+     * 캐시에서 토큰 삭제
+     *
+     * @param key 삭제할 키, refresh-token String
+     */
+    public void delete(final String key) {
+        redisTemplate.delete(key);
     }
+
 
     /**
      * 캐시로부터 유저정보 가져오기

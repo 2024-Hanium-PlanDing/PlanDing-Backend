@@ -1,6 +1,5 @@
 package com.tukorea.planding.global.config.security.jwt;
 
-import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -13,4 +12,5 @@ public class JwtProperties {
     private String refreshHeader;
     private long accessExpiration;
     private long refreshExpiration;
+    private String redirectUrl;
 }

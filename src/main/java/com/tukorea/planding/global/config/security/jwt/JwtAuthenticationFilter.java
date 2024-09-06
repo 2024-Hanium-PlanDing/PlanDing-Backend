@@ -1,24 +1,19 @@
 package com.tukorea.planding.global.config.security.jwt;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tukorea.planding.domain.auth.dto.TokenResponse;
+import com.tukorea.planding.domain.auth.repository.TokenInfoCacheRepository;
 import com.tukorea.planding.domain.auth.service.TokenService;
+import com.tukorea.planding.domain.user.dto.UserInfo;
+import com.tukorea.planding.domain.user.entity.User;
+import com.tukorea.planding.domain.user.repository.UserRepository;
 import com.tukorea.planding.global.error.BusinessException;
 import com.tukorea.planding.global.error.ErrorCode;
-import com.tukorea.planding.global.config.security.jwt.JwtUtil;
-import com.tukorea.planding.global.config.security.jwt.JwtTokenHandler;
-import com.tukorea.planding.domain.user.repository.UserRepository;
-import com.tukorea.planding.domain.user.entity.User;
-import com.tukorea.planding.domain.user.dto.UserInfo;
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,7 +22,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -47,6 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final TokenService tokenService;
     private final UserRepository userRepository;
+    private final TokenInfoCacheRepository tokenInfoCacheRepository;
 
 
     @Override
@@ -104,11 +101,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * @param response
      * @return 새로 발급한 AccessToken, RefreshToken을 response 헤더에 저장
      */
-    private void checkRefreshTokenAndReIssueAccessToken(String refreshToken,
-                                                        HttpServletResponse response) {
-        log.info("Refresh 토큰 확인 및 검증");
-        TokenResponse tokenResponse = tokenService.reIssueToken(refreshToken);
-        jwtUtil.sendAccessAndRefreshToken(response, tokenResponse.accessToken(), tokenResponse.refreshToken());
+    private void checkRefreshTokenAndReIssueAccessToken(
+            String refreshToken,
+            HttpServletResponse response) {
+        log.debug("Refresh 토큰 확인 및 검증");
+        if (jwtTokenHandler.isRefreshTokenExpired(refreshToken)) {
+            log.error("리프레시 토큰 만료");
+            tokenInfoCacheRepository.delete(refreshToken);
+            throw new BusinessException(ErrorCode.EXPIRED_REFRESH_TOKEN);
+        }
+
+        String newAccessToken = tokenService.reIssueAccessToken(refreshToken);
+        jwtUtil.sendAccessAndRefreshToken(response, newAccessToken, refreshToken);
     }
 
     private void saveAuthentication(User user) {
@@ -128,7 +132,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String[] excludePath = {
                 "/api/v1/ws", "/api/v1/login/android/kakao", "/login", "/swagger-ui/", "/v3/api-docs",
-                "/api-docs/json/", "/swagger-ui/index.html", "/api/v1/health"
+                "/api-docs/json/", "/swagger-ui/index.html", "/api/v1/health", "/api/v1/chatbot"
         };
         String path = request.getRequestURI();
         return Arrays.stream(excludePath).anyMatch(path::startsWith);

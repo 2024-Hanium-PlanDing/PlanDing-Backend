@@ -105,4 +105,11 @@ public class JwtTokenHandler {
                 .map(accessToken -> accessToken.replace(JwtConstant.BEARER.getValue(), ""));
     }
 
+    // 리프레시 토큰 만료여부
+    public boolean isRefreshTokenExpired(String refreshToken) {
+        Claims claims = extractAllClaims(refreshToken);
+        Date expiration = claims.getExpiration();
+        return expiration.before(new Date());
+    }
+
 }
