@@ -1,8 +1,7 @@
 package com.tukorea.planding.global.config.security.jwt;
 
 
-import com.tukorea.planding.domain.user.entity.User;
-import com.tukorea.planding.global.oauth.service.CustomOAuth2User;
+import com.tukorea.planding.domain.auth.dto.TemporaryTokenResponse;
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +46,16 @@ public class JwtTokenHandler {
         return generateToken(jwtProperties.getRefreshExpiration(), userId, userCode);
     }
 
+    // 임시토큰 생성
+    public String generateTemporaryToken(final Long userId,final String userCode) {
+        return Jwts.builder()
+                .setClaims(createClaims(userId,userCode))
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 60 * 10 * 1000)) // 10분
+                .signWith(SignatureAlgorithm.HS256, jwtProperties.getSECRET())
+                .compact();
+    }
+
     /**
      * 토큰을 파싱해서 올바른 토큰인지 확인
      *
@@ -65,7 +74,6 @@ public class JwtTokenHandler {
             return false;
         }
     }
-
 
 
     private Map<String, Object> createClaims(final Long userId, final String userCode) { // payload
@@ -111,5 +119,6 @@ public class JwtTokenHandler {
         Date expiration = claims.getExpiration();
         return expiration.before(new Date());
     }
+
 
 }

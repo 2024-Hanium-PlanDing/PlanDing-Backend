@@ -19,9 +19,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.nio.file.PathMatcher;
 import java.util.Arrays;
 import java.util.List;
 
@@ -51,6 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String refreshToken = jwtTokenHandler.extractRefreshToken(request)
                 .filter(jwtTokenHandler::validateToken)
                 .orElse(null);
+        log.info("refresh: {}",refreshToken);
 
         if (refreshToken != null) {
             checkRefreshTokenAndReIssueAccessToken(refreshToken, response);
@@ -80,6 +83,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String accessToken = jwtTokenHandler.extractAccessToken(request)
                 .filter(jwtTokenHandler::validateToken)
                 .orElse(null);
+
+        log.info("access: {}",accessToken);
 
 
         String userCode = jwtTokenHandler.extractClaim(accessToken, claims -> claims.get("code", String.class));
@@ -128,13 +133,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
+
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        String[] excludePath = {
-                "/api/v1/ws", "/api/v1/login/android/kakao", "/login", "/swagger-ui/", "/v3/api-docs",
-                "/api-docs/json/", "/swagger-ui/index.html", "/api/v1/health", "/api/v1/chatbot"
-        };
+        AntPathMatcher pathMatcher = new AntPathMatcher();
         String path = request.getRequestURI();
-        return Arrays.stream(excludePath).anyMatch(path::startsWith);
+
+        String[] excludePath = {
+                "/api/v1/temporary-token",
+                "/api/v1/ws/**",
+                "/api/v1/login/**",
+                "/v3/api-docs/**",
+                "/api-docs/json/**",
+                "/swagger-ui/**",
+                "/api/v1/health",
+                "/api/v1/chatbot",
+                "/actuator/**"
+        };
+
+        return Arrays.stream(excludePath).anyMatch(pattern -> pathMatcher.match(pattern, path));
     }
 }
