@@ -1,5 +1,6 @@
 package com.tukorea.planding.domain.schedule.service;
 
+import com.tukorea.planding.domain.planner.dto.group.PlannerWeekResponse;
 import com.tukorea.planding.domain.schedule.dto.request.ScheduleRequest;
 import com.tukorea.planding.domain.schedule.dto.response.ScheduleResponse;
 import com.tukorea.planding.domain.schedule.entity.Schedule;
@@ -10,12 +11,14 @@ import com.tukorea.planding.global.error.BusinessException;
 import com.tukorea.planding.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ScheduleQueryService {
 
