@@ -3,9 +3,8 @@ package com.tukorea.planding.domain.schedule.service;
 import com.tukorea.planding.domain.group.entity.GroupRoom;
 import com.tukorea.planding.domain.group.service.query.GroupQueryService;
 import com.tukorea.planding.domain.group.service.query.UserGroupQueryService;
-import com.tukorea.planding.domain.notify.service.ScheduleNotificationService;
+import com.tukorea.planding.domain.notify.service.fcm.FCMService;
 import com.tukorea.planding.domain.notify.service.schedule.GroupScheduleNotificationHandler;
-import com.tukorea.planding.domain.schedule.dto.request.ScheduleRequest;
 import com.tukorea.planding.domain.schedule.dto.request.websocket.SendCreateScheduleDTO;
 import com.tukorea.planding.domain.schedule.dto.request.websocket.SendDeleteScheduleDTO;
 import com.tukorea.planding.domain.schedule.dto.request.websocket.SendUpdateScheduleDTO;
@@ -42,6 +41,7 @@ public class GroupScheduleService {
     private final ScheduleQueryService scheduleQueryService;
     private final GroupQueryService groupQueryService;
     private final UserGroupQueryService userGroupQueryService;
+    private final FCMService fcmService;
 
     private final GroupScheduleRepository groupScheduleRepository;
     private final GroupScheduleAttendanceRepository groupScheduleAttendanceRepository;
@@ -49,14 +49,13 @@ public class GroupScheduleService {
     private final GroupScheduleNotificationHandler groupScheduleNotificationHandler;
 
 
-    public SendGroupResponse createGroupSchedule(String groupCode, SendCreateScheduleDTO request) {
+    public SendGroupResponse createGroupSchedule(String userCode, String groupCode, SendCreateScheduleDTO request) {
         log.info("Create 그룹스케줄 groupCode: {}, request: {}", groupCode, request);
-        checkUserAccessToGroupRoom(groupCode, request.userCode());
-        checkRequestGroupRoom(groupCode, request.groupCode());
+        checkUserAccessToGroupRoom(groupCode, userCode);
 
         GroupRoom groupRoom = groupQueryService.getGroupByCode(groupCode);
 
-        checkUserAccessToGroupRoom(request.groupCode(), request.userCode());
+        checkUserAccessToGroupRoom(groupCode, userCode);
 
         GroupSchedule groupSchedule = GroupSchedule.builder()
                 .groupRoom(groupRoom)
@@ -77,22 +76,20 @@ public class GroupScheduleService {
         groupScheduleRepository.save(groupSchedule);
         Schedule savedSchedule = scheduleQueryService.save(newSchedule);
 
-        notifyUsers(groupRoom, savedSchedule);
-
         /* 커밋 이후 수행(알람등록) */
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
             @Override
             public void afterCommit() {
-                groupScheduleNotificationHandler.registerScheduleBeforeOneHour(request.userCode(), savedSchedule);
+                groupScheduleNotificationHandler.registerScheduleBeforeOneHour(userCode, savedSchedule);
+                notifyGroupScheduleCreation(groupRoom, savedSchedule);
             }
         });
         return SendGroupResponse.from(savedSchedule, Action.CREATE);
     }
 
-    public SendGroupResponse updateScheduleByGroupRoom(String groupCode, SendUpdateScheduleDTO request) {
+    public SendGroupResponse updateScheduleByGroupRoom(String userCode, String groupCode, SendUpdateScheduleDTO request) {
         log.info("Updated 그룹스케줄 groupCode: {}, request: {}", groupCode, request);
-        checkUserAccessToGroupRoom(groupCode, request.userCode());
-        checkRequestGroupRoom(groupCode, request.groupCode());
+        checkUserAccessToGroupRoom(groupCode, userCode);
 
         Schedule schedule = scheduleQueryService.findScheduleById(request.scheduleId());
         schedule.update(request.title(), request.content(), request.startTime(), request.endTime());
@@ -101,19 +98,18 @@ public class GroupScheduleService {
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
             @Override
             public void afterCommit() {
-                groupScheduleNotificationHandler.updateScheduleBeforeOneHour(request.userCode(), schedule);
+                groupScheduleNotificationHandler.updateScheduleBeforeOneHour(userCode, schedule);
             }
         });
 
         return SendGroupResponse.from(schedule, Action.UPDATE);
     }
 
-    public SendGroupResponse deleteScheduleByGroupRoom(String groupCode, SendDeleteScheduleDTO request) {
+    public SendGroupResponse deleteScheduleByGroupRoom(String userCode, String groupCode, SendDeleteScheduleDTO request) {
         log.info("DELETE 그룹스케줄 groupCode: {}, request: {}", groupCode, request);
-        checkUserAccessToGroupRoom(groupCode, request.userCode());
-        checkRequestGroupRoom(groupCode, request.groupCode());
-        scheduleQueryService.deleteById(request.scheduleId());
-
+        checkUserAccessToGroupRoom(groupCode, userCode);
+        Schedule schedule = scheduleQueryService.findScheduleById(request.scheduleId());
+        scheduleQueryService.delete(schedule);
         /* 커밋 이후 수행(알람삭제) */
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
             @Override
@@ -121,7 +117,7 @@ public class GroupScheduleService {
                 groupScheduleNotificationHandler.deleteScheduleBeforeOneHour(request.scheduleId());
             }
         });
-        return SendGroupResponse.delete(request.scheduleId(), Action.DELETE);
+        return SendGroupResponse.from(schedule, Action.DELETE);
     }
 
     @Transactional(readOnly = true)
@@ -190,15 +186,22 @@ public class GroupScheduleService {
                 .collect(Collectors.toList());
     }
 
-    private void notifyUsers(GroupRoom groupRoom, Schedule savedSchedule) {
+    private void notifyGroupScheduleCreation(GroupRoom groupRoom, Schedule schedule) {
         List<User> notificationUsers = userGroupQueryService.findUserByIsConnectionFalse(groupRoom.getId());
         notificationUsers.forEach(member -> {
-            GroupScheduleCreatedEvent event = new GroupScheduleCreatedEvent(this,
-                    member.getUserCode(),
-                    groupRoom.getName(),
-                    savedSchedule.getTitle(),
-                    "/groupRoom/" + groupRoom.getId() + "/" + savedSchedule.getId());
+            String userCode = member.getUserCode();
+            String groupName = groupRoom.getName();
+            String scheduleTitle = schedule.getTitle();
+            String url = "/groupRoom/" + groupRoom.getGroupCode() + "/" + schedule.getId();
+
+            // FCM 알림 전송
+            fcmService.notifyGroupScheduleCreation(userCode, groupName, scheduleTitle, url);
+
+            // 이벤트 발행
+            GroupScheduleCreatedEvent event = new GroupScheduleCreatedEvent(
+                    this, userCode, groupName, scheduleTitle, url);
             eventPublisher.publishEvent(event);
         });
+
     }
 }
