@@ -13,18 +13,18 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CommonScheduleService {
     private final ScheduleQueryService scheduleQueryService;
 
-    @Transactional(readOnly = true)
     public List<ScheduleResponse> showTodaySchedule(UserInfo userInfo) {
         return scheduleQueryService.showTodaySchedule(userInfo.getId())
                 .stream()
                 .map(ScheduleResponse::from)
+                .sorted((ScheduleResponse.getComparatorByStartTime()))
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
     public List<ScheduleResponse> getWeekSchedule(LocalDate startDate, LocalDate endDate, UserInfo userInfo) {
         return scheduleQueryService.findWeeklyScheduleByUser(startDate, endDate, userInfo.getId())
                 .stream()

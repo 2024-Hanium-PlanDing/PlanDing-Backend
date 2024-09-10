@@ -96,6 +96,23 @@ public class ScheduleRepositoryCustomImpl implements ScheduleRepositoryCustom {
     }
 
     @Override
+    public List<Schedule> showTodaySchedule(String identity) {
+        LocalDate today = LocalDate.now();
+
+        return queryFactory.selectFrom(schedule)
+                .leftJoin(schedule.personalSchedule, personalSchedule)
+                .leftJoin(schedule.groupSchedule, groupSchedule)
+                .where(
+                        schedule.scheduleDate.eq(today)
+                                .and(
+                                        personalSchedule.user.userCode.eq(identity)
+                                                .or(groupSchedule.groupRoom.userGroups.any().user.userCode.eq(identity))
+                                )
+                )
+                .fetch();
+    }
+
+    @Override
     public List<Schedule> findByGroupRoomCode(String groupCode) {
         return queryFactory.selectFrom(schedule)
                 .join(schedule.groupSchedule, groupSchedule)

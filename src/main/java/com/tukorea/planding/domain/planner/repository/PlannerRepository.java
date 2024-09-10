@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface PlannerRepository extends JpaRepository<Planner, Long> {
+public interface PlannerRepository extends JpaRepository<Planner, Long>, PlannerRepositoryCustom {
 
     List<Planner> findBySchedule(Schedule schedule);
 

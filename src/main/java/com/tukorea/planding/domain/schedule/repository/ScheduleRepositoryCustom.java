@@ -42,6 +42,10 @@ public interface ScheduleRepositoryCustom {
 
     List<Schedule> showTodaySchedule(Long userId);
 
+    // chatbot
+    List<Schedule> showTodaySchedule(String identity);
+
+
     List<Schedule> findByGroupRoomCode(String groupCode);
 
     List<Schedule> findByUserAndScheduleDateBetween(Long userId, LocalDate startOfWeek, LocalDate endOfWeek);
