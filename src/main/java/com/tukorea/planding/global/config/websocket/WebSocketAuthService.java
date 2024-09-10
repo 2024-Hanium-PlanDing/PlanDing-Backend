@@ -23,36 +23,47 @@ public class WebSocketAuthService {
     sessionId, token, groupCode
      */
     public void handleConnect(StompHeaderAccessor accessor) {
-        String sessionId = accessor.getSessionId();
-        String jwt = accessor.getFirstNativeHeader("Authorization");
-        String groupCode = accessor.getFirstNativeHeader("groupCode");
+        try {
+            String sessionId = accessor.getSessionId();
+            String jwt = accessor.getFirstNativeHeader("Authorization");
+            String groupCode = accessor.getFirstNativeHeader("groupCode");
 
-
-        if (jwt != null && jwt.startsWith("Bearer ")) {
-            jwt = jwt.substring(7);
-            if (jwtTokenHandler.validateToken(jwt)) {
-                String userCode = jwtTokenHandler.extractClaim(jwt, claims -> claims.get("code", String.class));
-                // 유저코드 저장
-                accessor.getSessionAttributes().put("userCode", userCode);
-                // 웹소켓 세션설정
-                webSocketRegistry.register(sessionId, new UserInfoSession(userCode, groupCode));
-                // 유저 그룹 접속 업데이트
-                userGroupService.updateConnectionStatus(userCode, groupCode, true);
+            if(jwt==null){
+                log.error("오류 테스트 {} ",jwt);
             }
-        } else {
-            log.error("WebSocket 에러: JWT token not found or invalid format");
+
+            if (jwt != null && jwt.startsWith("Bearer ")) {
+                jwt = jwt.substring(7);
+                if (jwtTokenHandler.validateToken(jwt)) {
+                    String userCode = jwtTokenHandler.extractClaim(jwt, claims -> claims.get("code", String.class));
+                    // 유저코드 저장
+                    accessor.getSessionAttributes().put("userCode", userCode);
+                    // 웹소켓 세션설정
+                    webSocketRegistry.register(sessionId, new UserInfoSession(userCode, groupCode));
+                    // 유저 그룹 접속 업데이트
+                    userGroupService.updateConnectionStatus(userCode, groupCode, true);
+                }
+            } else {
+                log.error("WebSocket 에러: JWT token not found or invalid format");
+            }
+        }catch (Exception e){
+            log.error("handleConnect: {}",e);
         }
     }
 
     public void handleDisconnect(StompHeaderAccessor accessor) {
-        String sessionId = accessor.getSessionId();
-        UserInfoSession userInfo = webSocketRegistry.getRegister(sessionId);
+        try {
+            String sessionId = accessor.getSessionId();
+            UserInfoSession userInfo = webSocketRegistry.getRegister(sessionId);
 
-        if (userInfo != null) {
-            userGroupService.updateConnectionStatus(userInfo.userCode(), userInfo.groupCode(), false);
+            if (userInfo != null) {
+                userGroupService.updateConnectionStatus(userInfo.userCode(), userInfo.groupCode(), false);
+            }
+
+            webSocketRegistry.unregister(sessionId);
+        }catch (Exception e){
+            log.error("handleDisconnect Error: {}",e);
         }
-
-        webSocketRegistry.unregister(sessionId);
     }
 
 }

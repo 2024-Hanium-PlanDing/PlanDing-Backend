@@ -22,14 +22,19 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
-        StompHeaderAccessor accessor = StompHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+        try {
+            StompHeaderAccessor accessor = StompHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
-        if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-            webSocketAuthService.handleConnect(accessor);
-        } else if (StompCommand.DISCONNECT.equals(accessor.getCommand())) {
-            webSocketAuthService.handleDisconnect(accessor);
-        } else if (StompCommand.SEND.equals(accessor.getCommand())) {
-            log.info("PUB: {}", accessor.getDestination());
+            if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+                webSocketAuthService.handleConnect(accessor);
+                log.info("CON");
+            } else if (StompCommand.DISCONNECT.equals(accessor.getCommand())) {
+                webSocketAuthService.handleDisconnect(accessor);
+            } else if (StompCommand.SEND.equals(accessor.getCommand())) {
+                log.info("PUB: {}", accessor.getDestination());
+            }
+        }catch (Exception e){
+            log.error("웹소켓 인터셉터 오류 메시지: {}",e);
         }
 
         return message;
