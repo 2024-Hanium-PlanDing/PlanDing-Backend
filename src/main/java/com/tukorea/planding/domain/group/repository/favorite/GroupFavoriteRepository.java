@@ -17,4 +17,7 @@ public interface GroupFavoriteRepository extends JpaRepository<GroupFavorite, Lo
     @Transactional
     @Query("DELETE FROM GroupFavorite gf WHERE gf.user.id = :userId AND gf.groupRoom.groupCode = :groupCode")
     void deleteByUserIdAndGroupRoomId(@Param("userId") Long userId, @Param("groupCode") String groupCode);
+
+    @Query("SELECT gf FROM GroupFavorite gf JOIN FETCH gf.groupRoom WHERE gf.user.id = :userId")
+    List<GroupFavorite> findFavoriteGroupsByUser(Long userId);
 }

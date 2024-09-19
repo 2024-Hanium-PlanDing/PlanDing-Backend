@@ -30,10 +30,10 @@ public class GroupFavoriteService {
     private final UserQueryService userQueryService;
     private final GroupQueryService groupQueryService;
 
+
     @Transactional(readOnly = true)
     public List<GroupResponse> findFavoriteGroupsByUser(UserInfo userInfo) {
-        return userQueryService.getUserByUserCode(userInfo.getUserCode())
-                .getGroupFavorites()
+        return groupFavoriteRepository.findFavoriteGroupsByUser(userInfo.getId())
                 .stream()
                 .map(GroupFavorite::getGroupRoom)
                 .map(GroupResponse::from)
