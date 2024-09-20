@@ -24,10 +24,10 @@ public class GroupRoomRepositoryCustomImpl implements GroupRoomRepositoryCustom 
     public List<GroupRoom> findGroupRoomsByUserId(Long userId, PageRequest request) {
         return queryFactory.select(groupRoom)
                 .from(groupRoom)
-                .join(groupRoom.userGroups, userGroup).fetchJoin()
+                .join(groupRoom.userGroups, userGroup)
                 .where(groupRoom.userGroups.any().user.id.eq(userId))
                 .orderBy(groupRoom.createdDate.desc())
-                .offset(request.getPageNumber() * request.getPageSize())
+                .offset((long) request.getPageNumber() * request.getPageSize())
                 .limit(request.getPageSize())
                 .fetch();
     }

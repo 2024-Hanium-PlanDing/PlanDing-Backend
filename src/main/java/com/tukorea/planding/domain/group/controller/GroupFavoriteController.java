@@ -4,7 +4,6 @@ import com.tukorea.planding.common.CommonResponse;
 import com.tukorea.planding.common.CommonUtils;
 import com.tukorea.planding.domain.group.dto.response.GroupFavoriteResponse;
 import com.tukorea.planding.domain.group.dto.response.GroupResponse;
-import com.tukorea.planding.domain.group.entity.GroupRoom;
 import com.tukorea.planding.domain.group.service.GroupFavoriteService;
 import com.tukorea.planding.domain.user.dto.UserInfo;
 import io.swagger.v3.oas.annotations.Operation;

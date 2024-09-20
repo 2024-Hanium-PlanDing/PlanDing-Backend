@@ -4,11 +4,12 @@ import com.tukorea.planding.domain.group.dto.request.GroupCreateRequest;
 import com.tukorea.planding.domain.schedule.entity.GroupSchedule;
 import com.tukorea.planding.domain.user.entity.User;
 import com.tukorea.planding.global.audit.BaseEntity;
-import com.tukorea.planding.domain.schedule.entity.Schedule;
-import com.tukorea.planding.global.error.BusinessException;
-import com.tukorea.planding.global.error.ErrorCode;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.*;
 
@@ -40,6 +41,7 @@ public class GroupRoom extends BaseEntity {
     @Column(name = "alarm")
     private boolean alarm = true;
 
+    @BatchSize(size = 11)
     @OneToMany(mappedBy = "groupRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<UserGroup> userGroups = new HashSet<>();
 
