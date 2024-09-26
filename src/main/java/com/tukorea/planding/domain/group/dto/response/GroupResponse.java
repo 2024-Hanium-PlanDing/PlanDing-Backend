@@ -10,9 +10,10 @@ public record GroupResponse(
         String description,
         String code,
         String ownerCode,
-        String thumbnailPath
+        String thumbnailPath,
+        boolean alarm
 ) {
     public static GroupResponse from(GroupRoom groupRoom) {
-        return new GroupResponse(groupRoom.getId(), groupRoom.getName(), groupRoom.getDescription(), groupRoom.getGroupCode(), groupRoom.getOwner(), groupRoom.getThumbnail());
+        return new GroupResponse(groupRoom.getId(), groupRoom.getName(), groupRoom.getDescription(), groupRoom.getGroupCode(), groupRoom.getOwner(), groupRoom.getThumbnail(),groupRoom.isAlarm());
     }
 }
