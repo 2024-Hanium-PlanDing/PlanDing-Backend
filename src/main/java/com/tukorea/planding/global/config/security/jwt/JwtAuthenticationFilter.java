@@ -6,6 +6,7 @@ import com.tukorea.planding.domain.auth.service.TokenService;
 import com.tukorea.planding.domain.user.dto.UserInfo;
 import com.tukorea.planding.domain.user.entity.User;
 import com.tukorea.planding.domain.user.repository.UserRepository;
+import com.tukorea.planding.domain.user.service.UserQueryService;
 import com.tukorea.planding.global.error.BusinessException;
 import com.tukorea.planding.global.error.ErrorCode;
 import jakarta.servlet.FilterChain;
@@ -19,11 +20,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.nio.file.PathMatcher;
 import java.util.Arrays;
 import java.util.List;
 
@@ -44,8 +45,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenHandler jwtTokenHandler;
     private final JwtUtil jwtUtil;
     private final TokenService tokenService;
-    private final UserRepository userRepository;
     private final TokenInfoCacheRepository tokenInfoCacheRepository;
+    private final UserQueryService userQueryService;
 
 
     @Override
@@ -53,9 +54,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String refreshToken = jwtTokenHandler.extractRefreshToken(request)
                 .filter(jwtTokenHandler::validateToken)
                 .orElse(null);
-        log.info("refresh: {}",refreshToken);
 
         if (refreshToken != null) {
+            log.info("refresh: {}",refreshToken);
             checkRefreshTokenAndReIssueAccessToken(refreshToken, response);
             return;
         }
@@ -84,14 +85,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 .filter(jwtTokenHandler::validateToken)
                 .orElse(null);
 
-        log.info("access: {}",accessToken);
-
-
         String userCode = jwtTokenHandler.extractClaim(accessToken, claims -> claims.get("code", String.class));
 
+        //TODO: 영속성 컨텍스트 1차 캐시, 2차 캐시가 적용되지않는이유
+        saveAuthentication(userQueryService.getUserInfo(userCode));
 
-        saveAuthentication(userRepository.findByUserCode(userCode)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND)));
 
         filterChain.doFilter(request, response);
     }
@@ -120,15 +118,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         jwtUtil.sendAccessAndRefreshToken(response, newAccessToken, refreshToken);
     }
 
-    private void saveAuthentication(User user) {
-        UserInfo userInfo = UserInfo.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .username(user.getUsername())
-                .profileImage(user.getProfileImage())
-                .role(user.getRole())
-                .userCode(user.getUserCode())
-                .build();
+    private void saveAuthentication(UserInfo userInfo) {
         Authentication authentication = getAuthentication(userInfo);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
