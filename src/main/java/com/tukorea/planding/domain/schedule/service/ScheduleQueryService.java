@@ -1,11 +1,9 @@
 package com.tukorea.planding.domain.schedule.service;
 
-import com.tukorea.planding.domain.planner.dto.group.PlannerWeekResponse;
 import com.tukorea.planding.domain.schedule.dto.request.ScheduleRequest;
 import com.tukorea.planding.domain.schedule.dto.response.ScheduleResponse;
 import com.tukorea.planding.domain.schedule.entity.Schedule;
 import com.tukorea.planding.domain.schedule.repository.GroupScheduleAttendanceRepository;
-import com.tukorea.planding.domain.schedule.repository.GroupScheduleRepository;
 import com.tukorea.planding.domain.schedule.repository.ScheduleRepository;
 import com.tukorea.planding.global.error.BusinessException;
 import com.tukorea.planding.global.error.ErrorCode;
@@ -46,6 +44,10 @@ public class ScheduleQueryService {
 
     public List<Schedule> findWeeklyGroupScheduleByGroupCode(LocalDate startDate, LocalDate endDate, Long userId, String groupRoomCode) {
         return scheduleRepository.findWeeklyGroupScheduleByGroupCode(startDate, endDate, userId, groupRoomCode);
+    }
+
+    public List<Schedule> findAllGroupScheduleByGroupCode(LocalDate startDate, LocalDate endDate, Long userId) {
+        return scheduleRepository.findAllGroupScheduleByGroupCode(startDate, endDate, userId);
     }
 
 

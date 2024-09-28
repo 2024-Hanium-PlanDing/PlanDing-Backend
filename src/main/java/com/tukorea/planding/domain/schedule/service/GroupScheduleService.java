@@ -159,6 +159,14 @@ public class GroupScheduleService {
                 .collect(Collectors.toList());
     }
 
+    public List<ScheduleResponse> getAllScheduleByGroup(LocalDate startDate, LocalDate endDate, UserInfo userInfo) {
+        return scheduleQueryService.findAllGroupScheduleByGroupCode(startDate, endDate, userInfo.getId())
+                .stream()
+                .map(ScheduleResponse::from)
+                .sorted(ScheduleResponse.getComparatorByStartTime())
+                .collect(Collectors.toList());
+    }
+
 
     // 유저가 그룹룸에 접근할 권리가있는지 확인
     private void checkUserAccessToGroupRoom(String groupCode, String userCode) {
@@ -204,4 +212,6 @@ public class GroupScheduleService {
         });
 
     }
+
+
 }

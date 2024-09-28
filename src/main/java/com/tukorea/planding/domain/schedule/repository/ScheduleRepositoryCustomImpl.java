@@ -83,8 +83,9 @@ public class ScheduleRepositoryCustomImpl implements ScheduleRepositoryCustom {
         LocalDate today = LocalDate.now();
 
         return queryFactory.selectFrom(schedule)
-                .leftJoin(schedule.personalSchedule, personalSchedule)
-                .leftJoin(schedule.groupSchedule, groupSchedule)
+                .leftJoin(schedule.personalSchedule, personalSchedule).fetchJoin()
+                .leftJoin(schedule.groupSchedule, groupSchedule).fetchJoin()
+                .leftJoin(groupSchedule.groupRoom,groupRoom).fetchJoin()
                 .where(
                         schedule.scheduleDate.eq(today)
                                 .and(
@@ -92,6 +93,16 @@ public class ScheduleRepositoryCustomImpl implements ScheduleRepositoryCustom {
                                                 .or(groupSchedule.groupRoom.userGroups.any().user.id.eq(userId))
                                 )
                 )
+                .fetch();
+    }
+
+    @Override
+    public List<Schedule> findAllGroupScheduleByGroupCode(LocalDate startDate, LocalDate endDate, Long userId) {
+        return queryFactory.selectFrom(schedule)
+                .leftJoin(schedule.groupSchedule, groupSchedule)
+                .where(schedule.scheduleDate.between(startDate, endDate).and(
+                        groupSchedule.groupRoom.userGroups.any().user.id.eq(userId)
+                ))
                 .fetch();
     }
 

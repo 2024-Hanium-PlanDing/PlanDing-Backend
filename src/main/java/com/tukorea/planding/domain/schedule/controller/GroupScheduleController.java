@@ -85,4 +85,12 @@ public class GroupScheduleController {
         List<ScheduleResponse> scheduleResponse = groupScheduleService.getWeekScheduleByGroupCode(startDate, endDate, groupCode, userInfo);
         return CommonUtils.success(scheduleResponse);
     }
+
+    @Operation(summary = "그룹: 그룹 전체 데이터 조회")
+    @GetMapping("/api/v1/group-rooms/all/{startDate}/{endDate}")
+    public CommonResponse<List<ScheduleResponse>> getAllScheduleByGroup( @AuthenticationPrincipal UserInfo userInfo,@PathVariable LocalDate startDate,
+                                                                         @PathVariable LocalDate endDate){
+        List<ScheduleResponse> scheduleResponse = groupScheduleService.getAllScheduleByGroup(startDate, endDate, userInfo);
+        return CommonUtils.success(scheduleResponse);
+    }
 }

@@ -1,6 +1,8 @@
 package com.tukorea.planding.domain.schedule.repository;
 
 import com.tukorea.planding.domain.schedule.entity.Schedule;
+import com.tukorea.planding.domain.user.dto.UserInfo;
+import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -41,6 +43,8 @@ public interface ScheduleRepositoryCustom {
     List<Schedule> findOverlapSchedules(Long userId, LocalDate date, Integer startDate, Integer endDate);
 
     List<Schedule> showTodaySchedule(Long userId);
+
+    List<Schedule> findAllGroupScheduleByGroupCode(LocalDate startDate, LocalDate endDate, Long userId);
 
     // chatbot
     List<Schedule> showTodaySchedule(String identity);
