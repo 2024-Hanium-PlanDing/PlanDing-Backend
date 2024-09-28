@@ -9,9 +9,5 @@ import java.util.List;
 public interface GroupRoomRepositoryCustom {
     List<GroupRoom> findGroupRoomsByUserId(Long userId, PageRequest request);
 
-    List<GroupRoom> findGroupRoomsByUserId(Long userId);
-
-
-
     List<User> getGroupUsers(String groupCode);
 }

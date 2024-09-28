@@ -91,20 +91,10 @@ public class GroupRoomService {
     // 유저가 속한 그룹룸 가져오기
     public List<GroupResponse> getAllGroupRoomByUser(UserInfo userInfo, PageRequest request) {
         List<GroupRoom> groupRooms = groupQueryService.findGroupsByUserId(userInfo.getId(), request);
-
         return groupRooms.stream()
                 .map(this::toGroupResponse)
                 .collect(Collectors.toList());
     }
-
-    public List<GroupResponse> getAllGroupRoomByUser(UserInfo userInfo) {
-        List<GroupRoom> groupRooms = groupQueryService.findGroupsByUserId(userInfo.getId());
-
-        return groupRooms.stream()
-                .map(this::toGroupResponse)
-                .collect(Collectors.toList());
-    }
-
 
     @Transactional(readOnly = true)
     public GroupInformationResponse getGroupUsers(UserInfo userInfo, String groupCode) {

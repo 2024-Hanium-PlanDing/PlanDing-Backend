@@ -2,10 +2,8 @@ package com.tukorea.planding.domain.group.service.query;
 
 import com.tukorea.planding.domain.group.entity.GroupRoom;
 import com.tukorea.planding.domain.group.repository.normal.GroupRoomRepository;
-import com.tukorea.planding.domain.group.repository.normal.GroupRoomRepositoryCustom;
 import com.tukorea.planding.domain.group.repository.usergroup.UserGroupRepository;
 import com.tukorea.planding.domain.schedule.entity.GroupSchedule;
-import com.tukorea.planding.domain.schedule.entity.Schedule;
 import com.tukorea.planding.domain.schedule.repository.GroupScheduleRepository;
 import com.tukorea.planding.domain.schedule.service.ScheduleQueryService;
 import com.tukorea.planding.domain.user.entity.User;
@@ -17,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Set;
 
 @Service
 @Transactional
@@ -35,10 +32,6 @@ public class GroupQueryService {
 
     public List<GroupRoom> findGroupsByUserId(Long userId, PageRequest request) {
         return groupRoomRepository.findGroupRoomsByUserId(userId, request);
-    }
-
-    public List<GroupRoom> findGroupsByUserId(Long userId) {
-        return groupRoomRepository.findGroupRoomsByUserId(userId);
     }
 
     public GroupRoom getGroupById(Long groupId) {

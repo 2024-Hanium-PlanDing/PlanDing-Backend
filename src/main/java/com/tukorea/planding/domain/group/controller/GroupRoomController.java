@@ -28,7 +28,7 @@ public class GroupRoomController {
 
     private final GroupRoomService groupRoomService;
 
-    @Operation(summary = "메인페이지 API 페이지네이션ver", description = "내 그룹 가져오기")
+    @Operation(summary = "메인페이지 API", description = "내 그룹 가져오기")
     @GetMapping("/paging")
     public CommonResponse<List<GroupResponse>> getAllGroupRoomByUser(@AuthenticationPrincipal UserInfo userInfo,
                                                                      @RequestParam(defaultValue = "0") int page,
@@ -36,13 +36,6 @@ public class GroupRoomController {
 
         PageRequest pageRequest = PageRequest.of(page, size);
         List<GroupResponse> groupResponses = groupRoomService.getAllGroupRoomByUser(userInfo, pageRequest);
-        return CommonUtils.success(groupResponses);
-    }
-
-    @Operation(summary = "메인페이지 API", description = "내 그룹 가져오기")
-    @GetMapping()
-    public CommonResponse<List<GroupResponse>> getAllGroupRoomByUser(@AuthenticationPrincipal UserInfo userInfo) {
-        List<GroupResponse> groupResponses = groupRoomService.getAllGroupRoomByUser(userInfo);
         return CommonUtils.success(groupResponses);
     }
 

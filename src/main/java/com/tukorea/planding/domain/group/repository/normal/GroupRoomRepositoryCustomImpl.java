@@ -22,26 +22,14 @@ public class GroupRoomRepositoryCustomImpl implements GroupRoomRepositoryCustom 
 
     @Override
     public List<GroupRoom> findGroupRoomsByUserId(Long userId, PageRequest request) {
-        return queryFactory.select(groupRoom)
-                .from(groupRoom)
+        return queryFactory.selectFrom(groupRoom)
                 .join(groupRoom.userGroups, userGroup)
-                .where(groupRoom.userGroups.any().user.id.eq(userId))
-                .orderBy(groupRoom.createdDate.desc())
-                .offset((long) request.getPageNumber() * request.getPageSize())
+                .where(userGroup.user.id.eq(userId))
+                .orderBy(groupRoom.createdDate.asc())
                 .limit(request.getPageSize())
+                .offset((long) request.getPageNumber() * request.getPageSize())
                 .fetch();
     }
-
-    @Override
-    public List<GroupRoom> findGroupRoomsByUserId(Long userId) {
-        return queryFactory.select(groupRoom)
-                .from(groupRoom)
-                .join(groupRoom.userGroups, userGroup).fetchJoin()
-                .where(groupRoom.userGroups.any().user.id.eq(userId))
-                .orderBy(groupRoom.createdDate.desc())
-                .fetch();
-    }
-
 
     @Override
     public List<User> getGroupUsers(String groupCode) {
