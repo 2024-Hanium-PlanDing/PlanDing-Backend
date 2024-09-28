@@ -14,7 +14,9 @@ public record ScheduleCommonResponse(
         LocalDate scheduleDate,
         Integer startTime,
         Integer endTime,
-        String groupName
+        String groupName,
+        String groupCode,
+        String groupThumbnail
 ) {
     public static ScheduleCommonResponse from(Schedule schedule) {
         return ScheduleCommonResponse.builder()
@@ -25,6 +27,8 @@ public record ScheduleCommonResponse(
                 .startTime(schedule.getStartTime())
                 .endTime(schedule.getEndTime())
                 .groupName(schedule.getType() == ScheduleType.GROUP ? schedule.getGroupSchedule().getGroupRoom().getName() : null)
+                .groupCode(schedule.getType()==ScheduleType.GROUP ? schedule.getGroupSchedule().getGroupRoom().getGroupCode():null)
+                .groupThumbnail(schedule.getType()==ScheduleType.GROUP ? schedule.getGroupSchedule().getGroupRoom().getThumbnail():null)
                 .build();
     }
 }
