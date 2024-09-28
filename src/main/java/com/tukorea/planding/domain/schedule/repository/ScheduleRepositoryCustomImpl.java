@@ -19,6 +19,7 @@ public class ScheduleRepositoryCustomImpl implements ScheduleRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
+    //TODO 슬로우 쿼리 (> 0.5ms 기준) 발견 개선 필요
     @Override
     public List<Schedule> findWeeklyScheduleByUser(LocalDate startDate, LocalDate endDate, Long userId) {
         return queryFactory.selectFrom(schedule)
@@ -30,6 +31,7 @@ public class ScheduleRepositoryCustomImpl implements ScheduleRepositoryCustom {
                 .fetch();
     }
 
+    //TODO 슬로우 쿼리 (> 0.5ms 기준) 발견 개선 필요
     @Override
     public List<Schedule> findWeeklyPersonalScheduleByUser(LocalDate startDate, LocalDate endDate, Long userId) {
         return queryFactory.selectFrom(schedule)
