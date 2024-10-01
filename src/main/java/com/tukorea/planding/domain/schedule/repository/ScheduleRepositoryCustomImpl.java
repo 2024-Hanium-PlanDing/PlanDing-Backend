@@ -35,7 +35,7 @@ public class ScheduleRepositoryCustomImpl implements ScheduleRepositoryCustom {
     @Override
     public List<Schedule> findWeeklyPersonalScheduleByUser(LocalDate startDate, LocalDate endDate, Long userId) {
         return queryFactory.selectFrom(schedule)
-                .leftJoin(schedule.personalSchedule, personalSchedule)
+                .innerJoin(schedule.personalSchedule, personalSchedule)
                 .where(schedule.scheduleDate.between(startDate, endDate)
                         .and(personalSchedule.user.id.eq(userId)))
                 .fetch();
@@ -80,7 +80,6 @@ public class ScheduleRepositoryCustomImpl implements ScheduleRepositoryCustom {
                 .fetch();
     }
 
-    //TODO: 슬로우쿼리
     @Override
     public List<Schedule> showTodaySchedule(Long userId) {
         LocalDate today = LocalDate.now();
