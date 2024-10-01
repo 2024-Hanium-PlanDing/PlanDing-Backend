@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static com.tukorea.planding.domain.group.entity.QGroupRoom.groupRoom;
+import static com.tukorea.planding.domain.group.entity.QUserGroup.userGroup;
 import static com.tukorea.planding.domain.schedule.entity.QGroupSchedule.groupSchedule;
 import static com.tukorea.planding.domain.schedule.entity.QGroupScheduleAttendance.groupScheduleAttendance;
 import static com.tukorea.planding.domain.schedule.entity.QPersonalSchedule.personalSchedule;
@@ -80,21 +81,25 @@ public class ScheduleRepositoryCustomImpl implements ScheduleRepositoryCustom {
                 .fetch();
     }
 
+    //TODO: 슬로우쿼리
     @Override
     public List<Schedule> showTodaySchedule(Long userId) {
         LocalDate today = LocalDate.now();
 
-        return queryFactory.selectFrom(schedule)
-                .leftJoin(schedule.personalSchedule, personalSchedule).fetchJoin()
-                .leftJoin(schedule.groupSchedule, groupSchedule).fetchJoin()
-                .leftJoin(groupSchedule.groupRoom,groupRoom).fetchJoin()
+        return queryFactory.select(schedule)
+                .from(schedule)
+                .leftJoin(schedule.personalSchedule, personalSchedule)
+                .leftJoin(schedule.groupSchedule, groupSchedule)
+                .leftJoin(groupSchedule.groupRoom, groupRoom)
+                .leftJoin(groupRoom.userGroups, userGroup)
                 .where(
                         schedule.scheduleDate.eq(today)
                                 .and(
                                         personalSchedule.user.id.eq(userId)
-                                                .or(groupSchedule.groupRoom.userGroups.any().user.id.eq(userId))
+                                                .or(userGroup.user.id.eq(userId))
                                 )
                 )
+                .orderBy(schedule.startTime.asc())
                 .fetch();
     }
 
