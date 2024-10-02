@@ -46,9 +46,8 @@ public class NotificationHandler {
 
     @Transactional(readOnly = true)
     public List<NotificationScheduleResponse> getNotifications(UserInfo userInfo) {
-        return notificationRepository.findByUserCode(userInfo.getUserCode()).stream()
-                .map(NotificationScheduleResponse::of)
-                .collect(Collectors.toList());
+        return notificationRepository.findByUserCode(userInfo.getUserCode());
+
     }
 
 
