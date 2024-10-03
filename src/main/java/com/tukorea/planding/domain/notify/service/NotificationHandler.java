@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -47,7 +46,6 @@ public class NotificationHandler {
     @Transactional(readOnly = true)
     public List<NotificationScheduleResponse> getNotifications(UserInfo userInfo) {
         return notificationRepository.findByUserCode(userInfo.getUserCode());
-
     }
 
 

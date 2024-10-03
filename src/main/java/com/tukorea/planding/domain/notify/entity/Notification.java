@@ -46,9 +46,9 @@ public class Notification extends BaseEntity {
     private boolean isRead = false;
 
     @Builder
-    public Notification(String userCode,String title, String message, String groupName, String url, NotificationType notificationType, LocalDate scheduleDate, boolean isRead) {
+    public Notification(String userCode, String title, String message, String groupName, String url, NotificationType notificationType, LocalDate scheduleDate, boolean isRead) {
         this.userCode = userCode;
-        this.title=title;
+        this.title = title;
         this.message = message;
         this.groupName = groupName;
         this.url = url;

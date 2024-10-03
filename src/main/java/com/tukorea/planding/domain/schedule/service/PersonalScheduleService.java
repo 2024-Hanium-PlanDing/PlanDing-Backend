@@ -77,7 +77,6 @@ public class PersonalScheduleService {
         return scheduleQueryService.findWeeklyPersonalScheduleByUser(startDate, endDate, userInfo.getId())
                 .stream()
                 .map(PersonalScheduleResponse::from)
-                .sorted(PersonalScheduleResponse.getComparatorByStartTime())
                 .collect(Collectors.toList());
     }
 

@@ -38,6 +38,7 @@ public class ScheduleRepositoryCustomImpl implements ScheduleRepositoryCustom {
                 .innerJoin(schedule.personalSchedule, personalSchedule)
                 .where(schedule.scheduleDate.between(startDate, endDate)
                         .and(personalSchedule.user.id.eq(userId)))
+                .orderBy(schedule.startTime.asc())
                 .fetch();
     }
 

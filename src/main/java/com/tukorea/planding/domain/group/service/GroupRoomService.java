@@ -78,10 +78,9 @@ public class GroupRoomService {
     }
 
     public void deleteGroup(UserInfo userInfo, String groupCode) {
-        User user = userQueryService.getUserByUserCode(userInfo.getUserCode());
         GroupRoom groupRoom = groupQueryService.getGroupByCode(groupCode);
 
-        if (!groupRoom.getOwner().equals(user.getUserCode())) {
+        if (!groupRoom.getOwner().equals(userInfo.getUserCode())) {
             throw new BusinessException(ErrorCode.ACCESS_DENIED);
         }
 
