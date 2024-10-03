@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserGroupService {
 
@@ -21,7 +22,6 @@ public class UserGroupService {
     private final GroupRoomRepository groupRoomRepository;
 
 
-    @Transactional
     public void updateConnectionStatus(String userCode, String groupCode, boolean isConnected) {
 
         User user = userQueryService.getUserByUserCode(userCode);
