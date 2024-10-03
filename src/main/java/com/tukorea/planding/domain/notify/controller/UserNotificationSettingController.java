@@ -2,6 +2,7 @@ package com.tukorea.planding.domain.notify.controller;
 
 import com.tukorea.planding.common.CommonResponse;
 import com.tukorea.planding.common.CommonUtils;
+import com.tukorea.planding.domain.group.dto.response.GroupResponse;
 import com.tukorea.planding.domain.group.service.GroupRoomService;
 import com.tukorea.planding.domain.user.dto.UserInfo;
 import com.tukorea.planding.domain.user.service.UserService;
@@ -10,6 +11,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "User Setting", description = "사용자 알림 설정 관련")
 @RestController

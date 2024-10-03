@@ -1,17 +1,11 @@
 package com.tukorea.planding.domain.planner.dto.group;
 
-import com.tukorea.planding.domain.group.entity.GroupRoom;
 import com.tukorea.planding.domain.notify.entity.NotificationType;
-import com.tukorea.planding.domain.planner.PlannerStatus;
-import com.tukorea.planding.domain.planner.dto.GroupPlannerResponse;
 import com.tukorea.planding.domain.planner.dto.PlannerResponse;
 import com.tukorea.planding.domain.planner.entity.Planner;
-import com.tukorea.planding.domain.schedule.entity.Action;
-import com.tukorea.planding.domain.schedule.entity.ScheduleType;
 import lombok.Builder;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Builder
