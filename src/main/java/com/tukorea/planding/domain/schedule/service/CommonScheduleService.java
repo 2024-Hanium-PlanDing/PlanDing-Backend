@@ -21,7 +21,6 @@ public class CommonScheduleService {
         return scheduleQueryService.showTodaySchedule(userInfo.getId())
                 .stream()
                 .map(ScheduleResponse::from)
-                .sorted((ScheduleResponse.getComparatorByStartTime()))
                 .collect(Collectors.toList());
     }
 
@@ -29,7 +28,6 @@ public class CommonScheduleService {
         return scheduleQueryService.findWeeklyScheduleByUser(startDate, endDate, userInfo.getId())
                 .stream()
                 .map(ScheduleResponse::from)
-                .sorted(ScheduleResponse.getComparatorByStartTime())
                 .collect(Collectors.toList());
     }
 }
