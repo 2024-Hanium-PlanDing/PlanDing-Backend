@@ -29,8 +29,9 @@ public class GroupRoom extends BaseEntity {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "owner", nullable = false)
-    private String owner; // 그룹룸의 소유자
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User owner;
 
     @Column(name = "group_code", nullable = false, unique = true)
     private String groupCode; // 그룹방 고유 식별값
@@ -52,7 +53,7 @@ public class GroupRoom extends BaseEntity {
     private final List<GroupFavorite> groupFavorites = new ArrayList<>();
 
     @Builder
-    public GroupRoom(String name, String description, String owner, String groupCode) {
+    public GroupRoom(String name, String description, User owner, String groupCode) {
         this.name = name;
         this.description = description;
         this.owner = owner;
@@ -68,7 +69,7 @@ public class GroupRoom extends BaseEntity {
         return GroupRoom.builder()
                 .name(groupCreateRequest.name())
                 .description(groupCreateRequest.description())
-                .owner(owner.getUserCode())
+                .owner(owner)
                 .build();
     }
 
