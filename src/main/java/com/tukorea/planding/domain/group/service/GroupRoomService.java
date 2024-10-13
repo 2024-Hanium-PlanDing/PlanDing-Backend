@@ -10,7 +10,6 @@ import com.tukorea.planding.domain.group.entity.GroupRoom;
 import com.tukorea.planding.domain.group.entity.UserGroup;
 import com.tukorea.planding.domain.group.service.query.GroupQueryService;
 import com.tukorea.planding.domain.group.service.query.UserGroupQueryService;
-import com.tukorea.planding.domain.schedule.service.ScheduleQueryService;
 import com.tukorea.planding.domain.user.dto.UserInfo;
 import com.tukorea.planding.domain.user.dto.UserInfoSimple;
 import com.tukorea.planding.domain.user.entity.User;
@@ -27,7 +26,6 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,9 +65,7 @@ public class GroupRoomService {
         GroupRoom groupRoom = groupQueryService.getGroupById(groupUpdateRequest.groupId());
 
         // TODO 그룹의 팀원도 변경가능하도록
-        if (!groupRoom.getOwner().equals(userInfo.getUserCode())) {
-            throw new BusinessException(ErrorCode.ACCESS_DENIED);
-        }
+        validateOwner(userInfo,groupRoom);
 
         groupRoom.updateName(groupUpdateRequest.name());
         groupRoom.updateDescription(groupUpdateRequest.description());
@@ -80,9 +76,7 @@ public class GroupRoomService {
     public void deleteGroup(UserInfo userInfo, String groupCode) {
         GroupRoom groupRoom = groupQueryService.getGroupByCode(groupCode);
 
-        if (!groupRoom.getOwner().equals(userInfo.getUserCode())) {
-            throw new BusinessException(ErrorCode.ACCESS_DENIED);
-        }
+        validateOwner(userInfo,groupRoom);
 
         groupQueryService.delete(groupRoom);
     }
@@ -108,19 +102,19 @@ public class GroupRoomService {
 
         List<UserInfoSimple> userInfoSimples = groupQueryService.getGroupUsers(groupCode)
                 .stream()
-                .map(user -> UserInfoSimple.fromEntity(user, groupRoom.getOwner()))
+                .map(user -> UserInfoSimple.fromEntity(user, groupRoom.getOwner().getUserCode()))
                 .collect(Collectors.toList());
 
         return GroupInformationResponse.builder()
                 .id(groupRoom.getId())
-                .owner(groupRoom.getOwner())
+                .owner(groupRoom.getOwner().getUserCode())
                 .users(userInfoSimples)
                 .groupCode(groupRoom.getGroupCode())
                 .name(groupRoom.getName())
                 .description(groupRoom.getDescription())
                 .createdBy(LocalDate.from(groupRoom.getCreatedDate()))
                 .thumbnailUrl(groupRoom.getThumbnail())
-                .isGroupAdmin(groupRoom.getOwner().equals(userInfo.getUserCode()))
+                .isGroupAdmin(isGroupOwner(userInfo,groupRoom))
                 .isFavorite(groupRoom.getGroupFavorites().stream().anyMatch(a -> a.getGroupRoom().getGroupCode().equals(groupCode)))
                 .isAlarm(groupRoom.isAlarm())
                 .build();
@@ -130,7 +124,7 @@ public class GroupRoomService {
         GroupRoom groupRoom = groupQueryService.getGroupByCode(groupCode);
         UserGroup userGroup = userGroupQueryService.findByUserIdAndGroupId(userInfo.getId(), groupRoom.getId());
 
-        if (groupRoom.getOwner().equals(userInfo.getUserCode())) {
+        if (isGroupOwner(userInfo,groupRoom)) {
             groupQueryService.delete(groupRoom);
         } else {
             userGroupQueryService.delete(userGroup);
@@ -145,6 +139,16 @@ public class GroupRoomService {
 
     private GroupResponse toGroupResponse(GroupRoom groupRoom) {
         return GroupResponse.from(groupRoom);
+    }
+
+    private void validateOwner(UserInfo userInfo, GroupRoom groupRoom) {
+        if (!groupRoom.getOwner().getUserCode().equals(userInfo.getUserCode())) {
+            throw new BusinessException(ErrorCode.ACCESS_DENIED);
+        }
+    }
+
+    private boolean isGroupOwner(UserInfo userInfo, GroupRoom groupRoom) {
+        return groupRoom.getOwner().getUserCode().equals(userInfo.getUserCode());
     }
 
     public void updateGroupRoomAlarmSetting(String userCode, String groupCode, boolean alarmEnabled) {

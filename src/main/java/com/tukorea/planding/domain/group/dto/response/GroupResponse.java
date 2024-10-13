@@ -14,6 +14,6 @@ public record GroupResponse(
         boolean alarm
 ) {
     public static GroupResponse from(GroupRoom groupRoom) {
-        return new GroupResponse(groupRoom.getId(), groupRoom.getName(), groupRoom.getDescription(), groupRoom.getGroupCode(), groupRoom.getOwner(), groupRoom.getThumbnail(),groupRoom.isAlarm());
+        return new GroupResponse(groupRoom.getId(), groupRoom.getName(), groupRoom.getDescription(), groupRoom.getGroupCode(), groupRoom.getOwner().getUserCode(), groupRoom.getThumbnail(),groupRoom.isAlarm());
     }
 }
