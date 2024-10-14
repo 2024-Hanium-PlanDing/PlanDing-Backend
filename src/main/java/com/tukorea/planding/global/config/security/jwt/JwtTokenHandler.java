@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -120,5 +121,8 @@ public class JwtTokenHandler {
         return expiration.before(new Date());
     }
 
-
+    // 발급 시간과 현재 시간의 차이가 만료 시간보다 작은지 확인
+    public boolean isReissueAllowed(LocalDateTime issuedAt) {
+        return issuedAt.plusHours(jwtProperties.getRefreshExpiration()).isBefore(LocalDateTime.now());
+    }
 }

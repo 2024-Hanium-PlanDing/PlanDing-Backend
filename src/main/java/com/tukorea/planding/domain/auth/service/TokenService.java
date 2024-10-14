@@ -4,9 +4,13 @@ import com.tukorea.planding.domain.auth.dto.TemporaryTokenResponse;
 import com.tukorea.planding.domain.auth.dto.TokenResponse;
 import com.tukorea.planding.domain.auth.repository.TokenInfoCacheRepository;
 import com.tukorea.planding.global.config.security.jwt.JwtTokenHandler;
+import com.tukorea.planding.global.error.BusinessException;
+import com.tukorea.planding.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 @Slf4j
@@ -35,15 +39,23 @@ public class TokenService {
     public TokenResponse createNewToken(final Long userId, final String userCode) {
         TokenResponse tokenResponse = createTokenResponse(userId, userCode);
         tokenInfoCacheRepository.save(tokenResponse.refreshToken(), userCode);
+        tokenInfoCacheRepository.saveIssueTime(userCode, LocalDateTime.now()); // 토큰 발급시간관리
         return tokenResponse;
     }
 
     public String reIssueAccessToken(final String refreshToken) {
+        // TODO: fake_id,fake_userCode로 수정할것
         String userCode = jwtTokenHandler.extractClaim(refreshToken, claims -> claims.get("code", String.class));
         Long userId = jwtTokenHandler.extractClaim(refreshToken, claims -> claims.get("id", Long.class));
 
-        String newAccessToken = jwtTokenHandler.generateAccessToken(userId, userCode);
-        return newAccessToken;
+        // if 리프레시 토큰이 만료되지않았는데, 발급하는것이라면 에러 throw
+        LocalDateTime issuedAt = tokenInfoCacheRepository.getIssueTime(userCode);
+        if (issuedAt != null && !jwtTokenHandler.isReissueAllowed(issuedAt)) {
+            throw new BusinessException(ErrorCode.EXPIRED_REFRESH_TOKEN_ERROR);
+        }
+
+
+        return jwtTokenHandler.generateAccessToken(userId, userCode); // new access-token 생성
     }
 
     public TemporaryTokenResponse createTemporaryTokenResponse(final Long userId,final String userCode) {
@@ -58,4 +70,5 @@ public class TokenService {
                 jwtTokenHandler.generateRefreshToken(userId, userCode)
         );
     }
+
 }

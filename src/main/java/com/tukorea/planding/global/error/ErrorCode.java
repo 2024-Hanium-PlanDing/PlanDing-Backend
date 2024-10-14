@@ -23,6 +23,7 @@ public enum ErrorCode {
     INVALID_AUTH_TOKEN("JWT-001", "토큰이 존재하지 않습니다.", HttpStatus.UNAUTHORIZED),
     EXPIRED_AUTH_TOKEN("JWT-002", "만료된 토큰 입니다.", HttpStatus.UNAUTHORIZED),
     EXPIRED_REFRESH_TOKEN("JWT-002", "만료된 리프레시토큰 입니다.", HttpStatus.UNAUTHORIZED),
+    EXPIRED_REFRESH_TOKEN_ERROR("JWT-003", "아직 액세스 토큰을 재발급할 수 없습니다.", HttpStatus.UNAUTHORIZED),
 
     /**
      * User Error

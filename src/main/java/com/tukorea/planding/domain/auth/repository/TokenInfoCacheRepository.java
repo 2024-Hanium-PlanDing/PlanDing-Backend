@@ -4,14 +4,20 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+
+import static org.hibernate.validator.internal.engine.messageinterpolation.el.RootResolver.FORMATTER;
 
 @Repository
 @RequiredArgsConstructor
 public class TokenInfoCacheRepository {
     private final RedisTemplate<String, Object> redisTemplate;
     private static final int MAXIMUM_REFRESH_TOKEN_EXPIRES_IN_DAY = 30;
+    private static final String ISSUE_TIME_KEY_PREFIX = "token:issueTime:"; // Redis에 저장할 키 prefix
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     /**
      * 캐시에 토큰 저장
@@ -40,11 +46,23 @@ public class TokenInfoCacheRepository {
 
 
     /**
-     * 캐시로부터 유저정보 가져오기
-     *
-     * @param infoKey 캐시로 부터 가져올 키, refresh-token String
+     * 발급 시간을 Redis에 저장합니다.
+     * @param userCode 유저 코드
+     * @param issueTime 발급 시간
      */
-    public Optional<String> getUserInfo(final String infoKey) {
-        return Optional.ofNullable(redisTemplate.opsForValue().get(infoKey).toString());
+    public void saveIssueTime(String userCode, LocalDateTime issueTime) {
+        String key = ISSUE_TIME_KEY_PREFIX + userCode;
+        redisTemplate.opsForValue().set(key, issueTime.format(FORMATTER), 24, TimeUnit.HOURS);
+    }
+
+    /**
+     * Redis에서 발급 시간을 조회합니다.
+     * @param userCode 유저 코드
+     * @return 발급 시간 (없으면 null)
+     */
+    public LocalDateTime getIssueTime(String userCode) {
+        String key = ISSUE_TIME_KEY_PREFIX + userCode;
+        String issueTimeStr = (String) redisTemplate.opsForValue().get(key);
+        return issueTimeStr != null ? LocalDateTime.parse(issueTimeStr, FORMATTER) : null;
     }
 }
