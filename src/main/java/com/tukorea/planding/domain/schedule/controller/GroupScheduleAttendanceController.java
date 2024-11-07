@@ -4,12 +4,10 @@ import com.tukorea.planding.common.CommonResponse;
 import com.tukorea.planding.common.CommonUtils;
 import com.tukorea.planding.domain.schedule.dto.request.GroupScheduleAttendanceRequest;
 import com.tukorea.planding.domain.schedule.service.GroupScheduleAttendanceService;
-import com.tukorea.planding.domain.user.dto.UserInfo;
+import com.tukorea.planding.domain.user.dto.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +21,7 @@ public class GroupScheduleAttendanceController {
 
     @PostMapping()
     @Operation(summary = "스케줄 참여 여부 선택")
-    public CommonResponse<?> participationGroupSchedule(@AuthenticationPrincipal UserInfo userInfo, @RequestBody GroupScheduleAttendanceRequest status) {
-        return CommonUtils.success(groupScheduleAttendanceService.participationGroupSchedule(userInfo, status));
+    public CommonResponse<?> participationGroupSchedule(@AuthenticationPrincipal UserResponse userResponse, @RequestBody GroupScheduleAttendanceRequest status) {
+        return CommonUtils.success(groupScheduleAttendanceService.participationGroupSchedule(userResponse, status));
     }
 }

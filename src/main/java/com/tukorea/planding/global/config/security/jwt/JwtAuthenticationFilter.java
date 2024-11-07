@@ -3,9 +3,7 @@ package com.tukorea.planding.global.config.security.jwt;
 
 import com.tukorea.planding.domain.auth.repository.TokenInfoCacheRepository;
 import com.tukorea.planding.domain.auth.service.TokenService;
-import com.tukorea.planding.domain.user.dto.UserInfo;
-import com.tukorea.planding.domain.user.entity.User;
-import com.tukorea.planding.domain.user.repository.UserRepository;
+import com.tukorea.planding.domain.user.dto.UserResponse;
 import com.tukorea.planding.domain.user.service.UserQueryService;
 import com.tukorea.planding.global.error.BusinessException;
 import com.tukorea.planding.global.error.ErrorCode;
@@ -20,7 +18,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -66,8 +63,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     }
 
-    private Authentication getAuthentication(UserInfo userInfo) {
-        return new UsernamePasswordAuthenticationToken(userInfo, null, List.of(new SimpleGrantedAuthority(userInfo.getRole().getAuthority())));
+    private Authentication getAuthentication(UserResponse userResponse) {
+        return new UsernamePasswordAuthenticationToken(userResponse, null, List.of(new SimpleGrantedAuthority(userResponse.getRole().getAuthority())));
     }
 
     /**
@@ -118,8 +115,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         jwtUtil.sendAccessAndRefreshToken(response, newAccessToken, refreshToken);
     }
 
-    private void saveAuthentication(UserInfo userInfo) {
-        Authentication authentication = getAuthentication(userInfo);
+    private void saveAuthentication(UserResponse userResponse) {
+        Authentication authentication = getAuthentication(userResponse);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 

@@ -1,8 +1,6 @@
 package com.tukorea.planding.domain.schedule.repository;
 
 import com.tukorea.planding.domain.schedule.entity.Schedule;
-import com.tukorea.planding.domain.user.dto.UserInfo;
-import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
 import java.util.List;

@@ -9,8 +9,9 @@ import com.tukorea.planding.domain.planner.repository.PlannerRepository;
 import com.tukorea.planding.domain.planner.repository.PlannerUserRepository;
 import com.tukorea.planding.domain.schedule.entity.Schedule;
 import com.tukorea.planding.domain.schedule.service.ScheduleQueryService;
-import com.tukorea.planding.domain.user.dto.UserInfo;
+import com.tukorea.planding.domain.user.dto.UserResponse;
 import com.tukorea.planding.domain.user.entity.User;
+import com.tukorea.planding.domain.user.entity.UserDomain;
 import com.tukorea.planding.domain.user.service.UserQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class PersonalPlannerService {
     private final PlannerUserRepository plannerUserRepository;
     private final ScheduleQueryService scheduleQueryService;
 
-    public PersonalPlannerResponse createPersonalPlanner(UserInfo userInfo, PlannerRequest request) {
+    public PersonalPlannerResponse createPersonalPlanner(UserResponse userResponse, PlannerRequest request) {
         Schedule schedule = scheduleQueryService.findScheduleById(request.getScheduleId());
 
         Planner planner = Planner.builder()
@@ -44,8 +45,8 @@ public class PersonalPlannerService {
         Planner savedPlanner = plannerRepository.save(planner);
         savedPlanner.generatePlannerNumber();
 
-        User manager = userQueryService.getUserByUserCode(request.getManagerCode());
-        planner.getUsers().add(assignUserToPlanner(planner, manager, PlannerRole.MANAGER));
+        UserDomain manager = userQueryService.getUserByUserCode(request.getManagerCode());
+        planner.getUsers().add(assignUserToPlanner(planner, User.fromModel(manager), PlannerRole.MANAGER));
 
         return PersonalPlannerResponse.fromEntity(planner);
 
@@ -60,7 +61,7 @@ public class PersonalPlannerService {
         return plannerUserRepository.save(plannerUser);
     }
 
-    public void deletePlanner(UserInfo userInfo, Long plannerId) {
+    public void deletePlanner(UserResponse userResponse, Long plannerId) {
         Planner planner = plannerRepository.findById(plannerId)
                 .orElseThrow(() -> new IllegalArgumentException("Planner not found with id: " + plannerId));
 
@@ -75,7 +76,7 @@ public class PersonalPlannerService {
 
     }
 
-    public PersonalPlannerResponse updatePlanner(UserInfo userInfo, PlannerRequest request, Long plannerId) {
+    public PersonalPlannerResponse updatePlanner(UserResponse userResponse, PlannerRequest request, Long plannerId) {
 
         Planner planner = plannerRepository.findById(plannerId)
                 .orElseThrow(() -> new IllegalArgumentException("Planner not found with id: " + plannerId));

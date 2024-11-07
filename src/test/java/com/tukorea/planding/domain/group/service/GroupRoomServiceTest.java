@@ -5,7 +5,7 @@ import com.tukorea.planding.domain.group.entity.GroupRoom;
 import com.tukorea.planding.domain.group.entity.UserGroup;
 import com.tukorea.planding.domain.group.service.query.GroupQueryService;
 import com.tukorea.planding.domain.group.service.query.UserGroupQueryService;
-import com.tukorea.planding.domain.user.dto.UserInfo;
+import com.tukorea.planding.domain.user.dto.UserResponse;
 import com.tukorea.planding.domain.user.entity.SocialType;
 import com.tukorea.planding.domain.user.entity.User;
 import com.tukorea.planding.global.oauth.details.Role;
@@ -17,7 +17,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 @Transactional
 class GroupRoomServiceTest {
@@ -51,7 +50,7 @@ class GroupRoomServiceTest {
         when(groupQueryService.getGroupByCode("G-1234")).thenReturn(groupRoom);
 
         GroupInformationResponse response=groupRoomService.getGroupUsers(
-                UserInfo.builder()
+                UserResponse.builder()
                         .userCode("#1234")
                         .build(),"G-1234"
         );

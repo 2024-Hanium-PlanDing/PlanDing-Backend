@@ -6,8 +6,9 @@ import com.tukorea.planding.domain.group.entity.GroupFavorite;
 import com.tukorea.planding.domain.group.entity.GroupRoom;
 import com.tukorea.planding.domain.group.repository.favorite.GroupFavoriteRepository;
 import com.tukorea.planding.domain.group.service.query.GroupQueryService;
-import com.tukorea.planding.domain.user.dto.UserInfo;
+import com.tukorea.planding.domain.user.dto.UserResponse;
 import com.tukorea.planding.domain.user.entity.User;
+import com.tukorea.planding.domain.user.entity.UserDomain;
 import com.tukorea.planding.domain.user.service.UserQueryService;
 import com.tukorea.planding.global.error.BusinessException;
 import com.tukorea.planding.global.error.ErrorCode;
@@ -32,33 +33,33 @@ public class GroupFavoriteService {
 
 
     @Transactional(readOnly = true)
-    public List<GroupResponse> findFavoriteGroupsByUser(UserInfo userInfo) {
-        return groupFavoriteRepository.findFavoriteGroupsByUser(userInfo.getId())
+    public List<GroupResponse> findFavoriteGroupsByUser(UserResponse userResponse) {
+        return groupFavoriteRepository.findFavoriteGroupsByUser(userResponse.getId())
                 .stream()
                 .map(GroupFavorite::getGroupRoom)
                 .map(GroupResponse::from)
                 .collect(Collectors.toList());
     }
 
-    public GroupFavoriteResponse addFavorite(UserInfo userInfo, String groupCode) {
-        log.info("Add 그룹 즐겨찾기 for userCodes {} and group {}", userInfo.getUserCode(), groupCode);
-        if (groupFavoriteRepository.existsByUserAndGroupRoom(userInfo.getUserCode(), groupCode)) {
+    public GroupFavoriteResponse addFavorite(UserResponse userResponse, String groupCode) {
+        log.info("Add 그룹 즐겨찾기 for userCodes {} and group {}", userResponse.getUserCode(), groupCode);
+        if (groupFavoriteRepository.existsByUserAndGroupRoom(userResponse.getUserCode(), groupCode)) {
             throw new BusinessException(ErrorCode.FAVORITE_ALREADY_ADD);
         }
 
-        User user = userQueryService.getUserByUserCode(userInfo.getUserCode());
+        UserDomain user = userQueryService.getUserByUserCode(userResponse.getUserCode());
         GroupRoom groupRoom = groupQueryService.getGroupByCode(groupCode);
 
-        GroupFavorite groupFavorite = GroupFavorite.createGroupFavorite(user, groupRoom);
+        GroupFavorite groupFavorite = GroupFavorite.createGroupFavorite(User.fromModel(user), groupRoom);
         GroupFavorite save = groupFavoriteRepository.save(groupFavorite);
-        log.info("그룹 즐겨찾기 등록완료  for userCodes {} and group {}", userInfo.getUserCode(), groupCode);
+        log.info("그룹 즐겨찾기 등록완료  for userCodes {} and group {}", userResponse.getUserCode(), groupCode);
         return GroupFavoriteResponse.from(save);
     }
 
-    public void deleteFavorite(UserInfo userInfo, String groupCode) {
-        log.info("Deleting 그룹 즐겨찾기 for userCodes {} and group {}", userInfo.getUserCode(), groupCode);
+    public void deleteFavorite(UserResponse userResponse, String groupCode) {
+        log.info("Deleting 그룹 즐겨찾기 for userCodes {} and group {}", userResponse.getUserCode(), groupCode);
         try {
-            groupFavoriteRepository.deleteByUserIdAndGroupRoomId(userInfo.getId(), groupCode);
+            groupFavoriteRepository.deleteByUserIdAndGroupRoomId(userResponse.getId(), groupCode);
         } catch (EmptyResultDataAccessException e) {
             throw new BusinessException(ErrorCode.FAVORITE_ALREADY_DELETE);
         }

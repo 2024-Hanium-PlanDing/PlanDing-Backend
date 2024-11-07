@@ -2,8 +2,7 @@ package com.tukorea.planding.domain.user.service;
 
 import com.tukorea.planding.domain.user.dto.AndroidLoginRequest;
 import com.tukorea.planding.domain.user.dto.AndroidLoginResponse;
-import com.tukorea.planding.domain.user.entity.User;
-import com.tukorea.planding.domain.user.mapper.UserMapper;
+import com.tukorea.planding.domain.user.entity.UserDomain;
 import com.tukorea.planding.global.config.security.jwt.JwtTokenHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,19 +18,20 @@ public class AndroidLoginService {
     private final JwtTokenHandler jwtTokenHandler;
     private final UserService userService;
     private final UserQueryService userQueryService;
+    private final UserCodeGeneratorImpl userCodeGenerator;
 
     public AndroidLoginResponse signupApp(AndroidLoginRequest androidLoginRequest) {
 
-        User user = userQueryService.findByEmail(androidLoginRequest.accountEmail());
+        UserDomain userDomain = userQueryService.findByEmail(androidLoginRequest.accountEmail());
 
-        if (user == null) {
+        if (userDomain == null) {
             // 유저가 존재하지 않으면 회원가입
-            user = userService.createUserFromRequest(androidLoginRequest);
+            userDomain = userService.createAndroid(androidLoginRequest);
         }
 
-        String accessToken = jwtTokenHandler.generateAccessToken(user.getId(), user.getUserCode());
-        String refreshToken = jwtTokenHandler.generateRefreshToken(user.getId(), user.getUserCode());
+        String accessToken = jwtTokenHandler.generateAccessToken(userDomain.getId(), userDomain.getUserCode());
+        String refreshToken = jwtTokenHandler.generateRefreshToken(userDomain.getId(), userDomain.getUserCode());
 
-        return UserMapper.toAndroidLoginResponse(user, accessToken, refreshToken);
+        return AndroidLoginResponse.toAndroidLoginResponse(userDomain, accessToken, refreshToken);
     }
 }

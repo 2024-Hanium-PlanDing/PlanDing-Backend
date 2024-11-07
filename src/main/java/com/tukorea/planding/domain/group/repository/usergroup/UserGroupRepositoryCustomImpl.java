@@ -11,7 +11,6 @@ import java.util.List;
 import static com.tukorea.planding.domain.group.entity.QUserGroup.userGroup;
 import static com.tukorea.planding.domain.user.entity.QUser.user;
 
-
 @Repository
 @RequiredArgsConstructor
 public class UserGroupRepositoryCustomImpl implements UserGroupRepositoryCustom {

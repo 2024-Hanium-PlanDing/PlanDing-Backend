@@ -5,7 +5,7 @@ import com.tukorea.planding.common.CommonUtils;
 import com.tukorea.planding.domain.notify.dto.NotificationReadRequest;
 import com.tukorea.planding.domain.notify.dto.NotificationScheduleResponse;
 import com.tukorea.planding.domain.notify.service.NotificationHandler;
-import com.tukorea.planding.domain.user.dto.UserInfo;
+import com.tukorea.planding.domain.user.dto.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -27,21 +27,21 @@ public class NotifyController {
     //TODO 어떤 방 알림을 구독할지 정해야함
     @Operation(description = "기본적인 알림을 받는다")
     @GetMapping(value = "/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter subscribe(@AuthenticationPrincipal UserInfo userInfo) {
-        return notificationHandler.subscribe(userInfo.getUserCode());
+    public SseEmitter subscribe(@AuthenticationPrincipal UserResponse userResponse) {
+        return notificationHandler.subscribe(userResponse.getUserCode());
     }
 
     @Operation(description = "스케줄 타입 알람 목록 가져온다")
     @GetMapping("/schedules")
-    public CommonResponse<List<NotificationScheduleResponse>> getNotifications(@AuthenticationPrincipal UserInfo userInfo){
-        List<NotificationScheduleResponse> response = notificationHandler.getNotifications(userInfo);
+    public CommonResponse<List<NotificationScheduleResponse>> getNotifications(@AuthenticationPrincipal UserResponse userResponse){
+        List<NotificationScheduleResponse> response = notificationHandler.getNotifications(userResponse);
         return CommonUtils.success(response);
     }
 
     @Operation(description = "스케줄 타입 알람을 삭제한다")
     @DeleteMapping("/{scheduleId}")
-    public CommonResponse<?> deleteNotification(@AuthenticationPrincipal UserInfo userInfo,@PathVariable Long scheduleId){
-        notificationHandler.deleteNotification(userInfo,scheduleId);
+    public CommonResponse<?> deleteNotification(@AuthenticationPrincipal UserResponse userResponse, @PathVariable Long scheduleId){
+        notificationHandler.deleteNotification(userResponse,scheduleId);
         return CommonUtils.successWithEmptyData();
     }
 
