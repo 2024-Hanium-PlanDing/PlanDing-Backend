@@ -6,8 +6,9 @@ import com.tukorea.planding.domain.chat.dto.MessageResponse;
 import com.tukorea.planding.domain.chat.entity.ChatMessage;
 import com.tukorea.planding.domain.chat.repository.ChatMessageRepository;
 import com.tukorea.planding.domain.group.service.query.UserGroupQueryService;
-import com.tukorea.planding.domain.user.dto.UserInfo;
+import com.tukorea.planding.domain.user.dto.UserResponse;
 import com.tukorea.planding.domain.user.entity.User;
+import com.tukorea.planding.domain.user.entity.UserDomain;
 import com.tukorea.planding.domain.user.service.UserQueryService;
 import com.tukorea.planding.global.error.BusinessException;
 import com.tukorea.planding.global.error.ErrorCode;
@@ -30,7 +31,7 @@ public class ChatService {
     private final UserGroupQueryService userGroupQueryService;
 
     public MessageResponse sendMessage(String sender, MessageRequest messageDTO, String groupCode) {
-        User user = userQueryService.getUserByUserCode(sender);
+        UserDomain user = userQueryService.getUserByUserCode(sender);
 
         ChatMessage chatMessage = ChatMessage.builder()
                 .content(messageDTO.getContent())
@@ -53,8 +54,8 @@ public class ChatService {
         return response;
     }
 
-    public List<MessageResponse> getMessages(UserInfo userInfo, String groupCode) {
-        if (!userGroupQueryService.checkUserAccessToGroupRoom(groupCode, userInfo.getUserCode())) {
+    public List<MessageResponse> getMessages(UserResponse userResponse, String groupCode) {
+        if (!userGroupQueryService.checkUserAccessToGroupRoom(groupCode, userResponse.getUserCode())) {
             throw new BusinessException(ErrorCode.ACCESS_DENIED);
         }
 

@@ -8,8 +8,9 @@ import com.tukorea.planding.domain.notify.service.RedisMessageService;
 import com.tukorea.planding.domain.notify.service.ScheduleNotificationService;
 import com.tukorea.planding.domain.notify.service.fcm.FCMService;
 import com.tukorea.planding.domain.schedule.dto.response.PersonalScheduleResponse;
-import com.tukorea.planding.domain.user.dto.UserInfo;
+import com.tukorea.planding.domain.user.dto.UserResponse;
 import com.tukorea.planding.domain.user.entity.User;
+import com.tukorea.planding.domain.user.entity.UserDomain;
 import com.tukorea.planding.domain.user.service.UserQueryService;
 import com.tukorea.planding.global.error.BusinessException;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class PersonalScheduleNotificationHandler implements NotificationHandler 
     @Override
     public void sendNotification(NotificationDTO request) {
         try {
-            User user = userQueryService.getUserByUserCode(request.getUserCode());
+            UserDomain user = userQueryService.getUserByUserCode(request.getUserCode());
             if (!user.isAlarm()) {
                 return;
             }
@@ -90,7 +91,7 @@ public class PersonalScheduleNotificationHandler implements NotificationHandler 
         }
     }
 
-    public void updateScheduleBeforeOneHour(Long scheduleId, PersonalScheduleResponse request, UserInfo userInfo) {
+    public void updateScheduleBeforeOneHour(Long scheduleId, PersonalScheduleResponse request, UserResponse userResponse) {
         try {
             NotificationDTO notification = scheduleNotificationService.getNotificationByScheduleId(scheduleId);
             if (notification != null) {
@@ -100,10 +101,10 @@ public class PersonalScheduleNotificationHandler implements NotificationHandler 
 
             LocalTime starTime = LocalTime.of(request.startTime(), 0);
             LocalDateTime oneHourBefore = LocalDateTime.of(request.scheduleDate(), starTime).minusHours(1);
-            NotificationDTO oneHourBeforeNotification = NotificationDTO.createPersonalSchedule(userInfo.getUserCode(), request);
+            NotificationDTO oneHourBeforeNotification = NotificationDTO.createPersonalSchedule(userResponse.getUserCode(), request);
             scheduleNotificationService.scheduleNotification(oneHourBeforeNotification, oneHourBefore);
         } catch (Exception e) {
-            log.error("[Personal Schedule] 1시간 전 알림 업데이트 실패 for userCodes {}: {}", userInfo.getUserCode(), e.getMessage(), e);
+            log.error("[Personal Schedule] 1시간 전 알림 업데이트 실패 for userCodes {}: {}", userResponse.getUserCode(), e.getMessage(), e);
         }
     }
 

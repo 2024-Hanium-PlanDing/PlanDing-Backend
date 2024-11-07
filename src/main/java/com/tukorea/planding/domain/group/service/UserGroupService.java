@@ -5,6 +5,7 @@ import com.tukorea.planding.domain.group.entity.UserGroup;
 import com.tukorea.planding.domain.group.repository.normal.GroupRoomRepository;
 import com.tukorea.planding.domain.group.repository.usergroup.UserGroupRepository;
 import com.tukorea.planding.domain.user.entity.User;
+import com.tukorea.planding.domain.user.entity.UserDomain;
 import com.tukorea.planding.domain.user.service.UserQueryService;
 import com.tukorea.planding.global.error.BusinessException;
 import com.tukorea.planding.global.error.ErrorCode;
@@ -24,7 +25,7 @@ public class UserGroupService {
 
     public void updateConnectionStatus(String userCode, String groupCode, boolean isConnected) {
 
-        User user = userQueryService.getUserByUserCode(userCode);
+        UserDomain user = userQueryService.getUserByUserCode(userCode);
 
         GroupRoom groupRoom = groupRoomRepository.findByGroupCode(groupCode)
                 .orElseThrow(() -> new BusinessException(ErrorCode.GROUP_ROOM_NOT_FOUND));

@@ -6,7 +6,7 @@ import com.tukorea.planding.domain.group.dto.request.GroupInviteRequest;
 import com.tukorea.planding.domain.group.dto.response.GroupInviteAcceptResponse;
 import com.tukorea.planding.domain.group.dto.response.GroupInviteMessageResponse;
 import com.tukorea.planding.domain.group.service.GroupInviteService;
-import com.tukorea.planding.domain.user.dto.UserInfo;
+import com.tukorea.planding.domain.user.dto.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -24,28 +24,28 @@ public class GroupInviteController {
 
     @Operation(summary = "유저에게 초대를 보낸다")
     @PostMapping()
-    public CommonResponse<GroupInviteMessageResponse> invite(@AuthenticationPrincipal UserInfo userInfo, @RequestBody GroupInviteRequest groupInviteRequest) {
-        return CommonUtils.success(groupInviteService.inviteGroupRoom(userInfo, groupInviteRequest));
+    public CommonResponse<GroupInviteMessageResponse> invite(@AuthenticationPrincipal UserResponse userResponse, @RequestBody GroupInviteRequest groupInviteRequest) {
+        return CommonUtils.success(groupInviteService.inviteGroupRoom(userResponse, groupInviteRequest));
     }
 
     @Operation(summary = "초대를 수락한다")
     @GetMapping("/accept/{groupCode}/{inviteCode}")
-    public CommonResponse<GroupInviteAcceptResponse> accept(@AuthenticationPrincipal UserInfo userInfo, @PathVariable(name = "groupCode") String groupCode, @PathVariable(name = "inviteCode") String code) {
-        GroupInviteAcceptResponse response = groupInviteService.acceptInvitation(userInfo, code, groupCode);
+    public CommonResponse<GroupInviteAcceptResponse> accept(@AuthenticationPrincipal UserResponse userResponse, @PathVariable(name = "groupCode") String groupCode, @PathVariable(name = "inviteCode") String code) {
+        GroupInviteAcceptResponse response = groupInviteService.acceptInvitation(userResponse, code, groupCode);
         return CommonUtils.success(response);
     }
 
     @Operation(summary = "초대를 받은 목록", description = "아직 초대의 상태를 바꾸지 않은 경우만")
     @GetMapping()
-    public CommonResponse<List<GroupInviteMessageResponse>> getInvitations(@AuthenticationPrincipal UserInfo userInfo) {
-        List<GroupInviteMessageResponse> groupInviteResponse = groupInviteService.getInvitations(userInfo);
+    public CommonResponse<List<GroupInviteMessageResponse>> getInvitations(@AuthenticationPrincipal UserResponse userResponse) {
+        List<GroupInviteMessageResponse> groupInviteResponse = groupInviteService.getInvitations(userResponse);
         return CommonUtils.success(groupInviteResponse);
     }
 
     @Operation(summary = "초대를 거절한다.")
     @DeleteMapping("/decline/{inviteCode}")
-    public CommonResponse<?> declineInvitation(@AuthenticationPrincipal UserInfo userInfo, @PathVariable(name = "inviteCode") String code) {
-        groupInviteService.declineInvitation(userInfo, code);
+    public CommonResponse<?> declineInvitation(@AuthenticationPrincipal UserResponse userResponse, @PathVariable(name = "inviteCode") String code) {
+        groupInviteService.declineInvitation(userResponse, code);
         return CommonUtils.success("거절하였습니다.");
     }
 }

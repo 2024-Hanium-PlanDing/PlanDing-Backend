@@ -3,7 +3,7 @@ package com.tukorea.planding.domain.notify.controller;
 import com.tukorea.planding.common.CommonResponse;
 import com.tukorea.planding.common.CommonUtils;
 import com.tukorea.planding.domain.notify.dto.FcmDTO;
-import com.tukorea.planding.domain.user.dto.UserInfo;
+import com.tukorea.planding.domain.user.dto.UserResponse;
 import com.tukorea.planding.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,8 +20,8 @@ public class FireBaseController {
     private final UserService userService;
 
     @PostMapping("/token")
-    public CommonResponse<?> saveNotification(@AuthenticationPrincipal UserInfo userInfo, @RequestBody FcmDTO fcmDTO) {
-        userService.updateFcmToken(userInfo.getUserCode(), fcmDTO);
+    public CommonResponse<?> saveNotification(@AuthenticationPrincipal UserResponse userResponse, @RequestBody FcmDTO fcmDTO) {
+        userService.updateFcmToken(userResponse.getUserCode(), fcmDTO);
         return CommonUtils.successWithEmptyData();
     }
 }

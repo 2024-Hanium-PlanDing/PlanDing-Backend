@@ -1,8 +1,7 @@
 package com.tukorea.planding.domain.schedule.service;
 
-import com.tukorea.planding.domain.schedule.dto.request.ScheduleRequest;
 import com.tukorea.planding.domain.schedule.dto.response.ScheduleResponse;
-import com.tukorea.planding.domain.user.dto.UserInfo;
+import com.tukorea.planding.domain.user.dto.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,15 +16,15 @@ import java.util.stream.Collectors;
 public class CommonScheduleService {
     private final ScheduleQueryService scheduleQueryService;
 
-    public List<ScheduleResponse> showTodaySchedule(UserInfo userInfo) {
-        return scheduleQueryService.showTodaySchedule(userInfo.getId())
+    public List<ScheduleResponse> showTodaySchedule(UserResponse userResponse) {
+        return scheduleQueryService.showTodaySchedule(userResponse.getId())
                 .stream()
                 .map(ScheduleResponse::from)
                 .collect(Collectors.toList());
     }
 
-    public List<ScheduleResponse> getWeekSchedule(LocalDate startDate, LocalDate endDate, UserInfo userInfo) {
-        return scheduleQueryService.findWeeklyScheduleByUser(startDate, endDate, userInfo.getId())
+    public List<ScheduleResponse> getWeekSchedule(LocalDate startDate, LocalDate endDate, UserResponse userResponse) {
+        return scheduleQueryService.findWeeklyScheduleByUser(startDate, endDate, userResponse.getId())
                 .stream()
                 .map(ScheduleResponse::from)
                 .collect(Collectors.toList());

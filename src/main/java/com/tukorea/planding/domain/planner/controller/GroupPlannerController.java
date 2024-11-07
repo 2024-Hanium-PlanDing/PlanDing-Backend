@@ -5,7 +5,7 @@ import com.tukorea.planding.common.CommonUtils;
 import com.tukorea.planding.domain.planner.dto.*;
 import com.tukorea.planding.domain.planner.dto.group.PlannerWeekResponse;
 import com.tukorea.planding.domain.planner.service.GroupPlannerService;
-import com.tukorea.planding.domain.user.dto.UserInfo;
+import com.tukorea.planding.domain.user.dto.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -49,22 +49,22 @@ public class GroupPlannerController {
 
     @Operation(summary = "그룹 스케줄 플래너: 개별조회")
     @GetMapping("/api/v1/group-rooms/planner/{groupCode}/{plannerId}")
-    public CommonResponse<PlannerResponse> getPlannerByGroup(@AuthenticationPrincipal UserInfo userInfo, @PathVariable String groupCode, @PathVariable Long plannerId) {
-        return CommonUtils.success(groupPlannerService.getPlannerByGroup(userInfo, groupCode, plannerId));
+    public CommonResponse<PlannerResponse> getPlannerByGroup(@AuthenticationPrincipal UserResponse userResponse, @PathVariable String groupCode, @PathVariable Long plannerId) {
+        return CommonUtils.success(groupPlannerService.getPlannerByGroup(userResponse, groupCode, plannerId));
     }
 
     @Operation(summary = "그룹 스케줄 플래너: 조회")
     @GetMapping("/api/v1/group-rooms/{groupCode}/planner/{scheduleId}")
-    public CommonResponse<SchedulePlannerResponse> getPlannersByGroup(@AuthenticationPrincipal UserInfo userInfo, @PathVariable String groupCode, @PathVariable Long scheduleId) {
-        return CommonUtils.success(groupPlannerService.getPlannersByGroup(userInfo, groupCode, scheduleId));
+    public CommonResponse<SchedulePlannerResponse> getPlannersByGroup(@AuthenticationPrincipal UserResponse userResponse, @PathVariable String groupCode, @PathVariable Long scheduleId) {
+        return CommonUtils.success(groupPlannerService.getPlannersByGroup(userResponse, groupCode, scheduleId));
     }
 
     @Operation(summary = "그룹 플래너 주간: 조회")
     @GetMapping("/api/v1/group-rooms/planner/week/{groupCode}/{startDate}/{endDate}")
     public CommonResponse<List<PlannerWeekResponse>> getWeekPlannerByGroup(@PathVariable String groupCode, @PathVariable LocalDate startDate,
                                                                        @PathVariable LocalDate endDate
-            , @AuthenticationPrincipal UserInfo userInfo) {
-        return CommonUtils.success(groupPlannerService.findPlannersByGroupCodeAndDateRange(startDate, endDate, groupCode, userInfo));
+            , @AuthenticationPrincipal UserResponse userResponse) {
+        return CommonUtils.success(groupPlannerService.findPlannersByGroupCodeAndDateRange(startDate, endDate, groupCode, userResponse));
     }
 
 
