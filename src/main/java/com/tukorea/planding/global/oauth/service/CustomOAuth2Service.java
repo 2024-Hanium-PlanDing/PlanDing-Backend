@@ -1,9 +1,10 @@
 package com.tukorea.planding.global.oauth.service;
 
-import com.tukorea.planding.domain.user.repository.UserRepository;
+import com.tukorea.planding.domain.user.entity.UserDomain;
 import com.tukorea.planding.domain.user.entity.SocialType;
 import com.tukorea.planding.domain.user.entity.User;
-import com.tukorea.planding.domain.user.service.UserService;
+import com.tukorea.planding.domain.user.repository.UserRepository;
+import com.tukorea.planding.domain.user.service.UserCodeGeneratorImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,7 +24,7 @@ import java.util.Map;
 public class CustomOAuth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final UserRepository userRepository;
-    private final UserService userService;
+    private final UserCodeGeneratorImpl userCodeGenerator;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -39,7 +40,7 @@ public class CustomOAuth2Service implements OAuth2UserService<OAuth2UserRequest,
 
         OAuthAttributes extractAttributes = OAuthAttributes.of(socialType, userNameAttributeName, attributes);
 
-        User createdUser = getUser(extractAttributes, socialType);
+        UserDomain createdUser = getUser(extractAttributes, socialType);
 
         log.info("[" + registrationId + "]:OAuth 객체 생성");
         return new CustomOAuth2User(
@@ -54,8 +55,8 @@ public class CustomOAuth2Service implements OAuth2UserService<OAuth2UserRequest,
 
     }
 
-    private User getUser(OAuthAttributes attributes, SocialType socialType) {
-        User findUser = userRepository.findBySocialTypeAndSocialId(socialType,
+    private UserDomain getUser(OAuthAttributes attributes, SocialType socialType) {
+        UserDomain findUser = userRepository.findBySocialTypeAndSocialId(socialType,
                 attributes.getOauth2UserInfo().getOAuth2Id()).orElse(null);
 
         if (findUser == null) {
@@ -66,11 +67,11 @@ public class CustomOAuth2Service implements OAuth2UserService<OAuth2UserRequest,
         return findUser;
     }
 
-    private User saveUser(OAuthAttributes attributes, SocialType socialType) {
+    private UserDomain saveUser(OAuthAttributes attributes, SocialType socialType) {
         log.info("신규 회원가입");
-        String userCode = userService.generateUniqueUserCode();
+        String userCode = userCodeGenerator.generateUniqueUserCode();
         User createdUser = attributes.toEntity(socialType, attributes.getOauth2UserInfo(), userCode);
-        return userRepository.save(createdUser);
+        return userRepository.save(createdUser.toModel());
     }
 
 }

@@ -15,7 +15,7 @@ import com.tukorea.planding.domain.schedule.dto.response.websocket.SendGroupResp
 import com.tukorea.planding.domain.schedule.entity.*;
 import com.tukorea.planding.domain.schedule.repository.GroupScheduleAttendanceRepository;
 import com.tukorea.planding.domain.schedule.repository.GroupScheduleRepository;
-import com.tukorea.planding.domain.user.dto.UserInfo;
+import com.tukorea.planding.domain.user.dto.UserResponse;
 import com.tukorea.planding.domain.user.entity.User;
 import com.tukorea.planding.global.error.BusinessException;
 import com.tukorea.planding.global.error.ErrorCode;
@@ -121,8 +121,8 @@ public class GroupScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public GroupScheduleResponse getGroupScheduleById(UserInfo userInfo, String groupCode, Long scheduleId) {
-        checkUserAccessToGroupRoom(groupCode, userInfo.getUserCode());
+    public GroupScheduleResponse getGroupScheduleById(UserResponse userResponse, String groupCode, Long scheduleId) {
+        checkUserAccessToGroupRoom(groupCode, userResponse.getUserCode());
 
         GroupRoom groupRoom = groupQueryService.getGroupByCode(groupCode);
         Schedule schedule = scheduleQueryService.findScheduleById(scheduleId);
@@ -133,8 +133,8 @@ public class GroupScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public List<GroupScheduleResponse> getSchedulesByGroupRoom(String groupCode, UserInfo userInfo) {
-        checkUserAccessToGroupRoom(groupCode, userInfo.getUserCode());
+    public List<GroupScheduleResponse> getSchedulesByGroupRoom(String groupCode, UserResponse userResponse) {
+        checkUserAccessToGroupRoom(groupCode, userResponse.getUserCode());
         List<Schedule> schedules = scheduleQueryService.findByGroupRoomCode(groupCode);
         GroupRoom groupRoom = groupQueryService.getGroupByCode(groupCode);
 
@@ -143,24 +143,24 @@ public class GroupScheduleService {
                 .collect(Collectors.toList());
     }
 
-    public List<ScheduleResponse> getWeekSchedule(LocalDate startDate, LocalDate endDate, UserInfo userInfo) {
-        return scheduleQueryService.findWeeklyGroupScheduleByUser(startDate, endDate, userInfo.getId())
+    public List<ScheduleResponse> getWeekSchedule(LocalDate startDate, LocalDate endDate, UserResponse userResponse) {
+        return scheduleQueryService.findWeeklyGroupScheduleByUser(startDate, endDate, userResponse.getId())
                 .stream()
                 .map(ScheduleResponse::from)
                 .sorted(ScheduleResponse.getComparatorByStartTime())
                 .collect(Collectors.toList());
     }
 
-    public List<ScheduleResponse> getWeekScheduleByGroupCode(LocalDate startDate, LocalDate endDate, String groupRoomCode, UserInfo userInfo) {
-        return scheduleQueryService.findWeeklyGroupScheduleByGroupCode(startDate, endDate, userInfo.getId(), groupRoomCode)
+    public List<ScheduleResponse> getWeekScheduleByGroupCode(LocalDate startDate, LocalDate endDate, String groupRoomCode, UserResponse userResponse) {
+        return scheduleQueryService.findWeeklyGroupScheduleByGroupCode(startDate, endDate, userResponse.getId(), groupRoomCode)
                 .stream()
                 .map(ScheduleResponse::from)
                 .sorted(ScheduleResponse.getComparatorByStartTime())
                 .collect(Collectors.toList());
     }
 
-    public List<ScheduleResponse> getAllScheduleByGroup(LocalDate startDate, LocalDate endDate, UserInfo userInfo) {
-        return scheduleQueryService.findAllGroupScheduleByGroupCode(startDate, endDate, userInfo.getId())
+    public List<ScheduleResponse> getAllScheduleByGroup(LocalDate startDate, LocalDate endDate, UserResponse userResponse) {
+        return scheduleQueryService.findAllGroupScheduleByGroupCode(startDate, endDate, userResponse.getId())
                 .stream()
                 .map(ScheduleResponse::from)
                 .sorted(ScheduleResponse.getComparatorByStartTime())

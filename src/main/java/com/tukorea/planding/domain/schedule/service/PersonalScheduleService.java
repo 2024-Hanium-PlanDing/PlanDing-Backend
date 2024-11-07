@@ -8,8 +8,9 @@ import com.tukorea.planding.domain.schedule.entity.PersonalSchedule;
 import com.tukorea.planding.domain.schedule.entity.Schedule;
 import com.tukorea.planding.domain.schedule.entity.ScheduleType;
 import com.tukorea.planding.domain.schedule.repository.PersonalScheduleRepository;
-import com.tukorea.planding.domain.user.dto.UserInfo;
+import com.tukorea.planding.domain.user.dto.UserResponse;
 import com.tukorea.planding.domain.user.entity.User;
+import com.tukorea.planding.domain.user.entity.UserDomain;
 import com.tukorea.planding.domain.user.service.UserQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,50 +32,50 @@ public class PersonalScheduleService {
 
 
     // 메인페이지
-    public List<ScheduleResponse> getAllSchedule(UserInfo userInfo, int weekOffset) {
+    public List<ScheduleResponse> getAllSchedule(UserResponse userResponse, int weekOffset) {
 
         LocalDate today = LocalDate.now().plusWeeks(weekOffset);
         LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY));
         LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(java.time.DayOfWeek.SUNDAY));
 
-        List<Schedule> schedules = scheduleQueryService.findByUserAndScheduleDateBetween(userInfo.getId(), startOfWeek, endOfWeek);
+        List<Schedule> schedules = scheduleQueryService.findByUserAndScheduleDateBetween(userResponse.getId(), startOfWeek, endOfWeek);
 
         return schedules.stream()
                 .map(ScheduleResponse::from)
                 .collect(Collectors.toList());
     }
 
-    public PersonalScheduleResponse createSchedule(UserInfo userInfo, PersonalScheduleRequest personalScheduleRequest) {
-        User user = userQueryService.getUserByUserCode(userInfo.getUserCode());
+    public PersonalScheduleResponse createSchedule(UserResponse userResponse, PersonalScheduleRequest personalScheduleRequest) {
+        UserDomain user = userQueryService.getUserByUserCode(userResponse.getUserCode());
         // 개인 스케줄 생성
-        PersonalSchedule personalSchedule = createPersonalSchedule(user);
+        PersonalSchedule personalSchedule = createPersonalSchedule(User.fromModel(user));
         Schedule schedule = create(personalSchedule, personalScheduleRequest);
         return PersonalScheduleResponse.from(schedule);
     }
 
     @Transactional(readOnly = true)
-    public PersonalScheduleResponse getSchedule(Long scheduleId, UserInfo userInfo) {
+    public PersonalScheduleResponse getSchedule(Long scheduleId, UserResponse userResponse) {
         Schedule schedule = scheduleQueryService.findScheduleById(scheduleId);
-        schedule.getPersonalSchedule().checkOwnership(userInfo.getId());
+        schedule.getPersonalSchedule().checkOwnership(userResponse.getId());
         return PersonalScheduleResponse.from(schedule);
     }
 
-    public void deleteSchedule(UserInfo userInfo, Long scheduleId) {
+    public void deleteSchedule(UserResponse userResponse, Long scheduleId) {
         Schedule schedule = scheduleQueryService.findScheduleById(scheduleId);
-        schedule.getPersonalSchedule().checkOwnership(userInfo.getId());
+        schedule.getPersonalSchedule().checkOwnership(userResponse.getId());
         scheduleQueryService.delete(schedule);
     }
 
 
-    public PersonalScheduleResponse updateSchedule(Long scheduleId, PersonalScheduleRequest scheduleRequest, UserInfo userInfo) {
+    public PersonalScheduleResponse updateSchedule(Long scheduleId, PersonalScheduleRequest scheduleRequest, UserResponse userResponse) {
         Schedule schedule = scheduleQueryService.findScheduleById(scheduleId);
-        schedule.getPersonalSchedule().checkOwnership(userInfo.getId());
+        schedule.getPersonalSchedule().checkOwnership(userResponse.getId());
         schedule.update(scheduleRequest.title(), scheduleRequest.content(), scheduleRequest.startTime(), scheduleRequest.endTime());
         return PersonalScheduleResponse.from(schedule);
     }
 
-    public List<PersonalScheduleResponse> getWeekSchedule(LocalDate startDate, LocalDate endDate, UserInfo userInfo) {
-        return scheduleQueryService.findWeeklyPersonalScheduleByUser(startDate, endDate, userInfo.getId())
+    public List<PersonalScheduleResponse> getWeekSchedule(LocalDate startDate, LocalDate endDate, UserResponse userResponse) {
+        return scheduleQueryService.findWeeklyPersonalScheduleByUser(startDate, endDate, userResponse.getId())
                 .stream()
                 .map(PersonalScheduleResponse::from)
                 .collect(Collectors.toList());

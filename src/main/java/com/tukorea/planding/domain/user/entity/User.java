@@ -5,10 +5,7 @@ import com.tukorea.planding.domain.group.entity.UserGroup;
 import com.tukorea.planding.global.audit.BaseEntity;
 import com.tukorea.planding.global.oauth.details.Role;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.*;
 
@@ -69,16 +66,30 @@ public class User extends BaseEntity {
         this.fcmToken = fcmToken;
     }
 
-    public static String createCode() {
-        String c = UUID.randomUUID().toString();
-        return "#" + c.substring(0, 4);
+    public static User fromModel(UserDomain userDomain){
+        return User.builder()
+                .socialType(userDomain.getSocialType())
+                .socialId(userDomain.getSocialId())
+                .profileImage(userDomain.getProfileImage())
+                .fcmToken(userDomain.getFcmToken())
+                .email(userDomain.getEmail())
+                .role(userDomain.getRole())
+                .username(userDomain.getUsername())
+                .userCode(userDomain.getUserCode())
+                .build();
     }
 
-    public void updateFcmToken(String fcmToken) {
-        this.fcmToken = fcmToken;
-    }
-
-    public void updateAlarm(boolean alarm) {
-        this.alarm = alarm;
+    public UserDomain toModel(){
+        return UserDomain.builder()
+                .id(id)
+                .email(email)
+                .profileImage(profileImage)
+                .username(username)
+                .userCode(userCode)
+                .socialId(socialId)
+                .socialType(socialType)
+                .fcmToken(fcmToken)
+                .alarm(alarm)
+                .build();
     }
 }

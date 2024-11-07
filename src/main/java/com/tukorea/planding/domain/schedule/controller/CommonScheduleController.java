@@ -4,7 +4,7 @@ import com.tukorea.planding.common.CommonResponse;
 import com.tukorea.planding.common.CommonUtils;
 import com.tukorea.planding.domain.schedule.dto.response.ScheduleResponse;
 import com.tukorea.planding.domain.schedule.service.CommonScheduleService;
-import com.tukorea.planding.domain.user.dto.UserInfo;
+import com.tukorea.planding.domain.user.dto.UserResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +27,8 @@ public class CommonScheduleController {
 
     @Operation(summary = "오늘 스케줄 조회")
     @GetMapping("/today")
-    public CommonResponse<List<ScheduleResponse>> showTodaySchedule(@AuthenticationPrincipal UserInfo userInfo) {
-        List<ScheduleResponse> responses = commonScheduleService.showTodaySchedule(userInfo);
+    public CommonResponse<List<ScheduleResponse>> showTodaySchedule(@AuthenticationPrincipal UserResponse userResponse) {
+        List<ScheduleResponse> responses = commonScheduleService.showTodaySchedule(userResponse);
         return CommonUtils.success(responses);
     }
 
@@ -36,8 +36,8 @@ public class CommonScheduleController {
     @GetMapping("/week/{startDate}/{endDate}")
     public CommonResponse<List<ScheduleResponse>> getWeekSchedule(@PathVariable(name = "startDate") LocalDate startDate,
                                                                   @PathVariable(name = "endDate") LocalDate endDate
-            , @AuthenticationPrincipal UserInfo userInfo) {
-        List<ScheduleResponse> scheduleResponse = commonScheduleService.getWeekSchedule(startDate, endDate, userInfo);
+            , @AuthenticationPrincipal UserResponse userResponse) {
+        List<ScheduleResponse> scheduleResponse = commonScheduleService.getWeekSchedule(startDate, endDate, userResponse);
         return CommonUtils.success(scheduleResponse);
     }
 }

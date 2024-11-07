@@ -5,7 +5,7 @@ import com.tukorea.planding.domain.notify.dto.NotificationScheduleResponse;
 import com.tukorea.planding.domain.notify.entity.Notification;
 import com.tukorea.planding.domain.notify.repository.NotificationRepository;
 import com.tukorea.planding.domain.notify.service.sse.SseEmitterService;
-import com.tukorea.planding.domain.user.dto.UserInfo;
+import com.tukorea.planding.domain.user.dto.UserResponse;
 import com.tukorea.planding.global.error.BusinessException;
 import com.tukorea.planding.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -44,12 +44,12 @@ public class NotificationHandler {
     }
 
     @Transactional(readOnly = true)
-    public List<NotificationScheduleResponse> getNotifications(UserInfo userInfo) {
-        return notificationRepository.findByUserCode(userInfo.getUserCode());
+    public List<NotificationScheduleResponse> getNotifications(UserResponse userResponse) {
+        return notificationRepository.findByUserCode(userResponse.getUserCode());
     }
 
 
-    public void deleteNotification(UserInfo userInfo, Long scheduleId) {
+    public void deleteNotification(UserResponse userResponse, Long scheduleId) {
         notificationRepository.deleteById(scheduleId);
     }
 }
