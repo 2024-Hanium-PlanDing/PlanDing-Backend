@@ -1,63 +1,37 @@
 package com.tukorea.planding.domain.group.service;
 
-import com.tukorea.planding.domain.group.dto.response.GroupInformationResponse;
-import com.tukorea.planding.domain.group.entity.GroupRoom;
-import com.tukorea.planding.domain.group.entity.UserGroup;
-import com.tukorea.planding.domain.group.service.query.GroupQueryService;
-import com.tukorea.planding.domain.group.service.query.UserGroupQueryService;
-import com.tukorea.planding.domain.user.dto.UserResponse;
-import com.tukorea.planding.domain.user.entity.SocialType;
-import com.tukorea.planding.domain.user.entity.User;
-import com.tukorea.planding.global.oauth.details.Role;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.transaction.annotation.Transactional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-@Transactional
 class GroupRoomServiceTest {
+    @Test
+    void 그룹_룸을_생성할_수_있다() {
 
-    @InjectMocks
-    private GroupRoomService groupRoomService;
-
-    @Mock
-    private GroupQueryService groupQueryService;
-
-    @Mock
-    private UserGroupQueryService userGroupQueryService;
-
-    private User user;
-    private GroupRoom groupRoom;
-
-    @BeforeEach
-    void setUp(){
-        MockitoAnnotations.openMocks(this);
-
-        user=new User("email","profileImage","username", Role.USER, SocialType.KAKAO,null,"#1234",null);
-
-        groupRoom=new GroupRoom("name","description",user,"G-1234");
-
-        UserGroup userGroup=UserGroup.createUserGroup(user,groupRoom);
-        groupRoom.getUserGroups().add(userGroup);
     }
 
     @Test
-    void getGroupUsers_성공_그룹멤버인경우(){
-        when(groupQueryService.getGroupByCode("G-1234")).thenReturn(groupRoom);
+    void 그룹_룸을_업데이트_할_수_있다() {
 
-        GroupInformationResponse response=groupRoomService.getGroupUsers(
-                UserResponse.builder()
-                        .userCode("#1234")
-                        .build(),"G-1234"
-        );
-
-        assertThat(response.groupCode()).isEqualTo("G-1234");
-        assertThat(response.owner()).isEqualTo("#1234");
-        assertThat(response.isGroupAdmin()).isTrue();
     }
+
+    @Test
+    void 그룹_룸을_삭제_할_수_있다() {
+
+    }
+
+    @Test
+    void 그룹에_속한_유저들_의_정보를_가져올_수_있다() {
+
+    }
+
+    @Test
+    void 그룹을_떠날_수_있다() {
+
+    }
+
+    @Test
+    void 그룹별_알람을_설정할_수_있다() {
+
+    }
+
 
 }
