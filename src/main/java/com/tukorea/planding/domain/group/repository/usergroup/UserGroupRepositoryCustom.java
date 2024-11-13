@@ -12,6 +12,4 @@ public interface UserGroupRepositoryCustom {
 
     UserGroup findUserByGroupId(Long userId, Long groupRoomId);
 
-    boolean existsByUserCodeAndGroupId(String userCode, Long groupId);
-
 }

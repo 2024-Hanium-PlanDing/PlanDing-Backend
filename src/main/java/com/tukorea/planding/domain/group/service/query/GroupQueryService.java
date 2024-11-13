@@ -1,12 +1,13 @@
 package com.tukorea.planding.domain.group.service.query;
 
-import com.tukorea.planding.domain.group.entity.GroupRoom;
+import com.tukorea.planding.domain.group.entity.domain.GroupRoomDomain;
 import com.tukorea.planding.domain.group.repository.normal.GroupRoomRepository;
 import com.tukorea.planding.domain.group.repository.usergroup.UserGroupRepository;
 import com.tukorea.planding.domain.schedule.entity.GroupSchedule;
 import com.tukorea.planding.domain.schedule.repository.GroupScheduleRepository;
 import com.tukorea.planding.domain.schedule.service.ScheduleQueryService;
-import com.tukorea.planding.domain.user.entity.User;
+import com.tukorea.planding.domain.user.entity.UserDomain;
+import com.tukorea.planding.domain.user.repository.UserRepository;
 import com.tukorea.planding.global.error.BusinessException;
 import com.tukorea.planding.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -26,26 +27,30 @@ public class GroupQueryService {
     private final UserGroupRepository userGroupRepository;
     private final ScheduleQueryService scheduleQueryService;
 
-    public GroupRoom createGroup(GroupRoom groupRoom) {
+    public GroupRoomDomain createGroup(GroupRoomDomain groupRoom) {
         return groupRoomRepository.save(groupRoom);
     }
 
-    public List<GroupRoom> findGroupsByUserId(Long userId, PageRequest request) {
+    public List<GroupRoomDomain> findGroupsByUserId(Long userId, PageRequest request) {
         return groupRoomRepository.findGroupRoomsByUserId(userId, request);
     }
 
-    public GroupRoom getGroupById(Long groupId) {
-        return groupRoomRepository.findById(groupId)
+    public GroupRoomDomain getGroupById(Long groupId) {
+        return groupRoomRepository.findByGroupId(groupId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.GROUP_ROOM_NOT_FOUND));
     }
 
-    public GroupRoom getGroupByCode(String groupCode) {
+    public GroupRoomDomain getGroupByCode(String groupCode) {
         return groupRoomRepository.findByGroupCode(groupCode)
                 .orElseThrow(() -> new BusinessException(ErrorCode.GROUP_ROOM_NOT_FOUND));
     }
 
+    public GroupRoomDomain save(GroupRoomDomain groupRoomDomain) {
+        return groupRoomRepository.save(groupRoomDomain);
+    }
 
-    public void delete(GroupRoom groupRoom) {
+
+    public void delete(GroupRoomDomain groupRoom) {
         List<GroupSchedule> schedules = groupScheduleRepository.findAllByGroupRoomId(groupRoom.getId());
         for (GroupSchedule schedule : schedules) {
             schedule.getSchedules().stream()
@@ -56,14 +61,6 @@ public class GroupQueryService {
 
     public boolean existsByGroupCode(String groupCode) {
         return groupRoomRepository.existsByGroupCode(groupCode);
-    }
-
-    public List<User> getGroupUsers(String groupCode) {
-        return groupRoomRepository.getGroupUsers(groupCode);
-    }
-
-    public boolean existGroupInUser(String userCode, Long groupId) {
-        return userGroupRepository.existsByUserCodeAndGroupId(userCode, groupId);
     }
 
     public boolean existGroupInUser(String groupCode, String userCode) {

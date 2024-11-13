@@ -39,14 +39,4 @@ public class UserGroupRepositoryCustomImpl implements UserGroupRepositoryCustom 
                         .and(userGroup.user.id.eq(userId)))
                 .fetchFirst();
     }
-
-    @Override
-    public boolean existsByUserCodeAndGroupId(String userCode, Long groupId) {
-        long count = queryFactory.selectFrom(userGroup)
-                .where(userGroup.user.userCode.eq(userCode)
-                        .and(userGroup.groupRoom.id.eq(groupId)))
-                .fetchCount();
-
-        return count > 0;
-    }
 }

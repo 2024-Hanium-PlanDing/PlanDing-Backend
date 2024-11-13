@@ -10,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -47,5 +49,12 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public UserDomain save(UserDomain userDomain) {
         return userJpaRepository.save(User.fromModel(userDomain)).toModel();
+    }
+
+    @Override
+    public List<UserDomain> findByUserGroupGroupCode(String groupCode) {
+        return userJpaRepository.findByUserGroupGroupCode(groupCode).stream()
+                .map(User::toModel)
+                .collect(Collectors.toList());
     }
 }

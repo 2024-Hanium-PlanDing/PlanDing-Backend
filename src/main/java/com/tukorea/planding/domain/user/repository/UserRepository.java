@@ -3,6 +3,7 @@ package com.tukorea.planding.domain.user.repository;
 import com.tukorea.planding.domain.user.entity.SocialType;
 import com.tukorea.planding.domain.user.entity.UserDomain;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository {
@@ -16,4 +17,6 @@ public interface UserRepository {
     boolean existsByUserCode(String userCode);
 
     UserDomain save(UserDomain userDomain);
+
+    List<UserDomain> findByUserGroupGroupCode(String groupCode);
 }

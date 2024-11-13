@@ -12,6 +12,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Slf4j
 @Transactional
@@ -50,5 +52,9 @@ public class UserQueryService {
     @Transactional(readOnly = true)
     public boolean existsByUserCode(String userCode) {
         return userRepository.existsByUserCode(userCode);
+    }
+
+    public List<UserDomain> findByUserGroupGroupCode(String groupCode) {
+        return userRepository.findByUserGroupGroupCode(groupCode);
     }
 }
