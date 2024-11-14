@@ -1,18 +1,23 @@
 package com.tukorea.planding.domain.schedule.entity.domain;
 
-import com.tukorea.planding.domain.group.entity.GroupRoom;
 import com.tukorea.planding.domain.group.entity.domain.GroupRoomDomain;
-import com.tukorea.planding.domain.schedule.entity.Schedule;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.util.HashSet;
 import java.util.Set;
 
+@Getter
 public class GroupScheduleDomain {
 
-        private Long id;
+    private final Long id;
+    private final GroupRoomDomain groupRoom;
+    private final Set<ScheduleDomain> schedules;
 
-        private GroupRoomDomain groupRoom;
-
-        private Set<ScheduleDomain> schedules = new HashSet<>();
-
+    @Builder
+    public GroupScheduleDomain(Long id, GroupRoomDomain groupRoom, Set<ScheduleDomain> schedules) {
+        this.id = id;
+        this.groupRoom = groupRoom;
+        this.schedules = schedules;
+    }
 }
