@@ -4,6 +4,8 @@ import com.tukorea.planding.domain.group.dto.response.GroupFavoriteResponse;
 import com.tukorea.planding.domain.group.dto.response.GroupResponse;
 import com.tukorea.planding.domain.group.entity.GroupFavorite;
 import com.tukorea.planding.domain.group.entity.GroupRoom;
+import com.tukorea.planding.domain.group.entity.domain.GroupFavoriteDomain;
+import com.tukorea.planding.domain.group.entity.domain.GroupRoomDomain;
 import com.tukorea.planding.domain.group.repository.favorite.GroupFavoriteRepository;
 import com.tukorea.planding.domain.group.service.query.GroupQueryService;
 import com.tukorea.planding.domain.user.dto.UserResponse;
@@ -36,8 +38,8 @@ public class GroupFavoriteService {
     public List<GroupResponse> findFavoriteGroupsByUser(UserResponse userResponse) {
         return groupFavoriteRepository.findFavoriteGroupsByUser(userResponse.getId())
                 .stream()
-                .map(GroupFavorite::getGroupRoom)
-                .map(GroupResponse::from)
+                .map(GroupFavoriteDomain::getGroupRoomDomain)
+                .map(GroupResponse::toGroupResponse)
                 .collect(Collectors.toList());
     }
 
@@ -48,10 +50,10 @@ public class GroupFavoriteService {
         }
 
         UserDomain user = userQueryService.getUserByUserCode(userResponse.getUserCode());
-        GroupRoom groupRoom = groupQueryService.getGroupByCode(groupCode);
+        GroupRoomDomain groupRoom = groupQueryService.getGroupByCode(groupCode);
 
-        GroupFavorite groupFavorite = GroupFavorite.createGroupFavorite(User.fromModel(user), groupRoom);
-        GroupFavorite save = groupFavoriteRepository.save(groupFavorite);
+        GroupFavoriteDomain groupFavorite = GroupFavoriteDomain.createGroupFavorite(user, groupRoom);
+        GroupFavoriteDomain save = groupFavoriteRepository.save(groupFavorite);
         log.info("그룹 즐겨찾기 등록완료  for userCodes {} and group {}", userResponse.getUserCode(), groupCode);
         return GroupFavoriteResponse.from(save);
     }
