@@ -1,6 +1,6 @@
 package com.tukorea.planding.domain.group.dto.response;
 
-import com.tukorea.planding.domain.group.entity.GroupFavorite;
+import com.tukorea.planding.domain.group.entity.domain.GroupFavoriteDomain;
 import lombok.Builder;
 
 @Builder
@@ -8,10 +8,10 @@ public record GroupFavoriteResponse(
         String groupName,
         String groupCode
 ) {
-    public static GroupFavoriteResponse from(GroupFavorite groupFavorite) {
+    public static GroupFavoriteResponse from(GroupFavoriteDomain groupFavoriteDomain) {
         return GroupFavoriteResponse.builder()
-                .groupName(groupFavorite.getGroupRoom().getName())
-                .groupCode(groupFavorite.getGroupRoom().getGroupCode())
+                .groupName(groupFavoriteDomain.getGroupRoomDomain().getName())
+                .groupCode(groupFavoriteDomain.getGroupRoomDomain().getGroupCode())
                 .build();
     }
 }
