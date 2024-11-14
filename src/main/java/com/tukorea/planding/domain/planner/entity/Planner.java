@@ -2,6 +2,7 @@ package com.tukorea.planding.domain.planner.entity;
 
 import com.tukorea.planding.domain.planner.PlannerRole;
 import com.tukorea.planding.domain.planner.PlannerStatus;
+import com.tukorea.planding.domain.planner.entity.domain.PlannerDomain;
 import com.tukorea.planding.domain.schedule.entity.Schedule;
 import com.tukorea.planding.domain.user.entity.User;
 import com.tukorea.planding.global.audit.BaseEntity;
@@ -47,36 +48,28 @@ public class Planner extends BaseEntity {
     @OneToMany(mappedBy = "planner", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<PlannerUser> users = new ArrayList<>();
 
-    public void generatePlannerNumber() {
-        this.plannerNumber = schedule.getPlanners().size() + 1;
+
+    public static Planner fromModel(PlannerDomain plannerDomain) {
+        return Planner.builder()
+                .id(plannerDomain.getId())
+                .content(plannerDomain.getContent())
+                .deadline(plannerDomain.getDeadline())
+                .title(plannerDomain.getTitle())
+                .plannerNumber(plannerDomain.getPlannerNumber())
+                .schedule(Schedule.fromModel(plannerDomain.getSchedule()))
+                .status(plannerDomain.getStatus())
+                .build();
     }
 
-    public void declinePlannerNumber() {
-        this.plannerNumber = schedule.getPlanners().size() - 1;
-    }
-
-    public void update(String title, String content, PlannerStatus status, LocalDateTime deadline) {
-        this.title = title;
-        this.content = content;
-        this.status = status;
-        this.deadline = deadline;
-    }
-
-    public void updateManager(User newManager) {
-        this.users.stream()
-                .filter(plannerUser -> plannerUser.getRole() == PlannerRole.MANAGER)
-                .forEach(plannerUser -> plannerUser.updateRole(PlannerRole.GENERAL));
-
-        this.users.stream()
-                .filter(plannerUser -> plannerUser.getUser().equals(newManager))
-                .findFirst()
-                .ifPresentOrElse(
-                        plannerUser -> plannerUser.updateRole(PlannerRole.MANAGER),
-                        () -> this.users.add(PlannerUser.builder()
-                                .planner(this)
-                                .user(newManager)
-                                .role(PlannerRole.MANAGER)
-                                .build())
-                );
+    public PlannerDomain toModel() {
+        return PlannerDomain.builder()
+                .id(id)
+                .content(content)
+                .deadline(deadline)
+                .title(title)
+                .plannerNumber(plannerNumber)
+                .schedule(schedule.toModel())
+                .status(status)
+                .build();
     }
 }
