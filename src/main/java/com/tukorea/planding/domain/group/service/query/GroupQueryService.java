@@ -3,11 +3,9 @@ package com.tukorea.planding.domain.group.service.query;
 import com.tukorea.planding.domain.group.entity.domain.GroupRoomDomain;
 import com.tukorea.planding.domain.group.repository.normal.GroupRoomRepository;
 import com.tukorea.planding.domain.group.repository.usergroup.UserGroupRepository;
-import com.tukorea.planding.domain.schedule.entity.GroupSchedule;
-import com.tukorea.planding.domain.schedule.repository.GroupScheduleRepository;
+import com.tukorea.planding.domain.schedule.entity.domain.GroupScheduleDomain;
+import com.tukorea.planding.domain.schedule.repository.port.GroupScheduleRepository;
 import com.tukorea.planding.domain.schedule.service.ScheduleQueryService;
-import com.tukorea.planding.domain.user.entity.UserDomain;
-import com.tukorea.planding.domain.user.repository.UserRepository;
 import com.tukorea.planding.global.error.BusinessException;
 import com.tukorea.planding.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -51,8 +49,8 @@ public class GroupQueryService {
 
 
     public void delete(GroupRoomDomain groupRoom) {
-        List<GroupSchedule> schedules = groupScheduleRepository.findAllByGroupRoomId(groupRoom.getId());
-        for (GroupSchedule schedule : schedules) {
+        List<GroupScheduleDomain> schedules = groupScheduleRepository.findAllByGroupRoomId(groupRoom.getId());
+        for (GroupScheduleDomain schedule : schedules) {
             schedule.getSchedules().stream()
                     .forEach(s -> scheduleQueryService.deleteGroupScheduleById(s.getId()));
         }

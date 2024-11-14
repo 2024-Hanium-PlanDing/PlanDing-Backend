@@ -1,9 +1,11 @@
 package com.tukorea.planding.domain.group.service;
 
 import com.tukorea.planding.domain.group.dto.request.GroupCreateRequest;
-import com.tukorea.planding.domain.group.entity.GroupRoom;
+import com.tukorea.planding.domain.group.entity.domain.GroupRoomDomain;
+import com.tukorea.planding.domain.group.service.query.GroupQueryService;
 import com.tukorea.planding.domain.user.entity.User;
-import com.tukorea.planding.global.config.s3.S3Uploader;
+import com.tukorea.planding.domain.user.entity.UserDomain;
+import com.tukorea.planding.global.config.s3.FileUploader;
 import com.tukorea.planding.global.error.BusinessException;
 import com.tukorea.planding.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -16,15 +18,17 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class GroupRoomFactory {
 
-    private final S3Uploader s3Uploader;
+    private final FileUploader fileUploader;
+    private final GroupQueryService groupQueryService;
 
-    public GroupRoom createGroupRoom(GroupCreateRequest createGroupRoom, User user, MultipartFile thumbnailFile) {
-        GroupRoom newGroupRoom = GroupRoom.createGroupRoom(createGroupRoom, user);
+    public GroupRoomDomain createGroupRoom(GroupCreateRequest createGroupRoom, String groupCode, UserDomain user, MultipartFile thumbnailFile) {
+        GroupRoomDomain newGroupRoom = GroupRoomDomain.createGroupRoom(createGroupRoom, groupCode, user);
 
         if (thumbnailFile != null && !thumbnailFile.isEmpty()) {
             try {
-                String thumbnailUrl = s3Uploader.saveGroup(thumbnailFile);
-                newGroupRoom.updateThumbnail(thumbnailUrl);
+                String thumbnailUrl = fileUploader.uploadGroupThumbnail(thumbnailFile);
+                newGroupRoom = newGroupRoom.updateThumbnail(thumbnailUrl);
+                groupQueryService.save(newGroupRoom);
             } catch (IOException e) {
                 throw new BusinessException(ErrorCode.FILE_UPLOAD_ERROR);
             }

@@ -1,11 +1,21 @@
 package com.tukorea.planding.domain.group.repository.normal;
 
-import com.tukorea.planding.domain.group.entity.GroupRoom;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.tukorea.planding.domain.group.entity.domain.GroupRoomDomain;
+import org.springframework.data.domain.PageRequest;
 
+import java.util.List;
 import java.util.Optional;
 
-public interface GroupRoomRepository extends JpaRepository<GroupRoom, Long>, GroupRoomRepositoryCustom {
-    Optional<GroupRoom> findByGroupCode(String groupCode);
+public interface GroupRoomRepository {
+    Optional<GroupRoomDomain> findByGroupCode(String groupCode);
+
     boolean existsByGroupCode(String groupCode);
+
+    List<GroupRoomDomain> findGroupRoomsByUserId(Long userId, PageRequest request);
+
+    Optional<GroupRoomDomain> findByGroupId(Long groupId);
+
+    GroupRoomDomain save(GroupRoomDomain groupRoomDomain);
+
+    void delete(GroupRoomDomain groupRoomDomain);
 }
