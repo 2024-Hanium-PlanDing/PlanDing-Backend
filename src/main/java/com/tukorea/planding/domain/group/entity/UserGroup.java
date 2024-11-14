@@ -1,5 +1,6 @@
 package com.tukorea.planding.domain.group.entity;
 
+import com.tukorea.planding.domain.group.entity.domain.UserGroupDomain;
 import com.tukorea.planding.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,13 +26,26 @@ public class UserGroup {
     @Column(name = "is_connected")
     private boolean isConnected;
 
+    @Builder
     private UserGroup(User user, GroupRoom groupRoom, boolean isConnected) {
         this.user = user;
         this.groupRoom = groupRoom;
         this.isConnected = isConnected;
     }
 
-    public static UserGroup createUserGroup(User user, GroupRoom groupRoom) {
-        return new UserGroup(user, groupRoom, false);
+    public static UserGroup fromModel(UserGroupDomain userGroupDomain) {
+        return UserGroup.builder()
+                .user(User.fromModel(userGroupDomain.getUser()))
+                .groupRoom(GroupRoom.fromModel(userGroupDomain.getGroupRoom()))
+                .isConnected(userGroupDomain.isConnected())
+                .build();
+    }
+
+    public UserGroupDomain toModel() {
+        return UserGroupDomain.builder()
+                .user(user.toModel())
+                .groupRoom(groupRoom.toModel())
+                .isConnected(isConnected)
+                .build();
     }
 }
