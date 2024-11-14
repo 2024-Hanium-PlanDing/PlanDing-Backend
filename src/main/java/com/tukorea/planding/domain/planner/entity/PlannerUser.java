@@ -1,6 +1,7 @@
 package com.tukorea.planding.domain.planner.entity;
 
 import com.tukorea.planding.domain.planner.PlannerRole;
+import com.tukorea.planding.domain.planner.entity.domain.PlannerUserDomain;
 import com.tukorea.planding.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,7 +29,21 @@ public class PlannerUser {
     @Column(name = "role", nullable = false)
     private PlannerRole role;
 
-    public void updateRole(PlannerRole newRole) {
-        this.role = newRole;
+    public static PlannerUser fromModel(PlannerUserDomain plannerUserDomain) {
+        return PlannerUser.builder()
+                .id(plannerUserDomain.getId())
+                .user(User.fromModel(plannerUserDomain.getUser()))
+                .planner(Planner.fromModel(plannerUserDomain.getPlanner()))
+                .build();
     }
+
+    public PlannerUserDomain toModel() {
+        return PlannerUserDomain.builder()
+                .id(id)
+                .planner(planner.toModel())
+                .user(user.toModel())
+                .role(role)
+                .build();
+    }
+
 }
