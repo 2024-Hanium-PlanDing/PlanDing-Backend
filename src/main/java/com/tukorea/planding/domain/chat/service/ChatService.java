@@ -7,7 +7,6 @@ import com.tukorea.planding.domain.chat.entity.ChatMessage;
 import com.tukorea.planding.domain.chat.repository.ChatMessageRepository;
 import com.tukorea.planding.domain.group.service.query.UserGroupQueryService;
 import com.tukorea.planding.domain.user.dto.UserResponse;
-import com.tukorea.planding.domain.user.entity.User;
 import com.tukorea.planding.domain.user.entity.UserDomain;
 import com.tukorea.planding.domain.user.service.UserQueryService;
 import com.tukorea.planding.global.error.BusinessException;
