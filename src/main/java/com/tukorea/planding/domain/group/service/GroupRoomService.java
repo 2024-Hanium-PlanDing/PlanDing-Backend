@@ -1,13 +1,13 @@
 package com.tukorea.planding.domain.group.service;
 
-import com.tukorea.planding.domain.chat.repository.ChatRoomRepository;
+import com.tukorea.planding.common.service.GroupRoomCodeHolder;
 import com.tukorea.planding.domain.chat.service.ChatRoomService;
 import com.tukorea.planding.domain.group.dto.request.GroupCreateRequest;
 import com.tukorea.planding.domain.group.dto.request.GroupUpdateRequest;
 import com.tukorea.planding.domain.group.dto.response.GroupInformationResponse;
 import com.tukorea.planding.domain.group.dto.response.GroupResponse;
-import com.tukorea.planding.domain.group.entity.GroupRoom;
-import com.tukorea.planding.domain.group.entity.UserGroup;
+import com.tukorea.planding.domain.group.entity.domain.GroupRoomDomain;
+import com.tukorea.planding.domain.group.entity.domain.UserGroupDomain;
 import com.tukorea.planding.domain.group.service.query.GroupQueryService;
 import com.tukorea.planding.domain.group.service.query.UserGroupQueryService;
 import com.tukorea.planding.domain.user.dto.UserResponse;
@@ -17,21 +17,20 @@ import com.tukorea.planding.domain.user.entity.UserDomain;
 import com.tukorea.planding.domain.user.service.UserQueryService;
 import com.tukorea.planding.global.error.BusinessException;
 import com.tukorea.planding.global.error.ErrorCode;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@Builder
 @Transactional
 @RequiredArgsConstructor
 public class GroupRoomService {
@@ -41,122 +40,71 @@ public class GroupRoomService {
     private final GroupQueryService groupQueryService;
     private final GroupRoomFactory groupRoomFactory;
     private final ChatRoomService chatRoomService;
-    private final ChatRoomRepository chatRoomRepository;
+    private final GroupRoomCodeHolder groupRoomCodeHolder;
 
 
     public GroupResponse createGroupRoom(UserResponse userResponse, GroupCreateRequest createGroupRoom, MultipartFile thumbnailFile) {
         UserDomain user = userQueryService.getUserByUserCode(userResponse.getUserCode());
+        String groupCode = groupRoomCodeHolder.groupCode(); // 그룹코드 생성
 
-        GroupRoom newGroupRoom = groupRoomFactory.createGroupRoom(createGroupRoom, User.fromModel(user), thumbnailFile);
-        GroupRoom savedGroupRoom = groupQueryService.createGroup(newGroupRoom);
-        final UserGroup userGroup = UserGroup.createUserGroup(User.fromModel(user), savedGroupRoom);
+        GroupRoomDomain newGroupRoom = groupRoomFactory.createGroupRoom(createGroupRoom, groupCode, user, thumbnailFile);
+        GroupRoomDomain savedGroupRoom = groupQueryService.createGroup(newGroupRoom);
+        UserGroupDomain userGroup = UserGroupDomain.createUserGroup(user, savedGroupRoom);
 
         // 중간테이블에 유저, 그룹 정보 저장
         userGroupQueryService.save(userGroup);
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-            @Override
-            public void afterCommit() {
-                chatRoomService.createChatRoomForGroup(savedGroupRoom.getGroupCode());
-            }
-        });
-        return toGroupResponse(newGroupRoom);
+        chatRoomService.createChatRoomAfterCommit(groupCode);
+        return GroupResponse.toGroupResponse(newGroupRoom);
     }
 
     public GroupResponse updateGroupNameOrDescription(UserResponse userResponse, GroupUpdateRequest groupUpdateRequest) {
-        GroupRoom groupRoom = groupQueryService.getGroupById(groupUpdateRequest.groupId());
-
-        // TODO 그룹의 팀원도 변경가능하도록
-        validateOwner(userResponse,groupRoom);
-
-        groupRoom.updateName(groupUpdateRequest.name());
-        groupRoom.updateDescription(groupUpdateRequest.description());
-
-        return toGroupResponse(groupRoom);
+        GroupRoomDomain groupRoomDomain = groupQueryService.getGroupById(groupUpdateRequest.groupId());
+        groupRoomDomain.validateOwner(userResponse);     // TODO 그룹의 팀원도 변경가능하도록
+        groupRoomDomain = groupRoomDomain.update(groupUpdateRequest);
+        return GroupResponse.toGroupResponse(groupRoomDomain);
     }
 
     public void deleteGroup(UserResponse userResponse, String groupCode) {
-        GroupRoom groupRoom = groupQueryService.getGroupByCode(groupCode);
-
-        validateOwner(userResponse,groupRoom);
-
-        groupQueryService.delete(groupRoom);
+        GroupRoomDomain groupRoomDomain = groupQueryService.getGroupByCode(groupCode);
+        groupRoomDomain.validateOwner(userResponse);
+        groupQueryService.delete(groupRoomDomain);
     }
 
     // 유저가 속한 그룹룸 가져오기
     public List<GroupResponse> getAllGroupRoomByUser(UserResponse userResponse, PageRequest request) {
-        List<GroupRoom> groupRooms = groupQueryService.findGroupsByUserId(userResponse.getId(), request);
+        List<GroupRoomDomain> groupRooms = groupQueryService.findGroupsByUserId(userResponse.getId(), request);
         return groupRooms.stream()
-                .map(this::toGroupResponse)
+                .map(GroupResponse::toGroupResponse)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public GroupInformationResponse getGroupUsers(UserResponse userResponse, String groupCode) {
-        GroupRoom groupRoom = groupQueryService.getGroupByCode(groupCode);
-
-        boolean isMember = groupRoom.getUserGroups().stream()
-                .anyMatch(userGroup -> userGroup.getUser().getUserCode().equals(userResponse.getUserCode()));
-
-        if (!isMember) {
-            throw new BusinessException(ErrorCode.ACCESS_DENIED);
-        }
-
-        List<UserInfoSimple> userInfoSimples = groupQueryService.getGroupUsers(groupCode)
+        GroupRoomDomain groupRoom = groupQueryService.getGroupByCode(groupCode);
+        groupRoom.hasMember(userResponse); // 검사
+        List<UserInfoSimple> userInfoSimples = userQueryService.findByUserGroupGroupCode(groupCode)
                 .stream()
                 .map(user -> UserInfoSimple.fromEntity(user, groupRoom.getOwner().getUserCode()))
                 .collect(Collectors.toList());
-
-        return GroupInformationResponse.builder()
-                .id(groupRoom.getId())
-                .owner(groupRoom.getOwner().getUserCode())
-                .users(userInfoSimples)
-                .groupCode(groupRoom.getGroupCode())
-                .name(groupRoom.getName())
-                .description(groupRoom.getDescription())
-                .createdBy(LocalDate.from(groupRoom.getCreatedDate()))
-                .thumbnailUrl(groupRoom.getThumbnail())
-                .isGroupAdmin(isGroupOwner(userResponse,groupRoom))
-                .isFavorite(groupRoom.getGroupFavorites().stream().anyMatch(a -> a.getGroupRoom().getGroupCode().equals(groupCode)))
-                .isAlarm(groupRoom.isAlarm())
-                .build();
+        return GroupInformationResponse.from(groupRoom, userInfoSimples, userResponse);
     }
 
     public void leaveGroup(UserResponse userResponse, String groupCode) {
-        GroupRoom groupRoom = groupQueryService.getGroupByCode(groupCode);
-        UserGroup userGroup = userGroupQueryService.findByUserIdAndGroupId(userResponse.getId(), groupRoom.getId());
-
-        if (isGroupOwner(userResponse,groupRoom)) {
+        GroupRoomDomain groupRoom = groupQueryService.getGroupByCode(groupCode);
+        UserGroupDomain userGroup = userGroupQueryService.findByUserIdAndGroupId(userResponse.getId(), groupRoom.getId());
+        if (groupRoom.isGroupOwner(userResponse)) {
             groupQueryService.delete(groupRoom);
         } else {
             userGroupQueryService.delete(userGroup);
         }
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-            @Override
-            public void afterCommit() {
-                chatRoomRepository.leaveChatRoom(groupCode);
-            }
-        });
-    }
-
-    private GroupResponse toGroupResponse(GroupRoom groupRoom) {
-        return GroupResponse.from(groupRoom);
-    }
-
-    private void validateOwner(UserResponse userResponse, GroupRoom groupRoom) {
-        if (!groupRoom.getOwner().getUserCode().equals(userResponse.getUserCode())) {
-            throw new BusinessException(ErrorCode.ACCESS_DENIED);
-        }
-    }
-
-    private boolean isGroupOwner(UserResponse userResponse, GroupRoom groupRoom) {
-        return groupRoom.getOwner().getUserCode().equals(userResponse.getUserCode());
+        chatRoomService.deleteChatRoom(groupCode);
     }
 
     public void updateGroupRoomAlarmSetting(String userCode, String groupCode, boolean alarmEnabled) {
         if (!groupQueryService.existGroupInUser(groupCode, userCode)) {
             throw new BusinessException(ErrorCode.ACCESS_DENIED);
         }
-        GroupRoom groupRoom = groupQueryService.getGroupByCode(groupCode);
+        GroupRoomDomain groupRoom = groupQueryService.getGroupByCode(groupCode);
         groupRoom.updateAlarm(alarmEnabled);
     }
 }
