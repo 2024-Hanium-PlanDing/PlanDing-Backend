@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class FakeUserRepository implements UserRepository {
     private Long count = 0L;
@@ -67,6 +68,10 @@ public class FakeUserRepository implements UserRepository {
 
     @Override
     public List<UserDomain> findByUserGroupGroupCode(String groupCode) {
-        return null;
+        return data.stream()
+                .filter(item -> item.getUserGroup() != null)
+                .filter(item -> item.getUserGroup().stream()
+                        .anyMatch(userGroup -> userGroup.getGroupRoom().getGroupCode().equals(groupCode)))
+                .collect(Collectors.toList());
     }
 }
