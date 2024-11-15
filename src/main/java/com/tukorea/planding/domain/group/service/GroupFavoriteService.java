@@ -2,18 +2,16 @@ package com.tukorea.planding.domain.group.service;
 
 import com.tukorea.planding.domain.group.dto.response.GroupFavoriteResponse;
 import com.tukorea.planding.domain.group.dto.response.GroupResponse;
-import com.tukorea.planding.domain.group.entity.GroupFavorite;
-import com.tukorea.planding.domain.group.entity.GroupRoom;
 import com.tukorea.planding.domain.group.entity.domain.GroupFavoriteDomain;
 import com.tukorea.planding.domain.group.entity.domain.GroupRoomDomain;
 import com.tukorea.planding.domain.group.repository.favorite.GroupFavoriteRepository;
 import com.tukorea.planding.domain.group.service.query.GroupQueryService;
 import com.tukorea.planding.domain.user.dto.UserResponse;
-import com.tukorea.planding.domain.user.entity.User;
 import com.tukorea.planding.domain.user.entity.UserDomain;
 import com.tukorea.planding.domain.user.service.UserQueryService;
 import com.tukorea.planding.global.error.BusinessException;
 import com.tukorea.planding.global.error.ErrorCode;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -25,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@Builder
 @Transactional
 @RequiredArgsConstructor
 public class GroupFavoriteService {
