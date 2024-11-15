@@ -64,4 +64,9 @@ public class FakeUserRepository implements UserRepository {
             return userDomain;
         }
     }
+
+    @Override
+    public List<UserDomain> findByUserGroupGroupCode(String groupCode) {
+        return null;
+    }
 }

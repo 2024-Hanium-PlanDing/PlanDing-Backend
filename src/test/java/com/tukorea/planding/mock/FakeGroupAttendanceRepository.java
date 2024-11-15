@@ -47,7 +47,6 @@ public class FakeGroupAttendanceRepository implements GroupScheduleAttendanceRep
 
     @Override
     public GroupScheduleAttendanceDomain save(GroupScheduleAttendanceDomain groupScheduleAttendanceDomain) {
-        // 동일한 항목이 있을 경우 기존 데이터를 삭제하고 새 데이터를 추가합니다.
         data.removeIf(existing -> existing.getUser().getId().equals(groupScheduleAttendanceDomain.getUser().getId())
                 && existing.getSchedule().getId().equals(groupScheduleAttendanceDomain.getSchedule().getId()));
         data.add(groupScheduleAttendanceDomain);
