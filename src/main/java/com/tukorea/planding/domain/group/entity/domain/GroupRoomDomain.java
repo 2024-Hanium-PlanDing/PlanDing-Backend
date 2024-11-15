@@ -4,7 +4,6 @@ import com.tukorea.planding.domain.group.dto.request.GroupCreateRequest;
 import com.tukorea.planding.domain.group.dto.request.GroupUpdateRequest;
 import com.tukorea.planding.domain.schedule.entity.domain.GroupScheduleDomain;
 import com.tukorea.planding.domain.user.dto.UserResponse;
-import com.tukorea.planding.domain.user.entity.User;
 import com.tukorea.planding.domain.user.entity.UserDomain;
 import com.tukorea.planding.global.error.BusinessException;
 import com.tukorea.planding.global.error.ErrorCode;
@@ -46,11 +45,11 @@ public class GroupRoomDomain {
         this.groupFavorites = groupFavorites;
     }
 
-    public static GroupRoomDomain createGroupRoom(GroupCreateRequest groupCreateRequest, String groupCode, User owner) {
+    public static GroupRoomDomain createGroupRoom(GroupCreateRequest groupCreateRequest, String groupCode, UserDomain owner) {
         return GroupRoomDomain.builder()
                 .name(groupCreateRequest.name())
                 .description(groupCreateRequest.description())
-                .owner(owner.toModel())
+                .owner(owner)
                 .groupCode(groupCode)
                 .build();
     }
@@ -94,6 +93,21 @@ public class GroupRoomDomain {
                 .createdDate(createdDate)
                 .modifiedDate(LocalDateTime.now())
                 .alarm(alarm)
+                .build();
+    }
+
+    public GroupRoomDomain addUserGroup(Set<UserGroupDomain> userGroups) {
+        return GroupRoomDomain.builder()
+                .id(id)
+                .name(name)
+                .description(description)
+                .owner(owner)
+                .thumbnail(thumbnail)
+                .groupCode(groupCode)
+                .createdDate(createdDate)
+                .modifiedDate(modifiedDate)
+                .alarm(alarm)
+                .userGroups(userGroups)
                 .build();
     }
 

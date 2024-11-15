@@ -10,6 +10,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -118,5 +120,15 @@ class GroupRoomDomainTest {
     void 그룹의_오너인지_확인_한다() {
         UserResponse userResponse = UserResponse.toResponse(owner);
         assertThat(groupRoomDomain.isGroupOwner(userResponse)).isTrue();
+    }
+
+    @Test
+    void 그룹에서_유저를_추가할_수_있다(){
+        Set<UserGroupDomain> userGroupDomains=new HashSet<>();
+        userGroupDomains.add(UserGroupDomain.builder().build());
+        
+        GroupRoomDomain result = groupRoomDomain.addUserGroup(userGroupDomains);
+
+        assertThat(result.getUserGroups().size()).isEqualTo(1);
     }
 }
