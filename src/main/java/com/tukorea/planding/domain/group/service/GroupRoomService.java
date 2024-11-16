@@ -48,11 +48,13 @@ public class GroupRoomService {
         String groupCode = groupRoomCodeHolder.groupCode(); // 그룹코드 생성
 
         GroupRoomDomain newGroupRoom = groupRoomFactory.createGroupRoom(createGroupRoom, groupCode, user, thumbnailFile);
+        UserGroupDomain userGroup = UserGroupDomain.createUserGroup(user, newGroupRoom);
+
+        newGroupRoom.addUserGroup(userGroup);
         GroupRoomDomain savedGroupRoom = groupQueryService.createGroup(newGroupRoom);
-        UserGroupDomain userGroup = UserGroupDomain.createUserGroup(user, savedGroupRoom);
 
         // 중간테이블에 유저, 그룹 정보 저장
-        userGroupQueryService.save(userGroup);
+        userGroup = userGroupQueryService.save(userGroup);
         chatRoomService.createChatRoomAfterCommit(groupCode);
         return GroupResponse.toGroupResponse(newGroupRoom);
     }

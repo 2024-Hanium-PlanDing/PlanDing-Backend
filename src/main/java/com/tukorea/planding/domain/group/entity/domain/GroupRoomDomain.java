@@ -11,6 +11,8 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -96,7 +98,10 @@ public class GroupRoomDomain {
                 .build();
     }
 
-    public GroupRoomDomain addUserGroup(Set<UserGroupDomain> userGroups) {
+    public GroupRoomDomain addUserGroup(UserGroupDomain userGroup) {
+        Set<UserGroupDomain> updatedUserGroups = userGroups == null ? new HashSet<>() : new HashSet<>(this.userGroups);
+        updatedUserGroups.add(userGroup);
+
         return GroupRoomDomain.builder()
                 .id(id)
                 .name(name)
@@ -105,9 +110,31 @@ public class GroupRoomDomain {
                 .thumbnail(thumbnail)
                 .groupCode(groupCode)
                 .createdDate(createdDate)
-                .modifiedDate(modifiedDate)
+                .modifiedDate(LocalDateTime.now())
+                .alarm(alarm)
+                .userGroups(updatedUserGroups)
+                .groupSchedules(groupSchedules)
+                .groupFavorites(groupFavorites)
+                .build();
+    }
+
+    public GroupRoomDomain addFavorite(GroupFavoriteDomain groupFavoriteDomain) {
+        List<GroupFavoriteDomain> favoriteDomains = userGroups == null ? new ArrayList<>() : new ArrayList<>(this.groupFavorites);
+        favoriteDomains.add(groupFavoriteDomain);
+
+        return GroupRoomDomain.builder()
+                .id(id)
+                .name(name)
+                .description(description)
+                .owner(owner)
+                .thumbnail(thumbnail)
+                .groupCode(groupCode)
+                .createdDate(createdDate)
+                .modifiedDate(LocalDateTime.now())
                 .alarm(alarm)
                 .userGroups(userGroups)
+                .groupSchedules(groupSchedules)
+                .groupFavorites(favoriteDomains)
                 .build();
     }
 

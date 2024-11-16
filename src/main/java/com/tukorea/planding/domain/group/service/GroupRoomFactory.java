@@ -8,6 +8,7 @@ import com.tukorea.planding.domain.user.entity.UserDomain;
 import com.tukorea.planding.global.config.s3.FileUploader;
 import com.tukorea.planding.global.error.BusinessException;
 import com.tukorea.planding.global.error.ErrorCode;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @Component
+@Builder
 @RequiredArgsConstructor
 public class GroupRoomFactory {
 

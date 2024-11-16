@@ -16,8 +16,8 @@ public class UserGroupQueryService {
 
     private final UserGroupRepository userGroupRepository;
 
-    public void save(UserGroupDomain userGroupDomain) {
-        userGroupRepository.save(userGroupDomain);
+    public UserGroupDomain save(UserGroupDomain userGroupDomain) {
+        return userGroupRepository.save(userGroupDomain);
     }
 
     public boolean checkUserAccessToGroupRoom(String groupCode, String userCode) {

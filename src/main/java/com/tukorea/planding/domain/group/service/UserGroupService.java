@@ -2,9 +2,10 @@ package com.tukorea.planding.domain.group.service;
 
 import com.tukorea.planding.domain.group.entity.GroupRoom;
 import com.tukorea.planding.domain.group.entity.UserGroup;
+import com.tukorea.planding.domain.group.entity.domain.GroupRoomDomain;
+import com.tukorea.planding.domain.group.entity.domain.UserGroupDomain;
 import com.tukorea.planding.domain.group.repository.normal.GroupRoomRepository;
 import com.tukorea.planding.domain.group.repository.usergroup.UserGroupRepository;
-import com.tukorea.planding.domain.user.entity.User;
 import com.tukorea.planding.domain.user.entity.UserDomain;
 import com.tukorea.planding.domain.user.service.UserQueryService;
 import com.tukorea.planding.global.error.BusinessException;
@@ -27,15 +28,16 @@ public class UserGroupService {
 
         UserDomain user = userQueryService.getUserByUserCode(userCode);
 
-        GroupRoom groupRoom = groupRoomRepository.findByGroupCode(groupCode)
+        GroupRoomDomain groupRoom = groupRoomRepository.findByGroupCode(groupCode)
                 .orElseThrow(() -> new BusinessException(ErrorCode.GROUP_ROOM_NOT_FOUND));
 
         if (!userGroupRepository.existsByGroupRoomAndUser(groupCode, user.getUserCode())) {
             throw new BusinessException(ErrorCode.GROUP_ROOM_NOT_FOUND);
         }
 
-        UserGroup test = userGroupRepository.findUserByGroupId(user.getId(), groupRoom.getId());
-        test.setConnected(isConnected);
+        UserGroupDomain test = userGroupRepository.findUserByGroupId(user.getId(), groupRoom.getId());
+        test = test.updateConnect(isConnected);
+        userGroupRepository.save(test);
     }
 
 }

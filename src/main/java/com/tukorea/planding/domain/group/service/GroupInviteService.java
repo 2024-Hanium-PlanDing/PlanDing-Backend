@@ -1,17 +1,16 @@
 package com.tukorea.planding.domain.group.service;
 
-import com.tukorea.planding.domain.chat.repository.ChatRoomRepository;
+import com.tukorea.planding.domain.chat.repository.ChatRoomRepositoryImpl;
 import com.tukorea.planding.domain.group.dto.request.GroupInviteRequest;
 import com.tukorea.planding.domain.group.dto.response.GroupInviteAcceptResponse;
 import com.tukorea.planding.domain.group.dto.response.GroupInviteMessageResponse;
 import com.tukorea.planding.domain.group.dto.response.GroupResponse;
-import com.tukorea.planding.domain.group.entity.GroupRoom;
-import com.tukorea.planding.domain.group.entity.UserGroup;
+import com.tukorea.planding.domain.group.entity.domain.GroupRoomDomain;
+import com.tukorea.planding.domain.group.entity.domain.UserGroupDomain;
 import com.tukorea.planding.domain.group.service.query.GroupQueryService;
 import com.tukorea.planding.domain.group.service.query.UserGroupQueryService;
 import com.tukorea.planding.domain.notify.service.NotificationEventHandler;
 import com.tukorea.planding.domain.user.dto.UserResponse;
-import com.tukorea.planding.domain.user.entity.User;
 import com.tukorea.planding.domain.user.entity.UserDomain;
 import com.tukorea.planding.domain.user.service.UserQueryService;
 import com.tukorea.planding.global.error.BusinessException;
@@ -35,7 +34,7 @@ public class GroupInviteService {
     private final UserGroupQueryService userGroupQueryService;
     private final NotificationEventHandler eventHandler;
     private final RedisGroupInviteServiceImpl redisGroupInviteServiceImpl;
-    private final ChatRoomRepository chatRoomRepository;
+    private final ChatRoomRepositoryImpl chatRoomRepositoryImpl;
 
 
     public GroupInviteMessageResponse inviteGroupRoom(UserResponse userResponse, GroupInviteRequest groupInviteRequest) {
@@ -56,9 +55,9 @@ public class GroupInviteService {
             throw new BusinessException(ErrorCode.ACCESS_DENIED);
         }
 
-        GroupRoom group = groupQueryService.getGroupByCode(groupInviteRequest.groupCode());
+        GroupRoomDomain group = groupQueryService.getGroupByCode(groupInviteRequest.groupCode());
 
-        GroupInviteMessageResponse groupInviteMessageResponse = GroupInviteMessageResponse.create("IN" + UUID.randomUUID(), group.getGroupCode(), group.getName(), groupInviteRequest.userCode(), userResponse.getUsername(), GroupResponse.from(group), LocalDateTime.now());
+        GroupInviteMessageResponse groupInviteMessageResponse = GroupInviteMessageResponse.create("IN" + UUID.randomUUID(), group.getGroupCode(), group.getName(), groupInviteRequest.userCode(), userResponse.getUsername(), GroupResponse.toGroupResponse(group), LocalDateTime.now());
 
         redisGroupInviteServiceImpl.createInvitation(groupInviteRequest.userCode(), groupInviteMessageResponse);
 
@@ -69,9 +68,9 @@ public class GroupInviteService {
 
     public GroupInviteAcceptResponse acceptInvitation(UserResponse userResponse, String code, String groupCode) {
         UserDomain user = userQueryService.getUserByUserCode(userResponse.getUserCode());
-        GroupRoom group = groupQueryService.getGroupByCode(groupCode);
+        GroupRoomDomain group = groupQueryService.getGroupByCode(groupCode);
 
-        final UserGroup userGroup = UserGroup.createUserGroup(User.fromModel(user), group);
+        final UserGroupDomain userGroup = UserGroupDomain.createUserGroup(user, group);
         userGroupQueryService.save(userGroup);
 
         redisGroupInviteServiceImpl.deleteInvitation(userResponse.getUserCode(), code);
@@ -80,7 +79,7 @@ public class GroupInviteService {
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
             @Override
             public void afterCommit() {
-                chatRoomRepository.enterChatRoom(groupCode);
+                chatRoomRepositoryImpl.enterChatRoom(groupCode);
 
             }
         });
