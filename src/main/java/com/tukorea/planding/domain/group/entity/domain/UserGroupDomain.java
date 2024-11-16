@@ -1,9 +1,6 @@
 package com.tukorea.planding.domain.group.entity.domain;
 
 
-import com.tukorea.planding.domain.group.entity.GroupRoom;
-import com.tukorea.planding.domain.group.entity.UserGroup;
-import com.tukorea.planding.domain.user.entity.User;
 import com.tukorea.planding.domain.user.entity.UserDomain;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,7 +10,7 @@ public class UserGroupDomain {
     private final Long id;
     private final UserDomain user;
     private final GroupRoomDomain groupRoom;
-    private final boolean isConnected;
+    private boolean isConnected;
 
     @Builder
     public UserGroupDomain(Long id, UserDomain user, GroupRoomDomain groupRoom, boolean isConnected) {
@@ -37,11 +34,7 @@ public class UserGroupDomain {
                 .build();
     }
 
-    public UserGroupDomain updateConnect(boolean isConnected) {
-        return UserGroupDomain.builder()
-                .user(user)
-                .groupRoom(groupRoom)
-                .isConnected(isConnected)
-                .build();
+    public void updateConnect(boolean isConnected) {
+        this.isConnected = isConnected;
     }
 }

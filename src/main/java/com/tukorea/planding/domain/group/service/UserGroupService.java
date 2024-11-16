@@ -10,11 +10,13 @@ import com.tukorea.planding.domain.user.entity.UserDomain;
 import com.tukorea.planding.domain.user.service.UserQueryService;
 import com.tukorea.planding.global.error.BusinessException;
 import com.tukorea.planding.global.error.ErrorCode;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Builder
 @Transactional
 @RequiredArgsConstructor
 public class UserGroupService {
@@ -36,7 +38,7 @@ public class UserGroupService {
         }
 
         UserGroupDomain test = userGroupRepository.findUserByGroupId(user.getId(), groupRoom.getId());
-        test = test.updateConnect(isConnected);
+        test.updateConnect(isConnected);
         userGroupRepository.save(test);
     }
 
