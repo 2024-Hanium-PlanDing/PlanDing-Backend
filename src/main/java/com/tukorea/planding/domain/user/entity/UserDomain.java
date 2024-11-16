@@ -1,8 +1,5 @@
 package com.tukorea.planding.domain.user.entity;
 
-import com.tukorea.planding.common.service.UserCodeHolder;
-import com.tukorea.planding.domain.group.entity.GroupFavorite;
-import com.tukorea.planding.domain.group.entity.UserGroup;
 import com.tukorea.planding.domain.group.entity.domain.GroupFavoriteDomain;
 import com.tukorea.planding.domain.group.entity.domain.UserGroupDomain;
 import com.tukorea.planding.domain.user.dto.AndroidLoginRequest;
@@ -27,11 +24,11 @@ public class UserDomain {
     private final String userCode;
     private final boolean alarm;
     private final String fcmToken;
-    private final Set<UserGroupDomain> userGroup = new HashSet<>();
+    private final Set<UserGroupDomain> userGroup;
     private final List<GroupFavoriteDomain> groupFavorites = new ArrayList<>();
 
     @Builder
-    public UserDomain(Long id, String email, String profileImage, String username, Role role, SocialType socialType, String socialId, String userCode, boolean alarm, String fcmToken) {
+    public UserDomain(Long id, String email, String profileImage, String username, Role role, SocialType socialType, String socialId, String userCode, boolean alarm, String fcmToken, Set<UserGroupDomain> userGroup) {
         this.id = id;
         this.email = email;
         this.profileImage = profileImage;
@@ -42,7 +39,9 @@ public class UserDomain {
         this.userCode = userCode;
         this.alarm = alarm;
         this.fcmToken = fcmToken;
+        this.userGroup = userGroup;
     }
+
 
     public static UserDomain androidCreate(AndroidLoginRequest androidLoginRequest, String userCode) {
         return UserDomain.builder()
@@ -85,6 +84,26 @@ public class UserDomain {
                 .fcmToken(fcmToken)
                 .build();
     }
+
+    public UserDomain addUserGroup(UserGroupDomain userGroupDomain) {
+        Set<UserGroupDomain> updatedUserGroups = userGroup == null ? new HashSet<>() : new HashSet<>(this.userGroup);
+        updatedUserGroups.add(userGroupDomain);
+
+        return UserDomain.builder()
+                .id(id)
+                .email(email)
+                .profileImage(profileImage)
+                .username(username)
+                .role(role)
+                .socialType(socialType)
+                .socialId(socialId)
+                .alarm(alarm)
+                .userCode(userCode)
+                .fcmToken(fcmToken)
+                .userGroup(updatedUserGroups)
+                .build();
+    }
+
 
 
 }
