@@ -30,7 +30,7 @@ public class UserQueryService {
     }
 
     // 유저 정보를 조회하는 메서드에 캐싱을 적용
-    @Cacheable(value = "userInfoCache", key = "#userCode")
+    @Cacheable(value = "userResponseCache", key = "#userCode")
     public UserResponse getUserInfo(String userCode) {
         UserDomain user = getUserByUserCode(userCode);
         return UserResponse.toResponse(user);

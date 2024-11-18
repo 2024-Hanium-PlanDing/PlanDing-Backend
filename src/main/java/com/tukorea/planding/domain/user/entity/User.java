@@ -66,7 +66,7 @@ public class User extends BaseEntity {
         this.fcmToken = fcmToken;
     }
 
-    public static User fromModel(UserDomain userDomain){
+    public static User fromModel(UserDomain userDomain) {
         return User.builder()
                 .socialType(userDomain.getSocialType())
                 .socialId(userDomain.getSocialId())
@@ -79,7 +79,7 @@ public class User extends BaseEntity {
                 .build();
     }
 
-    public UserDomain toModel(){
+    public UserDomain toModel() {
         return UserDomain.builder()
                 .id(id)
                 .email(email)
@@ -90,6 +90,7 @@ public class User extends BaseEntity {
                 .socialType(socialType)
                 .fcmToken(fcmToken)
                 .alarm(alarm)
+                .role(role)
                 .build();
     }
 }

@@ -4,11 +4,12 @@ import com.tukorea.planding.domain.user.entity.UserDomain;
 import com.tukorea.planding.global.oauth.details.Role;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 @Builder
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class UserResponse {
     private Long id;
 
