@@ -1,9 +1,12 @@
 package com.tukorea.planding.domain.schedule.service;
 
+import com.tukorea.planding.domain.group.entity.GroupRoom;
 import com.tukorea.planding.domain.schedule.dto.request.GroupScheduleAttendanceRequest;
 import com.tukorea.planding.domain.schedule.dto.response.GroupScheduleAttendanceResponse;
+import com.tukorea.planding.domain.schedule.dto.response.UserScheduleAttendance;
 import com.tukorea.planding.domain.schedule.entity.GroupScheduleAttendance;
 import com.tukorea.planding.domain.schedule.entity.Schedule;
+import com.tukorea.planding.domain.schedule.entity.ScheduleStatus;
 import com.tukorea.planding.domain.schedule.repository.GroupScheduleAttendanceRepository;
 import com.tukorea.planding.domain.user.dto.UserResponse;
 import com.tukorea.planding.domain.user.entity.User;
@@ -14,6 +17,10 @@ import com.tukorea.planding.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -64,4 +71,17 @@ public class GroupScheduleAttendanceService {
                 .status(attendance.getStatus())
                 .build();
     }
+
+    @Transactional(readOnly = true)
+    public List<UserScheduleAttendance> getUserScheduleAttendances(GroupRoom groupRoom, Long scheduleId) {
+        return groupRoom.getUserGroups().stream()
+                .map(userGroup -> {
+                    Optional<GroupScheduleAttendance> attendance = groupScheduleAttendanceRepository.findByUserIdAndScheduleIdAndStatusNot(userGroup.getUser().getId(), scheduleId, ScheduleStatus.UNDECIDED);
+                    ScheduleStatus status = attendance.map(GroupScheduleAttendance::getStatus).orElse(ScheduleStatus.UNDECIDED);
+                    return new UserScheduleAttendance(userGroup.getUser().getUserCode(), userGroup.getUser().getUsername(), status);
+                })
+                .filter(attendance -> attendance.status() != ScheduleStatus.UNDECIDED)
+                .collect(Collectors.toList());
+    }
+
 }

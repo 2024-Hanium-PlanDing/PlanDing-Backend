@@ -1,6 +1,9 @@
 package com.tukorea.planding.domain.schedule.entity;
 
+import com.tukorea.planding.domain.group.dto.request.GroupCreateRequest;
 import com.tukorea.planding.domain.planner.entity.Planner;
+import com.tukorea.planding.domain.schedule.dto.request.PersonalScheduleRequest;
+import com.tukorea.planding.domain.schedule.dto.request.websocket.SendCreateScheduleDTO;
 import com.tukorea.planding.global.audit.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -75,5 +78,31 @@ public class Schedule extends BaseEntity {
         Optional.ofNullable(content).ifPresent(value -> this.content = value);
         Optional.ofNullable(startTime).ifPresent(value -> this.startTime = value);
         Optional.ofNullable(endTime).ifPresent(value -> this.endTime = value);
+    }
+
+    public static Schedule createGroupSchedule(SendCreateScheduleDTO request, GroupSchedule groupSchedule) {
+        return Schedule.builder()
+                .title(request.title())
+                .content(request.content())
+                .scheduleDate(request.scheduleDate())
+                .startTime(request.startTime())
+                .endTime(request.endTime())
+                .isComplete(false)
+                .groupSchedule(groupSchedule)
+                .type(ScheduleType.GROUP)
+                .build();
+    }
+
+    public static Schedule createPersonalSchedule(PersonalSchedule personalSchedule, PersonalScheduleRequest personalScheduleRequest) {
+        return Schedule.builder()
+                .personalSchedule(personalSchedule)
+                .title(personalScheduleRequest.title())
+                .content(personalScheduleRequest.content())
+                .scheduleDate(personalScheduleRequest.scheduleDate())
+                .startTime(personalScheduleRequest.startTime())
+                .endTime(personalScheduleRequest.endTime())
+                .isComplete(false)
+                .type(ScheduleType.PERSONAL)
+                .build();
     }
 }

@@ -62,10 +62,6 @@ public class GroupQueryService {
         return groupRoomRepository.getGroupUsers(groupCode);
     }
 
-    public boolean existGroupInUser(String userCode, Long groupId) {
-        return userGroupRepository.existsByUserCodeAndGroupId(userCode, groupId);
-    }
-
     public boolean existGroupInUser(String groupCode, String userCode) {
         return userGroupRepository.existsByGroupRoomAndUser(groupCode, userCode);
     }
